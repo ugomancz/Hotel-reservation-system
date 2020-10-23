@@ -1,7 +1,7 @@
 # Hotel Reservation System
 I need a program that will help me to run my hotel. Therefore I need a desktop application accessible all the time even without Internet connection. This program should help me and my employees to:
 - Keep information about guests and their reservations.
-  -Reservations can be done/cancelled via phone, mail or personally at the reception desk.
+  - Reservations can be done/cancelled via phone, mail or personally at the reception desk.
   - The following information is needed to make a reservation:
     - Information about the guest (name, phone, etc.)
     - Check-in and check-out dates
