@@ -1,0 +1,34 @@
+# Ignore everything...
+*
+
+# ...except directories
+!*/
+
+# ...and these files
+!*.java
+!.gitignore
+!README.md
+!pb162_codestyle.xml
+!polygon-error.txt
+!polygon-ok.txt
+!pom.xml
+!.gitlab-ci.yml
+!*.png
+!*.jpg
+# etc.
+
+
+# From directories, ignore...
+
+### Idea:
+.idea/
+.idea_modules/
+/out/
+
+### Maven template
+target/
+
+### Eclipse template
+bin/
+tmp/
+.settings/
