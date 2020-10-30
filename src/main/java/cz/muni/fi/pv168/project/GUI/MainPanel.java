@@ -15,4 +15,6 @@ public class MainPanel extends JPanel {
         this.add(new SidePanel(), BorderLayout.EAST);
         this.add(new Timetable(), BorderLayout.CENTER);
     }
+
+
 }

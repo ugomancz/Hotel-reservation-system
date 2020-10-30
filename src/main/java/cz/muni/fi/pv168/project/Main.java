@@ -6,8 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
+    public static JFrame frame = new JFrame("HotelApp");
     public static void main(String[] args) {
-        JFrame frame = new JFrame("HotelApp");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1280, 720);
         frame.setMinimumSize(new Dimension(640, 400));

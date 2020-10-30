@@ -12,9 +12,4 @@ public class Button extends JButton {
         this.setBackground(new Color(237, 235, 235));
         this.setFont(new Font("Tahoma", Font.BOLD, 14));
     }
-
-    void addTo(JPanel panel) {
-        panel.add(this);
-    }
-
 }

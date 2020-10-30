@@ -11,8 +11,19 @@ public class CalendarPanel extends JPanel {
         this.setBackground(Color.darkGray);
         this.setPreferredSize(new Dimension(100, 250));
 
-        this.add(new JLabel(new SimpleDateFormat("MMM")
-                        .format(Calendar.getInstance().getTime())), BorderLayout.CENTER);
+        /*String monthString = new SimpleDateFormat("MMM")
+                .format(Calendar.getInstance().getTime());
+        JLabel monthLabel = new JLabel("CALENDAR");
+        monthLabel.setForeground(Color.cyan);
+
+        Button previousMonth = new Button("<");
+        Button nextMonth = new Button(">");
+
+        this.add(monthLabel, BorderLayout.CENTER);
+        this.add(previousMonth, BorderLayout.WEST);
+        this.add(nextMonth, BorderLayout.EAST);
+        this.add(new JLabel(), BorderLayout.NORTH);
+        this.add(new JLabel(), BorderLayout.SOUTH);*/
 
     }
 }
