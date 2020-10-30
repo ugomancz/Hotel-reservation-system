@@ -12,9 +12,7 @@ public class MainPanel extends JPanel {
         this.setBackground(mainBackground);
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        //JPanel calendar = new JPanel();
-        this.add(new ButtonPanel(), BorderLayout.EAST);
-        this.add(new CalendarPanel(), BorderLayout.NORTH);
+        this.add(new SidePanel(), BorderLayout.EAST);
         this.add(new Timetable(), BorderLayout.CENTER);
     }
 }

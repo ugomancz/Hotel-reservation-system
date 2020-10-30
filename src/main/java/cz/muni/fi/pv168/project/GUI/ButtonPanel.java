@@ -1,24 +1,24 @@
 package cz.muni.fi.pv168.project.GUI;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ButtonPanel extends JPanel {
-    private final String[] buttonNames = {"New reservation","Change reservation","Cancel reservation",
-            "Check-in","Check-out", "Room info", "Reservation info", "Log out", "Settings"};
-    private final int numOfButtons = buttonNames.length;
-    private ArrayList<Button> buttons = new ArrayList<>();
+    private final ArrayList<String> buttonNames = new ArrayList<>(Arrays.asList("New reservation", "Change reservation", "Cancel reservation",
+            "Check-in", "Check-out", "Room info", "Reservation info", "Log out", "Settings"));
+    private final int numOfButtons = buttonNames.size();
+    private final ArrayList<Button> buttons = new ArrayList<>();
 
     public ButtonPanel() {
         super();
+        this.setLayout(new GridLayout(numOfButtons, 1, 5, 5));
         this.setBackground(MainPanel.mainBackground);
-        this.setLayout(new GridLayout(numOfButtons, 1, 0, 10));
-        this.setBorder(new EmptyBorder(0,0,0,0));
-        this.setPreferredSize(new Dimension(Button.dimension.width, 30));
+        this.setPreferredSize(new Dimension(Button.dimension.width, 500));
+
         for (int i = 0; i < numOfButtons; i++) {
-            buttons.add(new Button(buttonNames[i]));
+            buttons.add(new Button(buttonNames.get(i)));
             this.add(buttons.get(i));
         }
     }
