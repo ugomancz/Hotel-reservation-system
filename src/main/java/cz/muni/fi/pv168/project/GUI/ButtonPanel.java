@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.project.GUI;
 
 import cz.muni.fi.pv168.project.GUI.Forms.ChangeReservation;
 import cz.muni.fi.pv168.project.GUI.Forms.NewReservation;
+import cz.muni.fi.pv168.project.Main;
 
 import javax.swing.*;
 import java.awt.*;
