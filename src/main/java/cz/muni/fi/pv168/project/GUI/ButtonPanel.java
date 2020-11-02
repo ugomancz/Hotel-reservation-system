@@ -1,8 +1,6 @@
 package cz.muni.fi.pv168.project.GUI;
 
-import cz.muni.fi.pv168.project.GUI.Forms.ChangeReservation;
-import cz.muni.fi.pv168.project.GUI.Forms.NewReservation;
-import cz.muni.fi.pv168.project.Main;
+import cz.muni.fi.pv168.project.GUI.Forms.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,6 +34,20 @@ public class ButtonPanel extends JPanel implements ActionListener {
             new NewReservation();
         } else if (buttons.get(1) == e.getSource()) {
             new ChangeReservation();
+        } else if (buttons.get(2) == e.getSource()) {
+            new CancelReservation();
+        } else if (buttons.get(3) == e.getSource()) {
+            new CheckIn();
+        } else if (buttons.get(4) == e.getSource()) {
+            new CheckOut();
+        } else if (buttons.get(5) == e.getSource()) {
+            new RoomInfo();
+        } else if (buttons.get(6) == e.getSource()) {
+            new ReservationInfo();
+        } else if (buttons.get(7) == e.getSource()) {
+            System.out.println("Logout");
+        } else if (buttons.get(8) == e.getSource()) {
+            new Settings();
         }
     }
 }

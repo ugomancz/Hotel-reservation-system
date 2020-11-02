@@ -13,7 +13,7 @@ public abstract class Form extends JFrame {
         this.setLocationRelativeTo(Main.frame);
         this.setVisible(true);
 
-        Main.frame.setVisible(false);
+        Main.frame.setEnabled(false);
 
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -25,7 +25,7 @@ public abstract class Form extends JFrame {
     }
 
     private void onClose() {
-        Main.frame.setVisible(true);
+        Main.frame.setEnabled(true);
         this.dispose();
     }
 }
