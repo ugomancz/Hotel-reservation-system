@@ -13,6 +13,12 @@ public class SidePanel extends JPanel {
         this.setPreferredSize(new Dimension(Button.dimension.width, 500));
 
         this.add(new ButtonPanel(), BorderLayout.CENTER);
-        this.add(new CalendarPanel(), BorderLayout.SOUTH);
+        this.add(newCalendar(), BorderLayout.SOUTH);
+    }
+
+    private CalendarPanel newCalendar() {
+        CalendarPanel calendar = new CalendarPanel();
+        calendar.setBackground(new Color(240, 240, 240));
+        return calendar;
     }
 }
