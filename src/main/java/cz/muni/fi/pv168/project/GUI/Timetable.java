@@ -11,10 +11,10 @@ public class Timetable extends JPanel {
         this.setLayout(new GridLayout(10,31));
         this.setBorder(new EmptyBorder(0,0,0,0));
 
-        for (int i =0; i<(310); i++){
+        /*for (int i =0; i<(310); i++){
             final JLabel label = new JLabel();
             label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             this.add(label);
-        }
+        }*/
     }
 }

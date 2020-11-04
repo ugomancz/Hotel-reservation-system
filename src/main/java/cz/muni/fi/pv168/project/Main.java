@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.project;
 
-import cz.muni.fi.pv168.project.GUI.Forms.Login;
 import cz.muni.fi.pv168.project.GUI.MainPanel;
 
 import javax.swing.*;
@@ -13,6 +12,6 @@ public class Main {
         frame.setSize(1280, 720);
         frame.setMinimumSize(new Dimension(640, 400));
         frame.setContentPane(new MainPanel());
-        new Login();
+        frame.setVisible(true);
     }
 }

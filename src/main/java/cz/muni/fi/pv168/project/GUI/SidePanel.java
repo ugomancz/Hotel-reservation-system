@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.project.GUI;
 
+import com.github.lgooddatepicker.components.CalendarPanel;
+
 import javax.swing.*;
 import java.awt.*;
 

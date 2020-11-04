@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class ButtonPanel extends JPanel implements ActionListener {
     private final ArrayList<String> buttonNames = new ArrayList<>(Arrays.asList("New reservation", "Change reservation", "Cancel reservation",
-            "Check-in", "Check-out", "Room info", "Reservation info", "Log out", "Settings"));
+            "Check-in", "Check-out", "Room info", "Reservation info", "Settings"));
     private final ArrayList<Button> buttons = new ArrayList<>();
 
     public ButtonPanel() {
@@ -45,8 +45,6 @@ public class ButtonPanel extends JPanel implements ActionListener {
         } else if (buttons.get(6) == e.getSource()) {
             new ReservationInfo();
         } else if (buttons.get(7) == e.getSource()) {
-            System.out.println("Logout");
-        } else if (buttons.get(8) == e.getSource()) {
             new Settings();
         }
     }
