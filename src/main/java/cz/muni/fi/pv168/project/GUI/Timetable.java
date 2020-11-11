@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class Timetable extends JPanel {
 
-    JPanel[][] panels = new JPanel[Main.numberOfRooms][Main.week];
+    static JPanel[][] panels = new JPanel[Main.numberOfRooms][Main.week];
 
     public Timetable() {
         super();
@@ -17,8 +17,8 @@ public class Timetable extends JPanel {
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setBackground(Main.backgroundColor);
         this.initPanels(Main.numberOfRooms, Main.week);
-        changeColor(Color.yellow, 4);
-        changeName("Lvkas Hasík", 4);
+        changeColor(Color.orange, 2);
+        changeName("Lvkas Hasík", 2);
     }
 
     private void initPanels(int y, int x) {
@@ -40,7 +40,13 @@ public class Timetable extends JPanel {
 
     public void changeName(String name, int room) {
         for (int i = 1; i < 5; i++) {
-            panels[room-1][i].add(new JLabel(name, SwingConstants.CENTER));
+            if (panels[room-1][i].getComponentCount() > 0)
+                ((JLabel) panels[room - 1][i].getComponent(0)).setText(name);
+            else {
+                JLabel label = new JLabel(name, SwingConstants.CENTER);
+                panels[room-1][i].add(label);
+            }
         }
+        this.revalidate();
     }
 }

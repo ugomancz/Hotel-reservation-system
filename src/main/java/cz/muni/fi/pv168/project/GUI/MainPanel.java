@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class MainPanel extends JPanel {
+    public static Timetable timetable = new Timetable();
 
     public MainPanel() {
         super(new BorderLayout(10, 10));
@@ -14,7 +15,7 @@ public class MainPanel extends JPanel {
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         this.add(new SidePanel(), BorderLayout.EAST);
-        this.add(new Timetable(), BorderLayout.CENTER);
+        this.add(timetable, BorderLayout.CENTER);
         this.add(new RoomNames(), BorderLayout.WEST);
         this.add(new DayNames(), BorderLayout.NORTH);
     }
