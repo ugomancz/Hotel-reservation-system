@@ -17,7 +17,7 @@ public class Timetable extends JPanel {
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setBackground(Main.backgroundColor);
         this.initPanels(Main.numberOfRooms, Main.week);
-        changeColor(Color.orange, 4);
+        changeColor(Color.yellow, 4);
         changeName("Lvkas Hasík", 4);
     }
 
