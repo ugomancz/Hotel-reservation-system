@@ -19,7 +19,7 @@ public class MainPanel extends JPanel {
         this.add(new DayNames(), BorderLayout.NORTH);
     }
 
-    static class RoomNames extends JPanel {
+    private static class RoomNames extends JPanel {
         public Dimension dimensions = new Dimension(60, 500);
 
         private RoomNames() {
