@@ -24,7 +24,7 @@ public abstract class Form extends JFrame {
         });
     }
 
-    private void onClose() {
+    void onClose() {
         Main.frame.setEnabled(true);
         this.dispose();
     }
