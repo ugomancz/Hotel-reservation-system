@@ -17,6 +17,8 @@ public class Timetable extends JPanel {
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setBackground(Main.backgroundColor);
         this.initPanels(Main.numberOfRooms, Main.week);
+        changeColor(Color.orange, 4);
+        changeName("Lvkas Hasík", 4);
     }
 
     private void initPanels(int y, int x) {
@@ -30,9 +32,15 @@ public class Timetable extends JPanel {
         }
     }
 
-    public void changeColor(Color color) {
+    public void changeColor(Color color, int room) {
         for (int i = 1; i < 5; i++) {
-            panels[0][i].setBackground(color);
+            panels[room-1][i].setBackground(color);
+        }
+    }
+
+    public void changeName(String name, int room) {
+        for (int i = 1; i < 5; i++) {
+            panels[room-1][i].add(new JLabel(name, SwingConstants.CENTER));
         }
     }
 }
