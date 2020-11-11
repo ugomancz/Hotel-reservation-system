@@ -13,8 +13,6 @@ public class MainPanel extends JPanel {
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         this.add(new SidePanel(), BorderLayout.EAST);
-        this.add(new JTable(new TimetableModel()), BorderLayout.CENTER);
+        this.add(new Timetable(), BorderLayout.CENTER);
     }
-
-
 }

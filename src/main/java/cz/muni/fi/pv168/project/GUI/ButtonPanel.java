@@ -33,19 +33,19 @@ public class ButtonPanel extends JPanel implements ActionListener {
         if (buttons.get(0) == (e.getSource())) {
             new NewReservation();
         } else if (buttons.get(1) == e.getSource()) {
-            new ChangeReservation();
+            //new ChangeReservation();
         } else if (buttons.get(2) == e.getSource()) {
-            new CancelReservation();
+            //new CancelReservation();
         } else if (buttons.get(3) == e.getSource()) {
             new CheckIn();
         } else if (buttons.get(4) == e.getSource()) {
             new CheckOut();
         } else if (buttons.get(5) == e.getSource()) {
-            new RoomInfo();
+            //new RoomInfo();
         } else if (buttons.get(6) == e.getSource()) {
-            new ReservationInfo();
+            //new ReservationInfo();
         } else if (buttons.get(7) == e.getSource()) {
-            new Settings();
+            //new Settings();
         }
     }
 }
