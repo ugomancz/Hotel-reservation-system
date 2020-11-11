@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.project.GUI;
 
 import cz.muni.fi.pv168.project.GUI.Forms.*;
+import cz.muni.fi.pv168.project.Main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ public class ButtonPanel extends JPanel implements ActionListener {
         super();
         int numOfButtons = buttonNames.size();
         this.setLayout(new GridLayout(numOfButtons, 1, 5, 5));
-        this.setBackground(MainPanel.mainBackground);
+        this.setBackground(Main.backgroundColor);
         this.setPreferredSize(new Dimension(Button.dimension.width, 500));
 
         for (int i = 0; i < numOfButtons; i++) {

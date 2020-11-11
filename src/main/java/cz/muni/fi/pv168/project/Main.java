@@ -6,11 +6,15 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
+    public final static Color backgroundColor = Color.lightGray;
+    public final static int numberOfRooms = 15;
+    public final static int week = 7;
+
     public static JFrame frame = new JFrame("HotelApp");
+
     public static void main(String[] args) {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1280, 720);
-        frame.setMinimumSize(new Dimension(640, 400));
+        frame.setMinimumSize(new Dimension(1280, 720));
         frame.setContentPane(new MainPanel());
         frame.setVisible(true);
     }
