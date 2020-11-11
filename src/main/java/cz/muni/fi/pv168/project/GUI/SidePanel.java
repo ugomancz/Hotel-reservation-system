@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.project.Main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.DayOfWeek;
 
 public class SidePanel extends JPanel {
     public SidePanel() {
@@ -19,6 +20,7 @@ public class SidePanel extends JPanel {
 
     private CalendarPanel initCalendar() {
         CalendarPanel calendar = new CalendarPanel();
+        calendar.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
         calendar.setBackground(new Color(240, 240, 240));
         return calendar;
     }
