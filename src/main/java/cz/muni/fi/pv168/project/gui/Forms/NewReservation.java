@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
 
 import static java.lang.Integer.parseInt;
@@ -147,6 +148,7 @@ public class NewReservation extends Form implements ActionListener {
             if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
                 reservation = new Reservation(usedName, usedPhone, usedMail,parseInt(usedPeople), parseInt(room), from, to);
                 Main.reservations.add(reservation);
+                MainPanel.timetable.drawWeek(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
                 onClose();
             } else {
                 JOptionPane.showInternalMessageDialog(null, "Room full");
