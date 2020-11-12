@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ public class NewReservation extends Form implements ActionListener {
     JComboBox<Integer> rooms;
     DatePicker fromDate, toDate;
     Reservation reservation;
-    Integer array[] = new Integer[]{1, 2, 3, 4, 5, 6};
+    Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6};
 
 
     GridBagConstraints gbc = new GridBagConstraints();
@@ -44,7 +45,7 @@ public class NewReservation extends Form implements ActionListener {
 
         gbc.gridx = 0;
         gbc.gridy = 20;
-        add(new JLabel("email: "), gbc);
+        add(new JLabel("Email: "), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 30;
@@ -52,11 +53,11 @@ public class NewReservation extends Form implements ActionListener {
 
         gbc.gridx = 0;
         gbc.gridy = 40;
-        add(new JLabel("from: "), gbc);
+        add(new JLabel("From: "), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 50;
-        add(new JLabel("to: "), gbc);
+        add(new JLabel("To: "), gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 60;
@@ -92,11 +93,17 @@ public class NewReservation extends Form implements ActionListener {
         add(people, gbc);
 
         fromDate = new DatePicker();
+        fromDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
+        fromDate.getComponentToggleCalendarButton().setBackground(new Color(240,240,240));
+        fromDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
         gbc.gridx = 5;
         gbc.gridy = 40;
         add(fromDate, gbc);
 
         toDate = new DatePicker();
+        toDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
+        toDate.getComponentToggleCalendarButton().setBackground(new Color(240,240,240));
+        toDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
         gbc.gridx = 5;
         gbc.gridy = 50;
         add(toDate, gbc);
@@ -104,6 +111,7 @@ public class NewReservation extends Form implements ActionListener {
         rooms = new JComboBox<>(array);
         rooms.setSelectedIndex(0);
         rooms.addActionListener(this);
+        rooms.setFont(new Font("Tahoma", Font.BOLD, 14));
         gbc.gridx = 5;
         gbc.gridy = 60;
         add(rooms, gbc);
@@ -137,10 +145,8 @@ public class NewReservation extends Form implements ActionListener {
             LocalDate from = fromDate.getDate();
             LocalDate to = toDate.getDate();
             if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
-                reservation = new Reservation(usedName, parseInt(usedPeople), parseInt(room), from, to);
+                reservation = new Reservation(usedName, usedPhone, usedMail,parseInt(usedPeople), parseInt(room), from, to);
                 Main.reservations.add(reservation);
-                MainPanel.timetable.changeColor(Color.orange, parseInt(room));
-                MainPanel.timetable.changeName(usedName, parseInt(room));
                 onClose();
             } else {
                 JOptionPane.showInternalMessageDialog(null, "Room full");

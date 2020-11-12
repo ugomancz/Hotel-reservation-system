@@ -8,15 +8,20 @@ public class Reservation {
     private int roomNumber;
     private int hosts;
     private String name;
+    private String phone;
+    private String email;
     private ReservationStatus status;
 
-    public Reservation(String name, int hosts, int roomNumber, LocalDate arrival, LocalDate departure) {
+    public Reservation(String name, String phone, String email, int hosts,
+                       int roomNumber, LocalDate arrival, LocalDate departure) {
         this.name = name;
         this.hosts = hosts;
         this.roomNumber = roomNumber;
         this.arrival = arrival;
         this.departure = departure;
         this.status = ReservationStatus.planned;
+        this.phone = phone;
+        this.email = email;
         Main.reservations.add(this);
     }
 
