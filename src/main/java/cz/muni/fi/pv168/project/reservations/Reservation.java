@@ -10,7 +10,10 @@ public class Reservation {
     private int roomNumber;
     private int hosts;
     private String name;
+
     private String phone;
+
+
     private String email;
     private ReservationStatus status;
 
@@ -25,6 +28,13 @@ public class Reservation {
         this.phone = phone;
         this.email = email;
         Main.reservations.add(this);
+    }
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
     }
 
     public LocalDate getArrival() {
