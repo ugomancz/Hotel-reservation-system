@@ -138,8 +138,8 @@ public class CheckIn extends Form implements ActionListener {
             onClose();
 
         } else if (action.equals("Confirm")) {
-            MainPanel.timetable.changeColor(Color.red, 5);
-            MainPanel.timetable.changeName("Timotej Cirok", 5);
+            //MainPanel.timetable.setPanelColor(Color.red, 5);
+            //MainPanel.timetable.changeName("Timotej Cirok", 5);
             onClose();
         }
 
