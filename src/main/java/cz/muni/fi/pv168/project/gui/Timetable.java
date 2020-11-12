@@ -49,7 +49,7 @@ public class Timetable extends JPanel {
                 panel.setBackground(Color.orange);
                 return;
             case past:
-                panel.setBackground(Color.darkGray);
+                panel.setBackground(Color.lightGray);
         }
     }
 
@@ -80,7 +80,7 @@ public class Timetable extends JPanel {
 
     private Reservation getReservation(int room, LocalDate date) {
         for (Reservation reservation : Main.reservations) {
-            if (reservation.getStatus() != past && reservation.getRoomNumber() == room
+            if (reservation.getRoomNumber() == room
                     && dateInReservation(date, reservation.getArrival(), reservation.getDeparture())) {
                 return reservation;
             }
@@ -100,6 +100,10 @@ public class Timetable extends JPanel {
                 if (reservation != null) {
                     setPanelName(panels[room][day], reservation.getName());
                     setPanelColor(panels[room][day], reservation.getStatus());
+                } else {
+                    JPanel panel = new JPanel();
+                    panel.setBorder(new LineBorder(Color.black, 1));
+                    panels[room][day] = panel;
                 }
             }
         }
