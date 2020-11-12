@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class CheckOut extends Form implements ActionListener {
@@ -33,7 +32,7 @@ public class CheckOut extends Form implements ActionListener {
         this.setResizable(false);
         this.setLayout(new BorderLayout(0, 0));
 
-        pickReservation = new JComboBox<String>(activeReservations.stream()
+        pickReservation = new JComboBox<>(activeReservations.stream()
                 .map(Reservation::getName)
                 .toArray(String[]::new));
         pickReservation.addActionListener(this);
