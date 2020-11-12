@@ -28,13 +28,17 @@ public class CheckIn extends Form implements ActionListener {
 
         GridBagLayout layout = new GridBagLayout();
         this.setLayout(layout);
+        setLayout();
+        //Reservation test = new Reservation("Kokot", "123456789", "kokot@email.cz", 2, 5, LocalDate.now(), LocalDate.now().plusDays(2));
 
+    }
+
+    /**
+     * Sets layout in frame using GridBagLayout
+     */
+    private void setLayout() {
         gbc.weightx = 0;
         gbc.weighty = 0.1;
-
-
-
-
 
 
         JLabel IDnumber = new JLabel("ID number ");
@@ -176,14 +180,28 @@ public class CheckIn extends Form implements ActionListener {
         change.addActionListener(this);
         change.setEnabled(false);
         findReservation.addActionListener(this);
-
-        //Reservation test = new Reservation("Kokot", "123456789", "kokot@email.cz", 2, 5, LocalDate.now(), LocalDate.now().plusDays(2));
-
-
-
-
     }
 
+    /**
+     * In case of a found existing reservation, fills out all the information
+     */
+    private void fillReservation() {
+        int length = Period.between(reservation.getArrival(), reservation.getDeparture()).getDays();
+
+        nameField.setText(reservation.getName());
+        roomBox.setSelectedIndex(reservation.getRoomNumber() - 1);
+        phoneField.setText(reservation.getPhone());
+        lengthField.setText(String.valueOf(length));
+        emailField.setText(reservation.getEmail());
+        guestField.setText(String.valueOf(reservation.getHosts()));
+        confirm.setEnabled(true);
+    }
+
+    /**
+     * searches for an existing reservation using name and Today date as keys
+     * @param name : key for searching for an existing reservation
+     * @return existing reservation
+     */
     private Reservation findReservation(String name) {
         for (Reservation reservation : Main.reservations) {
             if (reservation.getName().equals(name) && reservation.getArrival().equals(LocalDate.now())) {
@@ -200,11 +218,10 @@ public class CheckIn extends Form implements ActionListener {
             onClose();
 
         } else if (action.equals("Confirm")) {
-
+            //if a reservation is confirmed it's status is changed
             reservation.setStatus(ReservationStatus.ongoing);
             MainPanel.timetable.drawWeek(LocalDate.now());
             onClose();
-
 
         } else if (action.equals("Change reservation")) {
             JOptionPane.showMessageDialog(this, "This function is not implemented yet");
@@ -212,16 +229,7 @@ public class CheckIn extends Form implements ActionListener {
             reservation = findReservation(nameField.getText());
             //reservation was found
             if (reservation != null) {
-                int length = Period.between(reservation.getArrival(), reservation.getDeparture()).getDays();
-
-                nameField.setText(reservation.getName());
-                roomBox.setSelectedIndex(reservation.getRoomNumber() - 1);
-                phoneField.setText(reservation.getPhone());
-                lengthField.setText(String.valueOf(length));
-                emailField.setText(reservation.getEmail());
-                guestField.setText(String.valueOf(reservation.getHosts()));
-                confirm.setEnabled(true);
-
+                fillReservation();
             } else {
                 JOptionPane.showMessageDialog(this, "No reservation found");
             }
