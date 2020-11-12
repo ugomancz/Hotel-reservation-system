@@ -64,7 +64,8 @@ public class Timetable extends JPanel {
     private boolean isInterfering(LocalDate newArrival, LocalDate newDeparture, LocalDate arrival, LocalDate departure) {
         return (newArrival.isAfter(arrival) && newArrival.isBefore(departure))
                 || (newDeparture.isAfter(arrival) && newDeparture.isBefore(departure))
-                || (newArrival.isBefore(arrival) && newDeparture.isAfter(departure));
+                || (newArrival.isBefore(arrival) && newDeparture.isAfter(departure))
+                || (newArrival.isEqual(arrival) && newDeparture.isEqual(departure));
     }
 
     public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
