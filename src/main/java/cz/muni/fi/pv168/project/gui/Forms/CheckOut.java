@@ -15,14 +15,14 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class CheckOut extends Form implements ActionListener {
-    JButton outButton, cancelButton;
-    JLabel label = new JLabel("", SwingConstants.CENTER);
-    JComboBox<String> pickReservation;
-    ArrayList<Reservation> activeReservations = new ArrayList<>(Main.reservations.stream()
+    private JButton outButton, cancelButton;
+    private JLabel label = new JLabel("", SwingConstants.CENTER);
+    private JComboBox<String> pickReservation;
+    private ArrayList<Reservation> activeReservations = new ArrayList<>(Main.reservations.stream()
             .filter((x) -> x.getStatus() == ReservationStatus.planned)
             .collect(Collectors.toList()));
-    Reservation reservation;
-    String receipt = "<html>Client: %s<br/><br/>" +
+    private Reservation reservation;
+    private String receipt = "<html>Client: %s<br/><br/>" +
             "Nights spent: %d<br/>" +
             "Room cost per night: %d<br/>" +
             "Local fees per person per night: %d<br/><br/>" +
@@ -37,6 +37,18 @@ public class CheckOut extends Form implements ActionListener {
         this.add(label, BorderLayout.CENTER);
         this.add(addButtons(), BorderLayout.SOUTH);
         this.add(addComboBox(), BorderLayout.NORTH);
+    }
+
+    private JPanel addButtons() {
+        outButton = new Button("Check-out");
+        outButton.addActionListener(this);
+        cancelButton = new Button("Cancel");
+        cancelButton.addActionListener(this);
+
+        JPanel panel = new JPanel();
+        panel.add(outButton);
+        panel.add(cancelButton);
+        return panel;
     }
 
     private JComboBox<String> addComboBox() {
@@ -55,18 +67,6 @@ public class CheckOut extends Form implements ActionListener {
             throw new RuntimeException("It seems this reservation doesn't exist", e);
         }
         label.setText(String.format(receipt, reservation.getName(), reservation.getLength(), 1200, 50, 5200));
-    }
-
-    private JPanel addButtons() {
-        outButton = new Button("Check-out");
-        outButton.addActionListener(this);
-        cancelButton = new Button("Cancel");
-        cancelButton.addActionListener(this);
-
-        JPanel panel = new JPanel();
-        panel.add(outButton);
-        panel.add(cancelButton);
-        return panel;
     }
 
     @Override
