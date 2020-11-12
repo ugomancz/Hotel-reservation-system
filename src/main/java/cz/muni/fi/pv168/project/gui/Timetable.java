@@ -1,7 +1,7 @@
-package cz.muni.fi.pv168.project.GUI;
+package cz.muni.fi.pv168.project.gui;
 
 import cz.muni.fi.pv168.project.Main;
-import cz.muni.fi.pv168.project.Reservation;
+import cz.muni.fi.pv168.project.reservations.Reservation;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -9,7 +9,7 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.time.LocalDate;
 
-import static cz.muni.fi.pv168.project.ReservationStatus.past;
+import static cz.muni.fi.pv168.project.reservations.ReservationStatus.past;
 
 public class Timetable extends JPanel {
 

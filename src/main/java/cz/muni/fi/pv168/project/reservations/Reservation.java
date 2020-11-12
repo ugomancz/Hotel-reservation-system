@@ -1,4 +1,6 @@
-package cz.muni.fi.pv168.project;
+package cz.muni.fi.pv168.project.reservations;
+
+import cz.muni.fi.pv168.project.Main;
 
 import java.time.LocalDate;
 

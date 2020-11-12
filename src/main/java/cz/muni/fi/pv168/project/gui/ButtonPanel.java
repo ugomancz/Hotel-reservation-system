@@ -1,8 +1,8 @@
-package cz.muni.fi.pv168.project.GUI;
+package cz.muni.fi.pv168.project.gui;
 
-import cz.muni.fi.pv168.project.GUI.Forms.CheckIn;
-import cz.muni.fi.pv168.project.GUI.Forms.CheckOut;
-import cz.muni.fi.pv168.project.GUI.Forms.NewReservation;
+import cz.muni.fi.pv168.project.gui.Forms.CheckIn;
+import cz.muni.fi.pv168.project.gui.Forms.CheckOut;
+import cz.muni.fi.pv168.project.gui.Forms.NewReservation;
 import cz.muni.fi.pv168.project.Main;
 
 import javax.swing.*;

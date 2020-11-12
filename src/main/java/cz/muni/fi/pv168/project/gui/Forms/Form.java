@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.project.GUI.Forms;
+package cz.muni.fi.pv168.project.gui.Forms;
 
 import cz.muni.fi.pv168.project.Main;
 

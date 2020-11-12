@@ -1,14 +1,12 @@
-package cz.muni.fi.pv168.project.GUI.Forms;
+package cz.muni.fi.pv168.project.gui.Forms;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 
-import cz.muni.fi.pv168.project.GUI.Button;
-import cz.muni.fi.pv168.project.GUI.MainPanel;
-import cz.muni.fi.pv168.project.GUI.Timetable;
+import cz.muni.fi.pv168.project.gui.Button;
+import cz.muni.fi.pv168.project.gui.MainPanel;
 
 public class CheckIn extends Form implements ActionListener {
 
