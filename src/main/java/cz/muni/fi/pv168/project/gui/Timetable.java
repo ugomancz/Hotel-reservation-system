@@ -25,7 +25,7 @@ public class Timetable extends JPanel {
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setBackground(Main.backgroundColor);
         this.initPanels(Main.numberOfRooms, Main.week);
-        selectedDate = LocalDate.now(); // .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        selectedDate = LocalDate.now();
         this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
@@ -91,7 +91,8 @@ public class Timetable extends JPanel {
         return date.isEqual(arrival) || date.isEqual(departure) || (date.isAfter(arrival) && date.isBefore(departure));
     }
 
-    public void drawWeek(LocalDate monday) {
+    public void drawWeek(LocalDate arrival) {
+        LocalDate monday = arrival.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         for (int room = 0; room < Main.numberOfRooms; room++) { // for every room
             for (int day = 0; day < Main.week; day++) { // for every day of the week
                 Reservation reservation = getReservation(room+1, monday.plusDays(day));
