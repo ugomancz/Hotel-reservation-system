@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class CheckOut extends Form implements ActionListener {
-    Dimension dimension = new Dimension(300, 300);
     JButton outButton, cancelButton;
     JLabel label = new JLabel("", SwingConstants.CENTER);
     JComboBox<String> pickReservation;
@@ -31,7 +30,7 @@ public class CheckOut extends Form implements ActionListener {
 
     public CheckOut() {
         super("Check-out");
-        this.setSize(dimension);
+        this.setSize(new Dimension(250, 250));
         this.setResizable(false);
         this.setLayout(new BorderLayout(0, 0));
 
