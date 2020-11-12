@@ -5,14 +5,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import cz.muni.fi.pv168.project.gui.Button;
 import cz.muni.fi.pv168.project.gui.MainPanel;
 
 public class CheckIn extends Form implements ActionListener {
 
     GridBagConstraints gbc = new GridBagConstraints();
-    String room;
-    String name;
+    JTextField nameField, roomField, phoneField, IDfield, lengthField;
 
 
     public CheckIn() {
@@ -34,7 +32,7 @@ public class CheckIn extends Form implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         this.add(IDnumber, gbc);
-        JTextField IDfield = new JTextField(16);
+        IDfield = new JTextField(16);
         IDfield.setEditable(true);
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -52,7 +50,7 @@ public class CheckIn extends Form implements ActionListener {
         gbc.gridy =1;
         //gbc.insets = new Insets(0, 0, 0, 0);
         this.add(nameLabel, gbc);
-        JTextField nameField = new JTextField(16);
+        nameField = new JTextField(16);
         nameField.setEditable(true);
         gbc.gridx =1;
         gbc.gridy =1;
@@ -64,7 +62,7 @@ public class CheckIn extends Form implements ActionListener {
         gbc.gridx =0;
         gbc.gridy =2;
         this.add(phoneLabel, gbc);
-        JTextField phoneField = new JTextField(16);
+        phoneField = new JTextField(16);
         phoneField.setEditable(true);
         gbc.gridx =1;
         gbc.gridy =2;
@@ -75,7 +73,7 @@ public class CheckIn extends Form implements ActionListener {
         gbc.gridx =0;
         gbc.gridy =3;
         this.add(roomLabel, gbc);
-        JTextField roomField = new JTextField(4);
+        roomField = new JTextField(4);
         roomField.setEditable(true);
         gbc.gridx =1;
         gbc.gridy =3;
@@ -87,7 +85,7 @@ public class CheckIn extends Form implements ActionListener {
         gbc.gridx =0;
         gbc.gridy =4;
         this.add(lengthLabel, gbc);
-        JTextField lengthField = new JTextField(4);
+        lengthField = new JTextField(4);
         roomField.setEditable(true);
         gbc.gridx =1;
         gbc.gridy =4;
@@ -103,7 +101,7 @@ public class CheckIn extends Form implements ActionListener {
         Button confirm, cancel, change;
         confirm = new Button("Confirm");
         cancel = new Button("Cancel");
-        //change = new Button("Change Reservation");
+        change = new Button("Change Reservation");
 
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -120,11 +118,17 @@ public class CheckIn extends Form implements ActionListener {
         gbc.gridwidth = 2;
         this.add(confirm, gbc);
 
+        gbc.gridx =2;
+        gbc.gridy =1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        this.add(change, gbc);
+
+
+
         cancel.addActionListener(this);
         confirm.addActionListener(this);
 
-        this.name = nameField.getText();
-        this.room = roomField.getText();
 
 
 
@@ -138,8 +142,8 @@ public class CheckIn extends Form implements ActionListener {
             onClose();
 
         } else if (action.equals("Confirm")) {
-            MainPanel.timetable.changeColor(Color.red, 5);
-            MainPanel.timetable.changeName("Timotej Cirok", 5);
+            MainPanel.timetable.changeColor(Color.orange, Integer.parseInt(roomField.getText()));
+            MainPanel.timetable.changeName(nameField.getText(), Integer.parseInt(roomField.getText()));
             onClose();
         }
 
