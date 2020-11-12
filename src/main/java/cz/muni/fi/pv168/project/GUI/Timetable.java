@@ -2,7 +2,6 @@ package cz.muni.fi.pv168.project.GUI;
 
 import cz.muni.fi.pv168.project.Main;
 import cz.muni.fi.pv168.project.Reservation;
-import jdk.vm.ci.meta.Local;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -23,8 +22,6 @@ public class Timetable extends JPanel {
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setBackground(Main.backgroundColor);
         this.initPanels(Main.numberOfRooms, Main.week);
-        changeColor(Color.orange, 2);
-        changeName("Lvkas Hasík", 2);
     }
 
     private void initPanels(int y, int x) {

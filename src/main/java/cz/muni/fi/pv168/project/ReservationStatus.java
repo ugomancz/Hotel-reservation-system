@@ -4,6 +4,4 @@ public enum ReservationStatus {
     planned,
     ongoing,
     past
-
 }
-
