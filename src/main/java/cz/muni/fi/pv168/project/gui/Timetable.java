@@ -17,7 +17,7 @@ import static cz.muni.fi.pv168.project.reservations.ReservationStatus.past;
 public class Timetable extends JPanel {
 
     static JPanel[][] panels = new JPanel[Main.numberOfRooms][Main.week];
-    public LocalDate selectedDate;
+    public LocalDate selectedDate = LocalDate.now();
 
     public Timetable() {
         super();
@@ -25,7 +25,6 @@ public class Timetable extends JPanel {
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setBackground(Main.backgroundColor);
         this.initPanels(Main.numberOfRooms, Main.week);
-        selectedDate = LocalDate.now();
         this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
@@ -49,7 +48,7 @@ public class Timetable extends JPanel {
                 panel.setBackground(Color.orange);
                 return;
             case past:
-                panel.setBackground(Color.darkGray);
+                panel.setBackground(Color.lightGray);
         }
     }
 
@@ -61,12 +60,18 @@ public class Timetable extends JPanel {
         }
     }
 
+    private void clearPanel(JPanel panel) {
+        panel.setBackground(Color.white);
+        if (panel.getComponentCount() > 0) {
+            ((JLabel) panel.getComponent(0)).setText("");
+        }
+    }
+
     private boolean isInterfering(LocalDate newArrival, LocalDate newDeparture, LocalDate arrival, LocalDate departure) {
         return (newArrival.isAfter(arrival) && newArrival.isBefore(departure))
                 || (newDeparture.isAfter(arrival) && newDeparture.isBefore(departure))
                 || (newArrival.isBefore(arrival) && newDeparture.isAfter(departure))
                 || (newArrival.isEqual(arrival) && newDeparture.isEqual(departure));
-
     }
 
     public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
@@ -81,7 +86,7 @@ public class Timetable extends JPanel {
 
     private Reservation getReservation(int room, LocalDate date) {
         for (Reservation reservation : Main.reservations) {
-            if (reservation.getStatus() != past && reservation.getRoomNumber() == room
+            if (reservation.getRoomNumber() == room
                     && dateInReservation(date, reservation.getArrival(), reservation.getDeparture())) {
                 return reservation;
             }
@@ -101,6 +106,8 @@ public class Timetable extends JPanel {
                 if (reservation != null) {
                     setPanelName(panels[room][day], reservation.getName());
                     setPanelColor(panels[room][day], reservation.getStatus());
+                } else {
+                    clearPanel(panels[room][day]);
                 }
             }
         }

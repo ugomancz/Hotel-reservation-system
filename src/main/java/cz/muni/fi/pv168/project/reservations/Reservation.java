@@ -16,6 +16,7 @@ public class Reservation {
 
     private String email;
     private ReservationStatus status;
+    private int length;
 
     public Reservation(String name, String phone, String email, int hosts,
                        int roomNumber, LocalDate arrival, LocalDate departure) {
@@ -27,6 +28,7 @@ public class Reservation {
         this.status = ReservationStatus.planned;
         this.phone = phone;
         this.email = email;
+        this.length = departure.compareTo(arrival);
         Main.reservations.add(this);
     }
     public String getEmail() {
@@ -83,5 +85,29 @@ public class Reservation {
 
     public void setStatus(ReservationStatus status) {
         this.status = status;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
