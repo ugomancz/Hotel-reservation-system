@@ -148,22 +148,15 @@ public class NewReservation extends Form implements ActionListener {
             String usedPhone = phone.getText();
             String usedMail = email.getText();
             String room = Objects.requireNonNull(rooms.getSelectedItem()).toString();
-            LocalDate dt1 = LocalDate.parse("2020-11-16");
-            LocalDate dt2 = LocalDate.parse("2020-11-22");
             LocalDate from = fromDate.getDate();
             LocalDate to = toDate.getDate();
-            if (from.isBefore(dt1)) {
-                JOptionPane.showInternalMessageDialog(null, "Arrival date too soon");
-            } else if (to.isAfter(dt2)) {
-                JOptionPane.showInternalMessageDialog(null, "Leaving date too late");
-            } else if (usedName.length() == 0){
+            if (usedName.length() == 0) {
                 JOptionPane.showInternalMessageDialog(null, "Name cannot be empty");
-            } else if (usedPhone.length() == 0){
+            } else if (usedPhone.length() == 0) {
                 JOptionPane.showInternalMessageDialog(null, "Phone cannot be empty");
-            } else if (tryParse(people.getText()) == null){
+            } else if (tryParse(people.getText()) == null) {
                 JOptionPane.showInternalMessageDialog(null, "Number of people is not number");
-            }
-            else {
+            } else {
                 int usedPeople = parseInt(people.getText());
                 if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
                     reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
