@@ -231,7 +231,7 @@ public class CheckIn extends Form implements ActionListener {
             if (reservation != null) {
                 fillReservation();
             } else {
-                JOptionPane.showMessageDialog(this, "No reservation found");
+                JOptionPane.showMessageDialog(this, "No check-in scheduled for today");
             }
 
         }

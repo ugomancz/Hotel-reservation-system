@@ -31,52 +31,26 @@ public class Reservation {
         this.length = departure.compareTo(arrival);
         Main.reservations.add(this);
     }
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
 
     public LocalDate getArrival() {
         return arrival;
     }
 
-    public void setArrival(LocalDate arrival) {
-        this.arrival = arrival;
-    }
 
     public LocalDate getDeparture() {
         return departure;
-    }
-
-    public void setDeparture(LocalDate departure) {
-        this.departure = departure;
     }
 
     public int getRoomNumber() {
         return roomNumber;
     }
 
-    public void setRoomNumber(int roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-
     public int getHosts() {
         return hosts;
     }
 
-    public void setHosts(int hosts) {
-        this.hosts = hosts;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public ReservationStatus getStatus() {
@@ -91,23 +65,12 @@ public class Reservation {
         return length;
     }
 
-    public void setLength(int length) {
-        this.length = length;
-    }
-
     public String getPhone() {
         return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }
