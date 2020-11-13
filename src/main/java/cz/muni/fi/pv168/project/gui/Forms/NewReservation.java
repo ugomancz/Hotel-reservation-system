@@ -3,7 +3,6 @@ package cz.muni.fi.pv168.project.gui.Forms;
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.project.gui.Button;
 import cz.muni.fi.pv168.project.gui.MainPanel;
-import cz.muni.fi.pv168.project.Main;
 import cz.muni.fi.pv168.project.reservations.Reservation;
 
 import javax.swing.*;
@@ -12,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.Objects;
 
 import static java.lang.Integer.parseInt;
@@ -23,7 +21,7 @@ public class NewReservation extends Form implements ActionListener {
     JComboBox<Integer> rooms;
     DatePicker fromDate, toDate;
     Reservation reservation;
-    Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6};
+    Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 
     GridBagConstraints gbc = new GridBagConstraints();
@@ -95,7 +93,7 @@ public class NewReservation extends Form implements ActionListener {
 
         fromDate = new DatePicker();
         fromDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
-        fromDate.getComponentToggleCalendarButton().setBackground(new Color(240,240,240));
+        fromDate.getComponentToggleCalendarButton().setBackground(new Color(240, 240, 240));
         fromDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
         gbc.gridx = 5;
         gbc.gridy = 40;
@@ -103,7 +101,7 @@ public class NewReservation extends Form implements ActionListener {
 
         toDate = new DatePicker();
         toDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
-        toDate.getComponentToggleCalendarButton().setBackground(new Color(240,240,240));
+        toDate.getComponentToggleCalendarButton().setBackground(new Color(240, 240, 240));
         toDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
         gbc.gridx = 5;
         gbc.gridy = 50;
@@ -133,6 +131,14 @@ public class NewReservation extends Form implements ActionListener {
 
     }
 
+    public Integer tryParse(String text) {
+        try {
+            return Integer.parseInt(text);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == cancelled) {
@@ -141,17 +147,23 @@ public class NewReservation extends Form implements ActionListener {
             String usedName = name.getText();
             String usedPhone = phone.getText();
             String usedMail = email.getText();
-            String usedPeople = people.getText();
             String room = Objects.requireNonNull(rooms.getSelectedItem()).toString();
             LocalDate from = fromDate.getDate();
             LocalDate to = toDate.getDate();
-            if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
-                reservation = new Reservation(usedName, usedPhone, usedMail,parseInt(usedPeople), parseInt(room), from, to);
-                Main.reservations.add(reservation);
-                MainPanel.timetable.drawWeek(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
-                onClose();
+            if (usedName.length() == 0) {
+                JOptionPane.showInternalMessageDialog(null, "Name cannot be empty");
+            } else if (usedPhone.length() == 0) {
+                JOptionPane.showInternalMessageDialog(null, "Phone cannot be empty");
+            } else if (tryParse(people.getText()) == null) {
+                JOptionPane.showInternalMessageDialog(null, "Number of people is not number");
             } else {
-                JOptionPane.showInternalMessageDialog(null, "Room full");
+                int usedPeople = parseInt(people.getText());
+                if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
+                    reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
+                    onClose();
+                } else {
+                    JOptionPane.showInternalMessageDialog(null, "Room full");
+                }
             }
         }
     }
