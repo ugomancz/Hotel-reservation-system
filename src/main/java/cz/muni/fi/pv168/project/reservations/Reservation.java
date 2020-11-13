@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.project.reservations;
 
 import cz.muni.fi.pv168.project.Main;
+import cz.muni.fi.pv168.project.gui.SidePanel;
 
 import java.time.LocalDate;
 
@@ -10,10 +11,7 @@ public class Reservation {
     private int roomNumber;
     private int hosts;
     private String name;
-
     private String phone;
-
-
     private String email;
     private ReservationStatus status;
     private int length;
@@ -30,6 +28,7 @@ public class Reservation {
         this.email = email;
         this.length = departure.compareTo(arrival);
         Main.reservations.add(this);
+        SidePanel.getCalendar().setSelectedDate(arrival);
     }
     public String getEmail() {
         return email;
