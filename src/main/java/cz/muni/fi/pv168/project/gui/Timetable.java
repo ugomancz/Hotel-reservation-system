@@ -17,7 +17,7 @@ import static cz.muni.fi.pv168.project.reservations.ReservationStatus.past;
 public class Timetable extends JPanel {
 
     static JPanel[][] panels = new JPanel[Main.numberOfRooms][Main.week];
-    public LocalDate selectedDate;
+    public LocalDate selectedDate = LocalDate.now();
 
     public Timetable() {
         super();
@@ -25,7 +25,6 @@ public class Timetable extends JPanel {
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setBackground(Main.backgroundColor);
         this.initPanels(Main.numberOfRooms, Main.week);
-        selectedDate = LocalDate.now();
         this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
@@ -58,6 +57,13 @@ public class Timetable extends JPanel {
             ((JLabel) panel.getComponent(0)).setText(name);
         else {
             panel.add(new JLabel(name, SwingConstants.CENTER));
+        }
+    }
+
+    private void clearPanel(JPanel panel) {
+        panel.setBackground(Color.white);
+        if (panel.getComponentCount() > 0) {
+            ((JLabel) panel.getComponent(0)).setText("");
         }
     }
 
@@ -101,9 +107,7 @@ public class Timetable extends JPanel {
                     setPanelName(panels[room][day], reservation.getName());
                     setPanelColor(panels[room][day], reservation.getStatus());
                 } else {
-                    JPanel panel = new JPanel();
-                    panel.setBorder(new LineBorder(Color.black, 1));
-                    panels[room][day] = panel;
+                    clearPanel(panels[room][day]);
                 }
             }
         }
