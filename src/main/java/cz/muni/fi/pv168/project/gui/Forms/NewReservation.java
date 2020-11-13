@@ -160,7 +160,6 @@ public class NewReservation extends Form implements ActionListener {
                 int usedPeople = parseInt(people.getText());
                 if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
                     reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
-                    MainPanel.timetable.drawWeek(from);
                     onClose();
                 } else {
                     JOptionPane.showInternalMessageDialog(null, "Room full");
