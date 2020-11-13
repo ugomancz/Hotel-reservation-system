@@ -94,6 +94,17 @@ public class Timetable extends JPanel {
         return null;
     }
 
+    public int getNumOfReservations(LocalDate date) {
+        int count = 0;
+        for (Reservation reservation : Main.reservations) {
+            if (reservation.getStatus() != past
+                    && dateInReservation(date, reservation.getArrival(), reservation.getDeparture())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private boolean dateInReservation(LocalDate date, LocalDate arrival, LocalDate departure) {
         return date.isEqual(arrival) || date.isEqual(departure) || (date.isAfter(arrival) && date.isBefore(departure));
     }
