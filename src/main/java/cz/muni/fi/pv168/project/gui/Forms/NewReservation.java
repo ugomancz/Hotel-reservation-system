@@ -23,7 +23,6 @@ public class NewReservation extends Form implements ActionListener {
     Reservation reservation;
     Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-
     GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation() {
@@ -127,8 +126,6 @@ public class NewReservation extends Form implements ActionListener {
         gbc.gridx = 5;
         gbc.gridy = 70;
         add(cancelled, gbc);
-
-
     }
 
     public Integer tryParse(String text) {
