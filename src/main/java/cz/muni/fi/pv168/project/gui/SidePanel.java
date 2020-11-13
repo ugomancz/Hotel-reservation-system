@@ -37,7 +37,6 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
         settings.setVisiblePreviousYearButton(false);
         settings.setHighlightPolicy(this);
         settings.setVisibleClearButton(false);
-
         calendar = new CalendarPanel(settings);
         calendar.setBackground(new Color(240, 240, 240));
         calendar.addCalendarListener(this);

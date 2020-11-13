@@ -19,7 +19,7 @@ public class CheckOut extends Form implements ActionListener {
     private JLabel label = new JLabel("", SwingConstants.CENTER);
     private JComboBox<String> pickReservation;
     private ArrayList<Reservation> activeReservations = new ArrayList<>(Main.reservations.stream()
-            .filter((x) -> x.getStatus() == ReservationStatus.planned)
+            .filter((x) -> x.getStatus() == ReservationStatus.ongoing)
             .collect(Collectors.toList()));
     private Reservation reservation;
     private String receipt = "<html>Client: %s<br/><br/>" +
