@@ -1,8 +1,11 @@
 package cz.muni.fi.pv168.project.gui;
 
 import com.github.lgooddatepicker.components.CalendarPanel;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.optionalusertools.CalendarListener;
+import com.github.lgooddatepicker.optionalusertools.DateHighlightPolicy;
 import com.github.lgooddatepicker.zinternaltools.CalendarSelectionEvent;
+import com.github.lgooddatepicker.zinternaltools.HighlightInformation;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
 import cz.muni.fi.pv168.project.Main;
 
@@ -11,7 +14,8 @@ import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
-public class SidePanel extends JPanel implements CalendarListener {
+public class SidePanel extends JPanel implements CalendarListener, DateHighlightPolicy {
+    private static CalendarPanel calendar;
     public SidePanel() {
         super();
         this.setBackground(Main.backgroundColor);
@@ -22,9 +26,17 @@ public class SidePanel extends JPanel implements CalendarListener {
         this.add(initCalendar(), BorderLayout.SOUTH);
     }
 
+    public static CalendarPanel getCalendar() {
+        return calendar;
+    }
+
     private CalendarPanel initCalendar() {
-        CalendarPanel calendar = new CalendarPanel();
-        calendar.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
+        DatePickerSettings settings = new DatePickerSettings();
+        settings.setFirstDayOfWeek(DayOfWeek.MONDAY);
+        settings.setVisibleNextYearButton(false);
+        settings.setVisiblePreviousYearButton(false);
+        settings.setHighlightPolicy(this);
+        calendar = new CalendarPanel(settings);
         calendar.setBackground(new Color(240, 240, 240));
         calendar.addCalendarListener(this);
         return calendar;
@@ -41,5 +53,21 @@ public class SidePanel extends JPanel implements CalendarListener {
 
     @Override
     public void yearMonthChanged(YearMonthChangeEvent yearMonthChangeEvent) {
+    }
+
+    @Override
+    public HighlightInformation getHighlightInformationOrNull(LocalDate localDate) {
+        int reservations = MainPanel.timetable.getNumOfReservations(localDate);
+        HighlightInformation highlight = new HighlightInformation();
+        if (reservations == 0) {
+            return null;
+        } else if (reservations < Main.numberOfRooms*2/3) {
+            highlight.colorBackground = Color.green;
+        } else if (reservations < Main.numberOfRooms) {
+            highlight.colorBackground = Color.orange;
+        } else {
+            highlight.colorBackground = new Color(250, 40, 40);
+        }
+        return highlight;
     }
 }
