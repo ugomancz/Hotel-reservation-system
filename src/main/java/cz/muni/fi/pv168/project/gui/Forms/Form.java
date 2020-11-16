@@ -9,7 +9,6 @@ import java.awt.event.WindowEvent;
 public abstract class Form extends JFrame {
     public Form(String title) {
         super(title);
-        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setLocationRelativeTo(Main.frame);
         this.setVisible(true);
 

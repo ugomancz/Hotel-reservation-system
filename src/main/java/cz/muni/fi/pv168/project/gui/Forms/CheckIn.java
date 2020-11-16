@@ -205,7 +205,7 @@ public class CheckIn extends Form implements ActionListener {
 
         } else if (action.equals("Confirm")) {
             //if a reservation is confirmed it's status is changed
-            reservation.setStatus(ReservationStatus.ongoing);
+            reservation.setStatus(ReservationStatus.ONGOING);
             MainPanel.timetable.drawWeek(LocalDate.now());
             onClose();
 

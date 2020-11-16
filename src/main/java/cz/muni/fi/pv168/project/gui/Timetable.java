@@ -12,7 +12,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
-import static cz.muni.fi.pv168.project.reservations.ReservationStatus.past;
+import static cz.muni.fi.pv168.project.reservations.ReservationStatus.PAST;
 
 public class Timetable extends JPanel {
 
@@ -41,13 +41,13 @@ public class Timetable extends JPanel {
 
     private void setPanelColor(JPanel panel, ReservationStatus status) {
         switch (status) {
-            case planned:
+            case PLANNED:
                 panel.setBackground(Color.green);
                 return;
-            case ongoing:
+            case ONGOING:
                 panel.setBackground(Color.orange);
                 return;
-            case past:
+            case PAST:
                 panel.setBackground(Color.lightGray);
         }
     }
@@ -76,7 +76,7 @@ public class Timetable extends JPanel {
 
     public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
         for (Reservation reservation : Main.reservations) {
-            if (reservation.getStatus() != past && reservation.getRoomNumber() == room
+            if (reservation.getStatus() != PAST && reservation.getRoomNumber() == room
                     && isInterfering(arrival, departure, reservation.getArrival(), reservation.getDeparture())) {
                 return false;
             }
@@ -97,7 +97,7 @@ public class Timetable extends JPanel {
     public int getNumOfReservations(LocalDate date) {
         int count = 0;
         for (Reservation reservation : Main.reservations) {
-            if (reservation.getStatus() != past
+            if (reservation.getStatus() != PAST
                     && dateInReservation(date, reservation.getArrival(), reservation.getDeparture())) {
                 count++;
             }

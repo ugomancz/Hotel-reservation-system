@@ -23,7 +23,7 @@ public class Reservation {
         this.roomNumber = roomNumber;
         this.arrival = arrival;
         this.departure = departure;
-        this.status = ReservationStatus.planned;
+        this.status = ReservationStatus.PLANNED;
         this.phone = phone;
         this.email = email;
         this.length = departure.compareTo(arrival);
