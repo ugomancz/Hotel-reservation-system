@@ -8,9 +8,9 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class Main {
-    public final static Color backgroundColor = Color.lightGray;
-    public final static int numberOfRooms = 15;
-    public final static int week = 7;
+    public final static Color BACKGROUND_COLOR = Color.lightGray;
+    public final static int NUMBER_OF_ROOMS = 15;
+    public final static int DAYS_IN_WEEK = 7;
     public static ArrayList<Reservation> reservations = new ArrayList<>();
 
     public static JFrame frame = new JFrame("HotelApp");

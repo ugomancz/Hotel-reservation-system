@@ -21,7 +21,7 @@ public class ButtonPanel extends JPanel implements ActionListener {
         super();
         int numOfButtons = buttonNames.size();
         this.setLayout(new GridLayout(numOfButtons, 1, 5, 5));
-        this.setBackground(Main.backgroundColor);
+        this.setBackground(Main.BACKGROUND_COLOR);
         this.setPreferredSize(new Dimension(Button.dimension.width, 500));
 
         for (int i = 0; i < numOfButtons; i++) {

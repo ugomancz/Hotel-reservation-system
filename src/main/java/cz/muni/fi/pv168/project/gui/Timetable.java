@@ -16,15 +16,15 @@ import static cz.muni.fi.pv168.project.reservations.ReservationStatus.PAST;
 
 public class Timetable extends JPanel {
 
-    static JPanel[][] panels = new JPanel[Main.numberOfRooms][Main.week];
+    static JPanel[][] panels = new JPanel[Main.NUMBER_OF_ROOMS][Main.DAYS_IN_WEEK];
     public LocalDate selectedDate = LocalDate.now();
 
     public Timetable() {
         super();
-        this.setLayout(new GridLayout(Main.numberOfRooms, Main.week, 0, 0));
+        this.setLayout(new GridLayout(Main.NUMBER_OF_ROOMS, Main.DAYS_IN_WEEK, 0, 0));
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
-        this.setBackground(Main.backgroundColor);
-        this.initPanels(Main.numberOfRooms, Main.week);
+        this.setBackground(Main.BACKGROUND_COLOR);
+        this.initPanels(Main.NUMBER_OF_ROOMS, Main.DAYS_IN_WEEK);
         this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
@@ -111,8 +111,8 @@ public class Timetable extends JPanel {
 
     public void drawWeek(LocalDate arrival) {
         LocalDate monday = arrival.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        for (int room = 0; room < Main.numberOfRooms; room++) { // for every room
-            for (int day = 0; day < Main.week; day++) { // for every day of the week
+        for (int room = 0; room < Main.NUMBER_OF_ROOMS; room++) { // for every room
+            for (int day = 0; day < Main.DAYS_IN_WEEK; day++) { // for every day of the week
                 Reservation reservation = getReservation(room+1, monday.plusDays(day));
                 if (reservation != null) {
                     setPanelName(panels[room][day], reservation.getName());

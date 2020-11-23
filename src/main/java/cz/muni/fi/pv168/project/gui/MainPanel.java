@@ -11,7 +11,7 @@ public class MainPanel extends JPanel {
 
     public MainPanel() {
         super(new BorderLayout(10, 10));
-        this.setBackground(Main.backgroundColor);
+        this.setBackground(Main.BACKGROUND_COLOR);
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         this.add(new SidePanel(), BorderLayout.EAST);
@@ -27,11 +27,11 @@ public class MainPanel extends JPanel {
             super();
             this.setLayout(new GridLayout(15, 1, 0, 1));
             this.setBorder(new EmptyBorder(0, 0, 0, 0));
-            this.setBackground(Main.backgroundColor);
+            this.setBackground(Main.BACKGROUND_COLOR);
             this.setPreferredSize(dimensions);
-            for (int i = 0; i < Main.numberOfRooms; i++) {
+            for (int i = 0; i < Main.NUMBER_OF_ROOMS; i++) {
                 JLabel label = new JLabel("Room n." + (i + 1));
-                label.setBackground(Main.backgroundColor);
+                label.setBackground(Main.BACKGROUND_COLOR);
                 this.add(label);
             }
 
@@ -45,9 +45,9 @@ public class MainPanel extends JPanel {
         private DayNames() {
             super();
             this.setBorder(new EmptyBorder(0, 70, 0, Button.dimension.width + 20));
-            this.setBackground(Main.backgroundColor);
-            this.setLayout(new GridLayout(1, Main.week, 1, 0));
-            for (int i = 0; i < Main.week; i++) {
+            this.setBackground(Main.BACKGROUND_COLOR);
+            this.setLayout(new GridLayout(1, Main.DAYS_IN_WEEK, 1, 0));
+            for (int i = 0; i < Main.DAYS_IN_WEEK; i++) {
                 JLabel label = new JLabel(dayNames[i], SwingConstants.CENTER);
                 this.add(label);
             }
