@@ -16,11 +16,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>DatePicker</groupId>
-            <artifactId>DatePicker</artifactId>
-            <scope>system</scope>
-            <version>1.0</version>
-            <systemPath>${pom.basedir}\src\lib\DatePicker.jar</systemPath>
+            <groupId>com.github.lgooddatepicker</groupId>
+            <artifactId>LGoodDatePicker</artifactId>
+            <version>11.1.0</version>
         </dependency>
     </dependencies>
 
