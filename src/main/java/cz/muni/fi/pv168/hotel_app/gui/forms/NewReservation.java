@@ -1,9 +1,9 @@
-package cz.muni.fi.pv168.project.gui.Forms;
+package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import com.github.lgooddatepicker.components.DatePicker;
-import cz.muni.fi.pv168.project.gui.Button;
-import cz.muni.fi.pv168.project.gui.MainPanel;
-import cz.muni.fi.pv168.project.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.gui.Button;
+import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,7 @@ import java.util.Objects;
 import static java.lang.Integer.parseInt;
 
 public class NewReservation extends Form implements ActionListener {
-    cz.muni.fi.pv168.project.gui.Button cancelled, okay;
+    cz.muni.fi.pv168.hotel_app.gui.Button cancelled, okay;
     JTextField name, phone, email, people;
     JComboBox<Integer> rooms;
     DatePicker fromDate, toDate;

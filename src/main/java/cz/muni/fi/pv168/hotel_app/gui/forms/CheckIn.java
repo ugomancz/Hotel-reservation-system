@@ -1,9 +1,9 @@
-package cz.muni.fi.pv168.project.gui.Forms;
+package cz.muni.fi.pv168.hotel_app.gui.forms;
 
-import cz.muni.fi.pv168.project.Main;
-import cz.muni.fi.pv168.project.gui.MainPanel;
-import cz.muni.fi.pv168.project.reservations.Reservation;
-import cz.muni.fi.pv168.project.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -205,7 +205,7 @@ public class CheckIn extends Form implements ActionListener {
 
         } else if (action.equals("Confirm")) {
             //if a reservation is confirmed it's status is changed
-            reservation.setStatus(ReservationStatus.ongoing);
+            reservation.setStatus(ReservationStatus.ONGOING);
             MainPanel.timetable.drawWeek(LocalDate.now());
             onClose();
 

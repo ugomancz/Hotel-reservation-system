@@ -1,10 +1,10 @@
-package cz.muni.fi.pv168.project.gui.Forms;
+package cz.muni.fi.pv168.hotel_app.gui.forms;
 
-import cz.muni.fi.pv168.project.Main;
-import cz.muni.fi.pv168.project.gui.Button;
-import cz.muni.fi.pv168.project.gui.MainPanel;
-import cz.muni.fi.pv168.project.reservations.Reservation;
-import cz.muni.fi.pv168.project.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.gui.Button;
+import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +19,7 @@ public class CheckOut extends Form implements ActionListener {
     private JLabel label = new JLabel("", SwingConstants.CENTER);
     private JComboBox<String> pickReservation;
     private ArrayList<Reservation> activeReservations = new ArrayList<>(Main.reservations.stream()
-            .filter((x) -> x.getStatus() == ReservationStatus.ongoing)
+            .filter((x) -> x.getStatus() == ReservationStatus.ONGOING)
             .collect(Collectors.toList()));
     private Reservation reservation;
     private String receipt = "<html>Client: %s<br/><br/>" +
@@ -72,7 +72,7 @@ public class CheckOut extends Form implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(outButton)) {
-            reservation.setStatus(ReservationStatus.past);
+            reservation.setStatus(ReservationStatus.PAST);
             MainPanel.timetable.drawWeek(LocalDate.now());
             onClose();
         } else if (e.getSource().equals(pickReservation)) {
