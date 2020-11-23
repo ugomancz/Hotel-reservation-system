@@ -7,7 +7,7 @@ import com.github.lgooddatepicker.optionalusertools.DateHighlightPolicy;
 import com.github.lgooddatepicker.zinternaltools.CalendarSelectionEvent;
 import com.github.lgooddatepicker.zinternaltools.HighlightInformation;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
-import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.Constants;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +18,7 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
     private static CalendarPanel calendar;
     public SidePanel() {
         super();
-        this.setBackground(Main.BACKGROUND_COLOR);
+        this.setBackground(Constants.BACKGROUND_COLOR);
         this.setLayout(new BorderLayout(0, 10));
         this.setPreferredSize(new Dimension(Button.dimension.width, 500));
 
@@ -62,9 +62,9 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
         HighlightInformation highlight = new HighlightInformation();
         if (reservations == 0) {
             return null;
-        } else if (reservations < Main.NUMBER_OF_ROOMS *2/3) {
+        } else if (reservations < Constants.NUMBER_OF_ROOMS *2/3) {
             highlight.colorBackground = Color.green;
-        } else if (reservations < Main.NUMBER_OF_ROOMS) {
+        } else if (reservations < Constants.NUMBER_OF_ROOMS) {
             highlight.colorBackground = Color.orange;
         } else {
             highlight.colorBackground = new Color(250, 40, 40);
