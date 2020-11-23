@@ -14,163 +14,125 @@ import java.time.Period;
 
 public class CheckIn extends Form implements ActionListener {
 
-    GridBagConstraints gbc = new GridBagConstraints();
-    JTextField nameField, phoneField, IDfield, lengthField, guestField, emailField;
-    JComboBox<Integer> roomBox;
-    Button confirm, cancel, change, findReservation;
-    Reservation reservation;
+    private final GridBagConstraints gbc = new GridBagConstraints();
+    private JTextField nameField, phoneField, lengthField, guestField, emailField;
+    private JComboBox<Integer> roomBox;
+    private Button confirm;
+    private Reservation reservation;
 
 
     public CheckIn() {
         super("Check-in");
-        this.setSize(new Dimension(500, 400));
+        setSize(new Dimension(500, 400));
 
         GridBagLayout layout = new GridBagLayout();
-        this.setLayout(layout);
+        setLayout(layout);
         setLayout();
+
+    }
+
+
+    /**
+     *
+     * @param x coordination for gbc
+     * @param y coordination for gbc
+     * @param component to be placed onto frame
+     */
+    public void placeComponent(int x, int y, Component component) {
+        gbc.gridx = x;
+        gbc.gridy = y;
+        add(component, gbc);
     }
 
     /**
      * Sets layout in frame using GridBagLayout
      */
-    private void setLayout() {
+    public void setLayout() {
         gbc.weightx = 0;
         gbc.weighty = 0.1;
 
-        JLabel IDnumber = new JLabel("ID number ");
-        gbc.gridx = 0;
-        gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.WEST;
-        this.add(IDnumber, gbc);
-        IDfield = new JTextField(16);
-        IDfield.setEditable(true);
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(IDfield);
-        findReservation = new Button("Find reservation");
-        gbc.gridx = 2;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        this.add(findReservation);
+        JLabel IDnumber = new JLabel("ID number ");
+        placeComponent(0, 0, IDnumber);
 
         JLabel nameLabel = new JLabel("Name ");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        this.add(nameLabel, gbc);
-        nameField = new JTextField(16);
-        nameField.setEditable(true);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(nameField, gbc);
+        placeComponent(0, 1, nameLabel);
 
         JLabel phoneLabel = new JLabel("Phone number ");
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        this.add(phoneLabel, gbc);
-        phoneField = new JTextField(16);
-        phoneField.setEditable(false);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(phoneField, gbc);
+        placeComponent(0, 2, phoneLabel);
 
         JLabel emailLabel = new JLabel("E-mail ");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.WEST;
-        this.add(emailLabel, gbc);
-        emailField = new JTextField(16);
-        emailField.setEditable(false);
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(emailField, gbc);
+        placeComponent(0, 3, emailLabel);
 
         JLabel roomLabel = new JLabel("Room number ");
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.anchor = GridBagConstraints.WEST;
-        this.add(roomLabel, gbc);
+        placeComponent(0, 4, roomLabel);
 
-        Integer[] rooms = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        JLabel lengthLabel = new JLabel("Length of stay ");
+        placeComponent(0, 5, lengthLabel);
+
+        JLabel guestLabel = new JLabel("Number of guests");
+        placeComponent(0, 6, guestLabel);
+
+        gbc.anchor = GridBagConstraints.CENTER;
+        JTextField IDfield = new JTextField(16);
+        IDfield.setEditable(false);
+        placeComponent(1, 0, IDfield);
+
+        nameField = new JTextField(16);
+        nameField.setEditable(true);
+        placeComponent(1, 1, nameField);
+
+        phoneField = new JTextField(16);
+        phoneField.setEditable(false);
+        placeComponent(1, 2, phoneField);
+
+        emailField = new JTextField(16);
+        emailField.setEditable(false);
+        placeComponent(1,3, emailField);
+
+        Integer[] rooms = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
         roomBox = new JComboBox<>(rooms);
         roomBox.setSelectedIndex(0);
         roomBox.addActionListener(this);
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(roomBox, gbc);
+        placeComponent(1, 4, roomBox);
 
-        JLabel lengthLabel = new JLabel("Length of stay ");
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.WEST;
-        this.add(lengthLabel, gbc);
         lengthField = new JTextField(4);
         lengthField.setEditable(false);
-        gbc.gridx = 1;
-        gbc.gridy = 5;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(lengthField, gbc);
-        JLabel days = new JLabel(" days");
-        gbc.gridx = 2;
-        gbc.gridy = 5;
-        this.add(days, gbc);
+        placeComponent(1, 5, lengthField);
 
-        JLabel guestLabel = new JLabel("Number of guests");
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.WEST;
-        this.add(guestLabel, gbc);
         guestField = new JTextField(4);
         guestField.setEditable(false);
-        gbc.gridx = 1;
-        gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(guestField, gbc);
+        placeComponent(1, 6, guestField);
 
-        confirm = new Button("Confirm");
-        cancel = new Button("Cancel");
-        change = new Button("Change Reservation");
-
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        gbc.anchor = GridBagConstraints.SOUTH;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 0.5;
-        gbc.gridwidth = 2;
-        this.add(cancel, gbc);
-        gbc.gridx = 2;
-        gbc.gridy = 7;
-        gbc.anchor = GridBagConstraints.SOUTH;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 0.5;
-        gbc.gridwidth = 2;
-        this.add(confirm, gbc);
-
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.EAST;
-        this.add(change, gbc);
+        Button findReservation = new Button("Find reservation");
+        placeComponent(2, 0, findReservation);
+        findReservation.addActionListener(this);
 
-        cancel.addActionListener(this);
+        Button change = new Button("Change Reservation");
+        placeComponent(2, 1, change);
+        change.addActionListener(this);
+        change.setEnabled(false);
+
+        JLabel nights = new JLabel(" nights");
+        placeComponent(2, 5, nights);
+
+        gbc.anchor = GridBagConstraints.SOUTH;
+        confirm = new Button("Confirm");
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        placeComponent(0, 7, confirm);
         confirm.addActionListener(this);
         confirm.setEnabled(false);
 
-        change.addActionListener(this);
-        change.setEnabled(false);
-        findReservation.addActionListener(this);
+        Button cancel = new Button("Cancel");
+        placeComponent(2, 7, cancel);
+        cancel.addActionListener(this);
     }
 
     /**
      * In case of a found existing reservation, fills out all the information
      */
-    private void fillReservation() {
+    public void fillReservation() {
         int length = Period.between(reservation.getArrival(), reservation.getDeparture()).getDays();
 
         nameField.setText(reservation.getName());
@@ -184,11 +146,10 @@ public class CheckIn extends Form implements ActionListener {
 
     /**
      * searches for an existing reservation using name and Today date as keys
-     *
      * @param name : key for searching for an existing reservation
      * @return existing reservation
      */
-    private Reservation findReservation(String name) {
+    public Reservation findReservation(String name) {
         for (Reservation reservation : Main.reservations) {
             if (reservation.getName().equals(name) && reservation.getArrival().equals(LocalDate.now())) {
                 return reservation;
@@ -202,16 +163,17 @@ public class CheckIn extends Form implements ActionListener {
         String action = e.getActionCommand();
         if (action.equals("Cancel")) {
             onClose();
-
-        } else if (action.equals("Confirm")) {
+        }
+        if (action.equals("Confirm")) {
             //if a reservation is confirmed it's status is changed
             reservation.setStatus(ReservationStatus.ONGOING);
             MainPanel.timetable.drawWeek(LocalDate.now());
             onClose();
-
-        } else if (action.equals("Change reservation")) {
+        }
+        if (action.equals("Change reservation")) {
             JOptionPane.showMessageDialog(this, "This function is not implemented yet");
-        } else if (action.equals("Find reservation")) {
+        }
+        if (action.equals("Find reservation")) {
             reservation = findReservation(nameField.getText());
             //reservation was found
             if (reservation != null) {
@@ -221,7 +183,5 @@ public class CheckIn extends Form implements ActionListener {
             }
 
         }
-
-
     }
 }
