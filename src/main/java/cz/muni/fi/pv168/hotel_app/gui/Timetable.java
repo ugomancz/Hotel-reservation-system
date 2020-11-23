@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel_app.gui;
 
+import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.Main;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
@@ -16,15 +17,15 @@ import static cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus.PAST;
 
 public class Timetable extends JPanel {
 
-    static JPanel[][] panels = new JPanel[Main.NUMBER_OF_ROOMS][Main.DAYS_IN_WEEK];
+    static JPanel[][] panels = new JPanel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
     public LocalDate selectedDate = LocalDate.now();
 
     public Timetable() {
         super();
-        this.setLayout(new GridLayout(Main.NUMBER_OF_ROOMS, Main.DAYS_IN_WEEK, 0, 0));
+        this.setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK, 0, 0));
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
-        this.setBackground(Main.BACKGROUND_COLOR);
-        this.initPanels(Main.NUMBER_OF_ROOMS, Main.DAYS_IN_WEEK);
+        this.setBackground(Constants.BACKGROUND_COLOR);
+        this.initPanels(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK);
         this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
@@ -111,8 +112,8 @@ public class Timetable extends JPanel {
 
     public void drawWeek(LocalDate arrival) {
         LocalDate monday = arrival.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        for (int room = 0; room < Main.NUMBER_OF_ROOMS; room++) { // for every room
-            for (int day = 0; day < Main.DAYS_IN_WEEK; day++) { // for every day of the week
+        for (int room = 0; room < Constants.NUMBER_OF_ROOMS; room++) { // for every room
+            for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
                 Reservation reservation = getReservation(room+1, monday.plusDays(day));
                 if (reservation != null) {
                     setPanelName(panels[room][day], reservation.getName());
