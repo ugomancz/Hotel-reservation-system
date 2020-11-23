@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.project.gui;
+package cz.muni.fi.pv168.hotel_app.gui;
 
 import javax.swing.*;
 import java.awt.*;

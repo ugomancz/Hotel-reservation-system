@@ -1,8 +1,8 @@
-package cz.muni.fi.pv168.project.gui;
+package cz.muni.fi.pv168.hotel_app.gui;
 
-import cz.muni.fi.pv168.project.Main;
-import cz.muni.fi.pv168.project.reservations.Reservation;
-import cz.muni.fi.pv168.project.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,7 +12,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
-import static cz.muni.fi.pv168.project.reservations.ReservationStatus.PAST;
+import static cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus.PAST;
 
 public class Timetable extends JPanel {
 

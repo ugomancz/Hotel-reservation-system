@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.project.reservations;
+package cz.muni.fi.pv168.hotel_app.reservations;
 
 public enum ReservationStatus {
     PLANNED,

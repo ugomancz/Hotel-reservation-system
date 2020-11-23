@@ -1,7 +1,7 @@
-package cz.muni.fi.pv168.project.reservations;
+package cz.muni.fi.pv168.hotel_app.reservations;
 
-import cz.muni.fi.pv168.project.Main;
-import cz.muni.fi.pv168.project.gui.SidePanel;
+import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.gui.SidePanel;
 
 import java.time.LocalDate;
 

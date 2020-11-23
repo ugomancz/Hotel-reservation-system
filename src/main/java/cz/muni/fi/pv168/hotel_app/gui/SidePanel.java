@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.project.gui;
+package cz.muni.fi.pv168.hotel_app.gui;
 
 import com.github.lgooddatepicker.components.CalendarPanel;
 import com.github.lgooddatepicker.components.DatePickerSettings;
@@ -7,7 +7,7 @@ import com.github.lgooddatepicker.optionalusertools.DateHighlightPolicy;
 import com.github.lgooddatepicker.zinternaltools.CalendarSelectionEvent;
 import com.github.lgooddatepicker.zinternaltools.HighlightInformation;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
-import cz.muni.fi.pv168.project.Main;
+import cz.muni.fi.pv168.hotel_app.Main;
 
 import javax.swing.*;
 import java.awt.*;

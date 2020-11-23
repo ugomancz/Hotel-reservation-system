@@ -1,7 +1,7 @@
-package cz.muni.fi.pv168.project;
+package cz.muni.fi.pv168.hotel_app;
 
-import cz.muni.fi.pv168.project.gui.MainPanel;
-import cz.muni.fi.pv168.project.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 
 import javax.swing.*;
 import java.awt.*;
