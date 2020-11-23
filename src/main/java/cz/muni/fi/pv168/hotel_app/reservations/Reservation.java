@@ -1,7 +1,7 @@
-package cz.muni.fi.pv168.project.reservations;
+package cz.muni.fi.pv168.hotel_app.reservations;
 
-import cz.muni.fi.pv168.project.Main;
-import cz.muni.fi.pv168.project.gui.SidePanel;
+import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.gui.SidePanel;
 
 import java.time.LocalDate;
 
@@ -23,7 +23,7 @@ public class Reservation {
         this.roomNumber = roomNumber;
         this.arrival = arrival;
         this.departure = departure;
-        this.status = ReservationStatus.planned;
+        this.status = ReservationStatus.PLANNED;
         this.phone = phone;
         this.email = email;
         this.length = departure.compareTo(arrival);

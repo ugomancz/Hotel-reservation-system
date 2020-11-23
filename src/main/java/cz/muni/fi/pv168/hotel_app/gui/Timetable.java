@@ -1,8 +1,8 @@
-package cz.muni.fi.pv168.project.gui;
+package cz.muni.fi.pv168.hotel_app.gui;
 
-import cz.muni.fi.pv168.project.Main;
-import cz.muni.fi.pv168.project.reservations.Reservation;
-import cz.muni.fi.pv168.project.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,19 +12,19 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
-import static cz.muni.fi.pv168.project.reservations.ReservationStatus.past;
+import static cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus.PAST;
 
 public class Timetable extends JPanel {
 
-    static JPanel[][] panels = new JPanel[Main.numberOfRooms][Main.week];
+    static JPanel[][] panels = new JPanel[Main.NUMBER_OF_ROOMS][Main.DAYS_IN_WEEK];
     public LocalDate selectedDate = LocalDate.now();
 
     public Timetable() {
         super();
-        this.setLayout(new GridLayout(Main.numberOfRooms, Main.week, 0, 0));
+        this.setLayout(new GridLayout(Main.NUMBER_OF_ROOMS, Main.DAYS_IN_WEEK, 0, 0));
         this.setBorder(new EmptyBorder(0, 0, 0, 0));
-        this.setBackground(Main.backgroundColor);
-        this.initPanels(Main.numberOfRooms, Main.week);
+        this.setBackground(Main.BACKGROUND_COLOR);
+        this.initPanels(Main.NUMBER_OF_ROOMS, Main.DAYS_IN_WEEK);
         this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
@@ -41,13 +41,13 @@ public class Timetable extends JPanel {
 
     private void setPanelColor(JPanel panel, ReservationStatus status) {
         switch (status) {
-            case planned:
+            case PLANNED:
                 panel.setBackground(Color.green);
                 return;
-            case ongoing:
+            case ONGOING:
                 panel.setBackground(Color.orange);
                 return;
-            case past:
+            case PAST:
                 panel.setBackground(Color.lightGray);
         }
     }
@@ -76,7 +76,7 @@ public class Timetable extends JPanel {
 
     public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
         for (Reservation reservation : Main.reservations) {
-            if (reservation.getStatus() != past && reservation.getRoomNumber() == room
+            if (reservation.getStatus() != PAST && reservation.getRoomNumber() == room
                     && isInterfering(arrival, departure, reservation.getArrival(), reservation.getDeparture())) {
                 return false;
             }
@@ -97,7 +97,7 @@ public class Timetable extends JPanel {
     public int getNumOfReservations(LocalDate date) {
         int count = 0;
         for (Reservation reservation : Main.reservations) {
-            if (reservation.getStatus() != past
+            if (reservation.getStatus() != PAST
                     && dateInReservation(date, reservation.getArrival(), reservation.getDeparture())) {
                 count++;
             }
@@ -111,8 +111,8 @@ public class Timetable extends JPanel {
 
     public void drawWeek(LocalDate arrival) {
         LocalDate monday = arrival.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        for (int room = 0; room < Main.numberOfRooms; room++) { // for every room
-            for (int day = 0; day < Main.week; day++) { // for every day of the week
+        for (int room = 0; room < Main.NUMBER_OF_ROOMS; room++) { // for every room
+            for (int day = 0; day < Main.DAYS_IN_WEEK; day++) { // for every day of the week
                 Reservation reservation = getReservation(room+1, monday.plusDays(day));
                 if (reservation != null) {
                     setPanelName(panels[room][day], reservation.getName());
