@@ -8,11 +8,10 @@ import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class CheckIn extends Form implements ActionListener {
+public class CheckIn extends Form {
 
     private final GridBagConstraints gbc = new GridBagConstraints();
     private JTextField nameField, phoneField, lengthField, guestField, emailField;
@@ -93,7 +92,7 @@ public class CheckIn extends Form implements ActionListener {
         Integer[] rooms = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
         roomBox = new JComboBox<>(rooms);
         roomBox.setSelectedIndex(0);
-        roomBox.addActionListener(this);
+        roomBox.addActionListener(this::actionPerformed);
         placeComponent(1, 4, roomBox);
 
         lengthField = new JTextField(4);
@@ -107,11 +106,11 @@ public class CheckIn extends Form implements ActionListener {
         gbc.anchor = GridBagConstraints.EAST;
         Button findReservation = new Button("Find reservation");
         placeComponent(2, 0, findReservation);
-        findReservation.addActionListener(this);
+        findReservation.addActionListener(this::actionPerformed);
 
         Button change = new Button("Change Reservation");
         placeComponent(2, 1, change);
-        change.addActionListener(this);
+        change.addActionListener(this::actionPerformed);
         change.setEnabled(false);
 
         JLabel nights = new JLabel(" nights");
@@ -121,12 +120,12 @@ public class CheckIn extends Form implements ActionListener {
         confirm = new Button("Confirm");
         gbc.fill = GridBagConstraints.HORIZONTAL;
         placeComponent(0, 7, confirm);
-        confirm.addActionListener(this);
+        confirm.addActionListener(this::actionPerformed);
         confirm.setEnabled(false);
 
         Button cancel = new Button("Cancel");
         placeComponent(2, 7, cancel);
-        cancel.addActionListener(this);
+        cancel.addActionListener(this::actionPerformed);
     }
 
     /**
@@ -158,9 +157,9 @@ public class CheckIn extends Form implements ActionListener {
         return null;
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
+        //maybe switch to e.getSource().equals(cancel)
         if (action.equals("Cancel")) {
             onClose();
         }
