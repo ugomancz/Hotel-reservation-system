@@ -37,7 +37,7 @@ public class CheckIn extends Form {
      * @param y coordination for gbc
      * @param component to be placed onto frame
      */
-    public void placeComponent(int x, int y, Component component) {
+    private void placeComponent(int x, int y, Component component) {
         gbc.gridx = x;
         gbc.gridy = y;
         add(component, gbc);
@@ -46,7 +46,7 @@ public class CheckIn extends Form {
     /**
      * Sets layout in frame using GridBagLayout
      */
-    public void fillOutFrame() {
+    private void fillOutFrame() {
         gbc.weightx = 0;
         gbc.weighty = 0.1;
 
@@ -131,7 +131,7 @@ public class CheckIn extends Form {
     /**
      * In case of a found existing reservation, fills out all the information
      */
-    public void fillReservation() {
+    private void fillReservation() {
         int length = Period.between(reservation.getArrival(), reservation.getDeparture()).getDays();
 
         nameField.setText(reservation.getName());
@@ -148,7 +148,7 @@ public class CheckIn extends Form {
      * @param name : key for searching for an existing reservation
      * @return existing reservation
      */
-    public Reservation findReservation(String name) {
+    private Reservation findReservation(String name) {
         for (Reservation reservation : Main.reservations) {
             if (reservation.getName().equals(name) && reservation.getArrival().equals(LocalDate.now())) {
                 return reservation;
@@ -157,7 +157,7 @@ public class CheckIn extends Form {
         return null;
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         //maybe switch to e.getSource().equals(cancel)
         if (action.equals("Cancel")) {
