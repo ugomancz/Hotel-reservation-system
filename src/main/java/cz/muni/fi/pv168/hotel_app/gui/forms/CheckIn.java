@@ -161,13 +161,13 @@ public class CheckIn extends Form {
         String action = e.getActionCommand();
         //maybe switch to e.getSource().equals(cancel)
         if (action.equals("Cancel")) {
-            onClose();
+            dispose();
         }
         if (action.equals("Confirm")) {
             //if a reservation is confirmed it's status is changed
             reservation.setStatus(ReservationStatus.ONGOING);
             MainPanel.timetable.drawWeek(LocalDate.now());
-            onClose();
+            dispose();
         }
         if (action.equals("Change reservation")) {
             JOptionPane.showMessageDialog(this, "This function is not implemented yet");
