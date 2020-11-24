@@ -8,8 +8,8 @@ public class Button extends JButton {
 
     public Button(String name) {
         super(name);
-        this.setFocusPainted(false);
-        this.setBackground(new Color(240,240,240));
-        this.setFont(new Font("Tahoma", Font.BOLD, 14));
+        setFocusPainted(false);
+        setBackground(new Color(240,240,240));
+        setFont(new Font("Tahoma", Font.BOLD, 14));
     }
 }

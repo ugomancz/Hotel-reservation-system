@@ -11,13 +11,13 @@ public class MainPanel extends JPanel {
 
     public MainPanel() {
         super(new BorderLayout(10, 10));
-        this.setBackground(Constants.BACKGROUND_COLOR);
-        this.setBorder(new EmptyBorder(10, 10, 10, 10));
+        setBackground(Constants.BACKGROUND_COLOR);
+        setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        this.add(new SidePanel(), BorderLayout.EAST);
-        this.add(timetable, BorderLayout.CENTER);
-        this.add(new RoomNames(), BorderLayout.WEST);
-        this.add(new DayNames(), BorderLayout.NORTH);
+        add(new SidePanel(), BorderLayout.EAST);
+        add(timetable, BorderLayout.CENTER);
+        add(new RoomNames(), BorderLayout.WEST);
+        add(new DayNames(), BorderLayout.NORTH);
     }
 
     private static class RoomNames extends JPanel {
@@ -25,14 +25,14 @@ public class MainPanel extends JPanel {
 
         private RoomNames() {
             super();
-            this.setLayout(new GridLayout(15, 1, 0, 1));
-            this.setBorder(new EmptyBorder(0, 0, 0, 0));
-            this.setBackground(Constants.BACKGROUND_COLOR);
-            this.setPreferredSize(dimensions);
+            setLayout(new GridLayout(15, 1, 0, 1));
+            setBorder(new EmptyBorder(0, 0, 0, 0));
+            setBackground(Constants.BACKGROUND_COLOR);
+            setPreferredSize(dimensions);
             for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
                 JLabel label = new JLabel("Room n." + (i + 1));
                 label.setBackground(Constants.BACKGROUND_COLOR);
-                this.add(label);
+                add(label);
             }
 
         }
@@ -44,12 +44,12 @@ public class MainPanel extends JPanel {
 
         private DayNames() {
             super();
-            this.setBorder(new EmptyBorder(0, 70, 0, Button.dimension.width + 20));
-            this.setBackground(Constants.BACKGROUND_COLOR);
-            this.setLayout(new GridLayout(1, Constants.DAYS_IN_WEEK, 1, 0));
+            setBorder(new EmptyBorder(0, 70, 0, Button.dimension.width + 20));
+            setBackground(Constants.BACKGROUND_COLOR);
+            setLayout(new GridLayout(1, Constants.DAYS_IN_WEEK, 1, 0));
             for (int i = 0; i < Constants.DAYS_IN_WEEK; i++) {
                 JLabel label = new JLabel(dayNames[i], SwingConstants.CENTER);
-                this.add(label);
+                add(label);
             }
         }
     }
