@@ -27,7 +27,7 @@ public class CheckIn extends Form implements ActionListener {
 
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
-        setLayout();
+        fillOutFrame();
 
     }
 
@@ -47,7 +47,7 @@ public class CheckIn extends Form implements ActionListener {
     /**
      * Sets layout in frame using GridBagLayout
      */
-    public void setLayout() {
+    public void fillOutFrame() {
         gbc.weightx = 0;
         gbc.weighty = 0.1;
 
