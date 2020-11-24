@@ -33,6 +33,7 @@ public class CheckOut extends JDialog {
         setResizable(false);
         setLayout(new BorderLayout(0, 0));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(Main.frame);
 
         add(label, BorderLayout.CENTER);
         add(addButtons(), BorderLayout.SOUTH);
