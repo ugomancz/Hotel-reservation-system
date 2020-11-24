@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class CheckIn extends Form {
+public class CheckIn extends JDialog {
 
     private final GridBagConstraints gbc = new GridBagConstraints();
     private JTextField nameField, phoneField, lengthField, guestField, emailField;
@@ -21,12 +21,16 @@ public class CheckIn extends Form {
 
 
     public CheckIn() {
-        super("Check-in");
+        super(Main.frame, "Check-in", ModalityType.APPLICATION_MODAL);
         setSize(new Dimension(500, 400));
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(Main.frame);
+        setEnabled(true);
 
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
         fillOutFrame();
+        setVisible(true);
 
     }
 
