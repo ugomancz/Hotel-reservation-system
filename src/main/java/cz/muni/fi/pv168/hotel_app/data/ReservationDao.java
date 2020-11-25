@@ -14,7 +14,20 @@ public final class ReservationDao {
 
     public ReservationDao(DataSource dataSource) {
         this.dataSource = dataSource;
+        if (!tableExits("APP", "RESERVATION")) {
+            createTable();
+        }
     }
+
+    private boolean tableExits(String schemaName, String tableName) {
+        try (var connection = dataSource.getConnection();
+             var rs = connection.getMetaData().getTables(null, schemaName, tableName, null)) {
+            return rs.next();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to detect if the table " + schemaName + "." + tableName + " exist", ex);
+        }
+    }
+
 
     private void createTable() {
         try (var connection = dataSource.getConnection();
