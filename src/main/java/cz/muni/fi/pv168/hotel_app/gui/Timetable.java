@@ -22,20 +22,20 @@ public class Timetable extends JPanel {
 
     public Timetable() {
         super();
-        this.setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK, 0, 0));
-        this.setBorder(new EmptyBorder(0, 0, 0, 0));
-        this.setBackground(Constants.BACKGROUND_COLOR);
-        this.initPanels(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK);
-        this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+        setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK, 0, 0));
+        setBorder(new EmptyBorder(0, 0, 0, 0));
+        setBackground(Constants.BACKGROUND_COLOR);
+        initPanels();
+        drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
-    private void initPanels(int y, int x) {
-        for (int i = 0; i < y; i++) {
-            for (int j = 0; j < x; j++) {
+    private void initPanels() {
+        for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
+            for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
                 JPanel panel = new JPanel();
                 panel.setBorder(new LineBorder(Color.black, 1));
                 panels[i][j] = panel;
-                this.add(panel);
+                add(panel);
             }
         }
     }
@@ -123,6 +123,6 @@ public class Timetable extends JPanel {
                 }
             }
         }
-        this.revalidate();
+        revalidate();
     }
 }

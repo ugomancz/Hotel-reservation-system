@@ -21,12 +21,12 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
 
     public SidePanel() {
         super();
-        this.setBackground(Constants.BACKGROUND_COLOR);
-        this.setLayout(new BorderLayout(0, 10));
-        this.setPreferredSize(dimension);
+        setBackground(Constants.BACKGROUND_COLOR);
+        setLayout(new BorderLayout(0, 10));
+        setPreferredSize(dimension);
 
-        this.add(new ButtonPanel(dimension), BorderLayout.CENTER);
-        this.add(initCalendar(), BorderLayout.SOUTH);
+        add(new ButtonPanel(dimension), BorderLayout.CENTER);
+        add(initCalendar(), BorderLayout.SOUTH);
     }
 
     public static CalendarPanel getCalendar() {
