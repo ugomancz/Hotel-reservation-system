@@ -6,7 +6,6 @@ import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.DayOfWeek;
