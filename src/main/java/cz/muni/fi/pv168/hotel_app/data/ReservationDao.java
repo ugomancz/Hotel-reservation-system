@@ -20,7 +20,7 @@ public final class ReservationDao {
         try (var connection = dataSource.getConnection();
              var st = connection.createStatement()) {
 
-            st.executeUpdate("CREATE TABLE RESERVATIONS (" +
+            st.executeUpdate("CREATE TABLE APP.RESERVATION (" +
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
                     "ARRIVAL DATE NOT NULL" +
                     "DEPARTURE DATE NOT NULL" +
