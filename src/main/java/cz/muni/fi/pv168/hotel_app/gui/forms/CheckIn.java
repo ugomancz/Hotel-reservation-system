@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import cz.muni.fi.pv168.hotel_app.Main;
-import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
+import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
@@ -21,10 +21,10 @@ public class CheckIn extends JDialog {
 
 
     public CheckIn() {
-        super(Main.frame, "Check-in", ModalityType.APPLICATION_MODAL);
+        super(MainWindow.frame, "Check-in", ModalityType.APPLICATION_MODAL);
         setSize(new Dimension(500, 400));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(Main.frame);
+        setLocationRelativeTo(MainWindow.frame);
         setEnabled(true);
 
         GridBagLayout layout = new GridBagLayout();
@@ -170,7 +170,7 @@ public class CheckIn extends JDialog {
         if (action.equals("Confirm")) {
             //if a reservation is confirmed it's status is changed
             reservation.setStatus(ReservationStatus.ONGOING);
-            MainPanel.timetable.drawWeek(LocalDate.now());
+            MainWindow.timetable.drawWeek(LocalDate.now());
             dispose();
         }
         if (action.equals("Change reservation")) {

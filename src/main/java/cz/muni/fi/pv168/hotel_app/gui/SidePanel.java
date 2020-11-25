@@ -46,9 +46,9 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
     @Override
     public void selectedDateChanged(CalendarSelectionEvent calendarSelectionEvent) {
         if (calendarSelectionEvent.getNewDate() != null) {
-            MainPanel.timetable.drawWeek(calendarSelectionEvent.getNewDate());
+            MainWindow.timetable.drawWeek(calendarSelectionEvent.getNewDate());
         } else {
-            MainPanel.timetable.drawWeek(LocalDate.now());
+            MainWindow.timetable.drawWeek(LocalDate.now());
         }
     }
 
@@ -58,7 +58,7 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
 
     @Override
     public HighlightInformation getHighlightInformationOrNull(LocalDate localDate) {
-        int reservations = MainPanel.timetable.getNumOfReservations(localDate);
+        int reservations = MainWindow.timetable.getNumOfReservations(localDate);
         HighlightInformation highlight = new HighlightInformation();
         if (reservations == 0) {
             return null;

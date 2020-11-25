@@ -3,13 +3,12 @@ package cz.muni.fi.pv168.hotel_app.gui.forms;
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel_app.Main;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
-import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
+import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.DayOfWeek;
@@ -31,16 +30,16 @@ public class NewReservation {
     GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation() {
-        frame.setLocationRelativeTo(Main.frame);
+        frame.setLocationRelativeTo(MainWindow.frame);
         frame.setVisible(true);
 
-        Main.frame.setEnabled(false);
+        MainWindow.frame.setEnabled(false);
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                Main.frame.setEnabled(true);
+                MainWindow.frame.setEnabled(true);
                 frame.dispose();
             }
         });
@@ -143,7 +142,7 @@ public class NewReservation {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelled)) {
-            Main.frame.setEnabled(true);
+            MainWindow.frame.setEnabled(true);
             frame.dispose();
         } else if (e.getSource().equals(okay)) {
             String usedName = name.getText();
@@ -160,9 +159,9 @@ public class NewReservation {
                 JOptionPane.showInternalMessageDialog(null, "Number of people is not number");
             } else {
                 int usedPeople = parseInt(people.getText());
-                if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
+                if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
                     reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
-                    Main.frame.setEnabled(true);
+                    MainWindow.frame.setEnabled(true);
                     frame.dispose();
                 } else {
                     JOptionPane.showInternalMessageDialog(null, "Room full");

@@ -8,56 +8,69 @@ import cz.muni.fi.pv168.hotel_app.gui.forms.NewReservation;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Arrays;
 
-public class ButtonPanel extends JPanel implements ActionListener {
-    private static final ArrayList<String> buttonNames = new ArrayList<>(Arrays.asList("New reservation", "Change reservation", "Cancel reservation",
-            "Check-in", "Check-out", "Room info", "Reservation info", "Settings"));
-    private final ArrayList<Button> buttons = new ArrayList<>();
+public class ButtonPanel extends JPanel {
+
+    private static final int numOfButtons = 8;
+    private Button newReservation, changeReservation, cancelReservation,
+            checkIn, checkOut, roomInfo, reservationInfo, settings;
 
     public ButtonPanel() {
         super();
-        int numOfButtons = buttonNames.size();
-        this.setLayout(new GridLayout(numOfButtons, 1, 5, 5));
-        this.setBackground(Constants.BACKGROUND_COLOR);
-        this.setPreferredSize(new Dimension(Button.dimension.width, 500));
+        setLayout(new GridLayout(numOfButtons, 1, 5, 5));
+        setBackground(Constants.BACKGROUND_COLOR);
+        setPreferredSize(new Dimension(Button.dimension.width, 500));
 
-        for (int i = 0; i < numOfButtons; i++) {
-            buttons.add(new Button(buttonNames.get(i)));
-            buttons.get(i).addActionListener(this);
-            this.add(buttons.get(i));
-        }
+        addButtons();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (buttons.get(0) == (e.getSource())) {
-            new NewReservation();
-        } else if (buttons.get(1) == e.getSource()) {
-            notImplemented();
-            //new ChangeReservation();
-        } else if (buttons.get(2) == e.getSource()) {
-            notImplemented();
-            //new CancelReservation();
-        } else if (buttons.get(3) == e.getSource()) {
-            new CheckIn();
-        } else if (buttons.get(4) == e.getSource()) {
-            new CheckOut();
-        } else if (buttons.get(5) == e.getSource()) {
-            notImplemented();
-            //new RoomInfo();
-        } else if (buttons.get(6) == e.getSource()) {
-            notImplemented();
-            //new ReservationInfo();
-        } else if (buttons.get(7) == e.getSource()) {
-            notImplemented();
-            //new Settings();
-        }
-    }
-
-    private void notImplemented() {
+    private static void notImplemented() {
         JOptionPane.showInternalMessageDialog(null, "Not yet implemented");
+    }
+
+    private void addButtons() {
+        newReservation = initButton("New reservation");
+        changeReservation = initButton("Change reservation");
+        cancelReservation = initButton("Cancel reservation");
+        checkIn = initButton("Check in");
+        checkOut = initButton("Check out");
+        roomInfo = initButton("Room info");
+        reservationInfo = initButton("Reservation info");
+        settings = initButton("Settings");
+
+        add(newReservation);
+        add(changeReservation);
+        add(cancelReservation);
+        add(checkIn);
+        add(checkOut);
+        add(roomInfo);
+        add(reservationInfo);
+        add(settings);
+    }
+
+    private Button initButton(String name) {
+        Button button = new Button(name);
+        button.addActionListener(this::actionPerformed);
+        return button;
+    }
+
+    private void actionPerformed(ActionEvent e) {
+        if (e.getSource().equals(newReservation)) {
+            new NewReservation();
+        } else if (e.getSource().equals(changeReservation)) {
+            notImplemented();
+        } else if (e.getSource().equals(cancelReservation)) {
+            notImplemented();
+        } else if (e.getSource().equals(checkIn)) {
+            new CheckIn();
+        } else if (e.getSource().equals(checkOut)) {
+            new CheckOut();
+        } else if (e.getSource().equals(roomInfo)) {
+            notImplemented();
+        } else if (e.getSource().equals(reservationInfo)) {
+            notImplemented();
+        } else if (e.getSource().equals(settings)) {
+            notImplemented();
+        }
     }
 }
