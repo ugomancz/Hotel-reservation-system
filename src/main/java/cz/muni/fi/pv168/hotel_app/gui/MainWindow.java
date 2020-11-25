@@ -6,18 +6,37 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class MainPanel extends JPanel {
+public class MainWindow {
+
     public static Timetable timetable = new Timetable();
+    public static JFrame frame;
+    private static JPanel panel;
 
-    public MainPanel() {
-        super(new BorderLayout(10, 10));
-        setBackground(Constants.BACKGROUND_COLOR);
-        setBorder(new EmptyBorder(10, 10, 10, 10));
+    public MainWindow() {
+        frame = initFrame();
+        panel = initPanel();
+        frame.add(panel);
+        frame.setVisible(true);
+    }
 
-        add(new SidePanel(), BorderLayout.EAST);
-        add(timetable, BorderLayout.CENTER);
-        add(new RoomNames(), BorderLayout.WEST);
-        add(new DayNames(), BorderLayout.NORTH);
+    private JFrame initFrame() {
+        frame = new JFrame("HotelApp");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(1280, 720));
+        return frame;
+    }
+
+    private JPanel initPanel() {
+        panel = new JPanel();
+        panel.setBorder(new EmptyBorder(5,5,5,5));
+        panel.setLayout(new BorderLayout(5,5));
+        panel.setBackground(Constants.BACKGROUND_COLOR);
+
+        panel.add(new SidePanel(), BorderLayout.EAST);
+        panel.add(timetable, BorderLayout.CENTER);
+        panel.add(new RoomNames(), BorderLayout.WEST);
+        panel.add(new DayNames(), BorderLayout.NORTH);
+        return panel;
     }
 
     private static class RoomNames extends JPanel {

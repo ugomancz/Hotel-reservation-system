@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import cz.muni.fi.pv168.hotel_app.Main;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
-import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
+import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
@@ -28,12 +28,12 @@ public class CheckOut extends JDialog {
             "<u>Total: %d</u></html>";
 
     public CheckOut() {
-        super(Main.frame, "Check-out", ModalityType.APPLICATION_MODAL);
+        super(MainWindow.frame, "Check-out", ModalityType.APPLICATION_MODAL);
         setSize(new Dimension(250, 250));
         setResizable(false);
         setLayout(new BorderLayout(0, 0));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(Main.frame);
+        setLocationRelativeTo(MainWindow.frame);
 
         add(label, BorderLayout.CENTER);
         add(addButtons(), BorderLayout.SOUTH);
@@ -74,7 +74,7 @@ public class CheckOut extends JDialog {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(outButton)) {
             reservation.setStatus(ReservationStatus.PAST);
-            MainPanel.timetable.drawWeek(LocalDate.now());
+            MainWindow.timetable.drawWeek(LocalDate.now());
             dispose();
         } else if (e.getSource().equals(pickReservation)) {
             displayDetails((String) pickReservation.getSelectedItem());
