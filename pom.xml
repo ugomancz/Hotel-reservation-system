@@ -21,6 +21,12 @@
             <artifactId>LGoodDatePicker</artifactId>
             <version>11.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>10.14.1.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>
