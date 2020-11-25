@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import cz.muni.fi.pv168.hotel_app.Main;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainPanel;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
@@ -9,57 +10,67 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Objects;
 
 import static java.lang.Integer.parseInt;
 
-public class NewReservation extends Form implements ActionListener {
-    cz.muni.fi.pv168.hotel_app.gui.Button cancelled, okay;
+public class NewReservation {
+
+    Button cancelled, okay;
     JTextField name, phone, email, people;
     JComboBox<Integer> rooms;
     DatePicker fromDate, toDate;
     Reservation reservation;
+    JFrame frame = new JFrame();
     Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation() {
-        super("New Reservation");
-        this.setSize(new Dimension(400, 400));
-        this.setLayout(new GridBagLayout());
+        frame.setLocationRelativeTo(Main.frame);
+        frame.setVisible(true);
+
+        Main.frame.setEnabled(false);
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                Main.frame.setEnabled(true);
+                frame.dispose();
+            }
+        });
+        frame.setSize(new Dimension(400, 400));
+        frame.setLayout(new GridBagLayout());
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
 
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        this.add(new JLabel("Name and surname: "), gbc);
+        frame.add(new JLabel("Name and surname: "), gbc);
 
-        gbc.gridx = 0;
         gbc.gridy = 10;
-        this.add(new JLabel("Phone: "), gbc);
+        frame.add(new JLabel("Phone: "), gbc);
 
-        gbc.gridx = 0;
         gbc.gridy = 20;
-        add(new JLabel("Email: "), gbc);
+        frame.add(new JLabel("Email: "), gbc);
 
-        gbc.gridx = 0;
         gbc.gridy = 30;
-        this.add(new JLabel("Number of people: "), gbc);
+        frame.add(new JLabel("Number of people: "), gbc);
 
-        gbc.gridx = 0;
         gbc.gridy = 40;
-        add(new JLabel("From: "), gbc);
+        frame.add(new JLabel("From: "), gbc);
 
-        gbc.gridx = 0;
         gbc.gridy = 50;
-        add(new JLabel("To: "), gbc);
+        frame.add(new JLabel("To: "), gbc);
 
-        gbc.gridx = 0;
         gbc.gridy = 60;
-        add(new JLabel("Room number: "), gbc);
+        frame.add(new JLabel("Room number: "), gbc);
 
         gbc.anchor = GridBagConstraints.LINE_START;
         name = new JTextField(13);
@@ -67,65 +78,59 @@ public class NewReservation extends Form implements ActionListener {
         name.setEditable(true);
         gbc.gridx = 5;
         gbc.gridy = 0;
-        add(name, gbc);
+        frame.add(name, gbc);
 
         phone = new JTextField(13);
         phone.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         phone.setEditable(true);
-        gbc.gridx = 5;
         gbc.gridy = 10;
-        add(phone, gbc);
+        frame.add(phone, gbc);
 
         email = new JTextField(13);
         email.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         email.setEditable(true);
-        gbc.gridx = 5;
         gbc.gridy = 20;
-        add(email, gbc);
+        frame.add(email, gbc);
 
         people = new JTextField(13);
         people.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         people.setEditable(true);
-        gbc.gridx = 5;
         gbc.gridy = 30;
-        add(people, gbc);
+        frame.add(people, gbc);
 
         fromDate = new DatePicker();
         fromDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
         fromDate.getComponentToggleCalendarButton().setBackground(new Color(240, 240, 240));
         fromDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
-        gbc.gridx = 5;
         gbc.gridy = 40;
-        add(fromDate, gbc);
+        frame.add(fromDate, gbc);
 
         toDate = new DatePicker();
         toDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
         toDate.getComponentToggleCalendarButton().setBackground(new Color(240, 240, 240));
         toDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
-        gbc.gridx = 5;
         gbc.gridy = 50;
-        add(toDate, gbc);
+        frame.add(toDate, gbc);
 
         rooms = new JComboBox<>(array);
         rooms.setSelectedIndex(0);
-        rooms.addActionListener(this);
+        rooms.addActionListener(this::actionPerformed);
         rooms.setFont(new Font("Tahoma", Font.BOLD, 14));
-        gbc.gridx = 5;
         gbc.gridy = 60;
-        add(rooms, gbc);
+        frame.add(rooms, gbc);
 
         gbc.anchor = GridBagConstraints.CENTER;
         okay = new Button("OK");
-        okay.addActionListener(this);
+        okay.addActionListener(this::actionPerformed);
         gbc.gridx = 0;
         gbc.gridy = 70;
-        add(okay, gbc);
+        frame.add(okay, gbc);
 
         cancelled = new Button("Cancel");
-        cancelled.addActionListener(this);
+        cancelled.addActionListener(this::actionPerformed);
         gbc.gridx = 5;
         gbc.gridy = 70;
-        add(cancelled, gbc);
+        frame.add(cancelled, gbc);
     }
 
     public Integer tryParse(String text) {
@@ -136,11 +141,11 @@ public class NewReservation extends Form implements ActionListener {
         }
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == cancelled) {
-            onClose();
-        } else if (e.getSource() == okay) {
+        if (e.getSource().equals(cancelled)) {
+            Main.frame.setEnabled(true);
+            frame.dispose();
+        } else if (e.getSource().equals(okay)) {
             String usedName = name.getText();
             String usedPhone = phone.getText();
             String usedMail = email.getText();
@@ -157,7 +162,8 @@ public class NewReservation extends Form implements ActionListener {
                 int usedPeople = parseInt(people.getText());
                 if (MainPanel.timetable.isFree(parseInt(room), from, to)) {
                     reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
-                    onClose();
+                    Main.frame.setEnabled(true);
+                    frame.dispose();
                 } else {
                     JOptionPane.showInternalMessageDialog(null, "Room full");
                 }
