@@ -40,7 +40,7 @@ public class MainWindow {
     }
 
     private static class RoomNames extends JPanel {
-        public Dimension dimensions = new Dimension(60, 500);
+        public Dimension dimensions = new Dimension(70, 500);
 
         private RoomNames() {
             super();
