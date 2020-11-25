@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
@@ -161,6 +162,7 @@ public class NewReservation {
                 int usedPeople = parseInt(people.getText());
                 if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
                     reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
+                    Main.reservationDao.create(reservation);
                     MainWindow.frame.setEnabled(true);
                     frame.dispose();
                 } else {
