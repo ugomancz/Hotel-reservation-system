@@ -15,11 +15,11 @@ public class ButtonPanel extends JPanel {
     private Button newReservation, changeReservation, cancelReservation,
             checkIn, checkOut, roomInfo, reservationInfo, settings;
 
-    public ButtonPanel() {
+    public ButtonPanel(Dimension dimension) {
         super();
         setLayout(new GridLayout(numOfButtons, 1, 5, 5));
         setBackground(Constants.BACKGROUND_COLOR);
-        setPreferredSize(new Dimension(Button.dimension.width, 500));
+        setPreferredSize(dimension);
 
         addButtons();
     }

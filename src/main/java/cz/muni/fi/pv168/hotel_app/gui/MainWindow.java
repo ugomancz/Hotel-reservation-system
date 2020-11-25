@@ -63,7 +63,7 @@ public class MainWindow {
 
         private DayNames() {
             super();
-            setBorder(new EmptyBorder(0, 70, 0, Button.dimension.width + 20));
+            setBorder(new EmptyBorder(0, 70, 0, SidePanel.dimension.width + 20));
             setBackground(Constants.BACKGROUND_COLOR);
             setLayout(new GridLayout(1, Constants.DAYS_IN_WEEK, 1, 0));
             for (int i = 0; i < Constants.DAYS_IN_WEEK; i++) {
