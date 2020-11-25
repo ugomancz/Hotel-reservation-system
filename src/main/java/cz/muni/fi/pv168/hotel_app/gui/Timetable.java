@@ -3,7 +3,6 @@ package cz.muni.fi.pv168.hotel_app.gui;
 import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.Main;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
-import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -37,19 +36,6 @@ public class Timetable extends JPanel {
                 panels[i][j] = panel;
                 add(panel);
             }
-        }
-    }
-
-    private void setPanelColor(JPanel panel, ReservationStatus status) {
-        switch (status) {
-            case PLANNED:
-                panel.setBackground(Color.green);
-                return;
-            case ONGOING:
-                panel.setBackground(Color.orange);
-                return;
-            case PAST:
-                panel.setBackground(Color.lightGray);
         }
     }
 
@@ -114,10 +100,10 @@ public class Timetable extends JPanel {
         LocalDate monday = arrival.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         for (int room = 0; room < Constants.NUMBER_OF_ROOMS; room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
-                Reservation reservation = getReservation(room+1, monday.plusDays(day));
+                Reservation reservation = getReservation(room + 1, monday.plusDays(day));
                 if (reservation != null) {
                     setPanelName(panels[room][day], reservation.getName());
-                    setPanelColor(panels[room][day], reservation.getStatus());
+                    panels[room][day].setBackground(reservation.getStatus().getColor());
                 } else {
                     clearPanel(panels[room][day]);
                 }
