@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel_app;
 
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import org.apache.derby.jdbc.EmbeddedDataSource;
@@ -9,9 +10,11 @@ import java.util.ArrayList;
 
 public class Main {
 
+    public static ReservationDao reservationDao;
     public static ArrayList<Reservation> reservations = new ArrayList<>();
 
     public static void main(String[] args) {
+        reservationDao = new ReservationDao(createDataSource());
         new MainWindow();
     }
 

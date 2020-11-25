@@ -35,17 +35,17 @@ public final class ReservationDao {
 
             st.executeUpdate("CREATE TABLE APP.RESERVATION (" +
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
-                    "ARRIVAL DATE NOT NULL" +
-                    "DEPARTURE DATE NOT NULL" +
-                    "ROOMNUMBER INT(10) NOT NULL," +
-                    "HOSTS INT," +
+                    "ARRIVAL DATE NOT NULL," +
+                    "DEPARTURE DATE NOT NULL," +
+                    "ROOMNUMBER BIGINT NOT NULL," +
+                    "HOSTS BIGINT," +
                     "NAME VARCHAR(100) NOT NULL," +
                     "PHONE VARCHAR(100) NOT NULL," +
                     "EMAIL VARCHAR(100)," +
-                    "STATUS VARCHAR(100) NOT NULL," +
+                    "STATUS VARCHAR(100) NOT NULL" +
                     ")");
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to create EMPLOYEE table", ex);
+            throw new DataAccessException("Failed to create RESERVATION table", ex);
         }
     }
 
