@@ -8,6 +8,7 @@ import java.sql.SQLException;
 /**
  * @author Denis Kollar
  */
+@SuppressWarnings("SqlNoDataSourceInspection")
 public final class ReservationDao {
     private final DataSource dataSource;
 
@@ -19,12 +20,16 @@ public final class ReservationDao {
         try (var connection = dataSource.getConnection();
              var st = connection.createStatement()) {
 
-            st.executeUpdate("CREATE TABLE APP.EMPLOYEE (" +
+            st.executeUpdate("CREATE TABLE RESERVATIONS (" +
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
-                    "FIRST_NAME VARCHAR(100) NOT NULL," +
-                    "LAST_NAME VARCHAR(100) NOT NULL," +
-                    "GENDER VARCHAR(6) NOT NULL CONSTRAINT GENDER_CHECK CHECK (GENDER IN ('MALE','FEMALE'))," +
-                    "BIRTH_DATE DATE NOT NULL" +
+                    "ARRIVAL DATE NOT NULL" +
+                    "DEPARTURE DATE NOT NULL" +
+                    "ROOMNUMBER INT(10) NOT NULL," +
+                    "HOSTS INT," +
+                    "NAME VARCHAR(100) NOT NULL," +
+                    "PHONE VARCHAR(100) NOT NULL," +
+                    "EMAIL VARCHAR(100)," +
+                    "STATUS VARCHAR(100) NOT NULL," +
                     ")");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create EMPLOYEE table", ex);
