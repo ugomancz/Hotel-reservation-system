@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.hotel_app.gui.SidePanel;
 import java.time.LocalDate;
 
 public class Reservation {
+    private Long id;
     private final LocalDate arrival;
     private final LocalDate departure;
     private final int roomNumber;
@@ -30,6 +31,15 @@ public class Reservation {
         Main.reservations.add(this);
         SidePanel.getCalendar().setSelectedDate(arrival);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
     public LocalDate getArrival() {
         return arrival;

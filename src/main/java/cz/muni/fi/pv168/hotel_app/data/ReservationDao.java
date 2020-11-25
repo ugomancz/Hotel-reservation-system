@@ -1,8 +1,13 @@
 package cz.muni.fi.pv168.hotel_app.data;
 
 
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.sql.SQLException;
+
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 
 /**
@@ -28,6 +33,31 @@ public final class ReservationDao {
         }
     }
 
+    public void create(Reservation reservation) {
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement(
+                     "INSERT INTO RESERVATION (ARRIVAL, DEPARTURE, ROOMNUMBER, HOSTS,NAME,PHONE,EMAIL,STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                     RETURN_GENERATED_KEYS)) {
+            st.setDate(1, Date.valueOf(reservation.getArrival()));
+            st.setDate(2, Date.valueOf(reservation.getDeparture()));
+            st.setLong(3, reservation.getRoomNumber());
+            st.setLong(4, reservation.getHosts());
+            st.setString(5, reservation.getName());
+            st.setString(6, reservation.getPhone());
+            st.setString(7, reservation.getEmail());
+            st.setString(8, reservation.getStatus().name());
+            st.executeUpdate();
+            try (var rs = st.getGeneratedKeys()) {
+                if (rs.next()) {
+                    reservation.setId(rs.getLong(1));
+                } else {
+                    throw new DataAccessException("Failed to fetch generated key: no key returned for reservation: " + reservation);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to store employee " + reservation, ex);
+        }
+    }
 
     private void createTable() {
         try (var connection = dataSource.getConnection();
