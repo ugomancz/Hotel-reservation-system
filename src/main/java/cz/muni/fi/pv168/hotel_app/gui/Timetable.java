@@ -107,6 +107,5 @@ public class Timetable extends JPanel {
                 }
             }
         }
-        revalidate();
     }
 }
