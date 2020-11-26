@@ -48,7 +48,7 @@ public class MainWindow {
 
         private RoomNames() {
             super();
-            setLayout(new GridLayout(15, 1, 0, 1));
+            setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, 1, 0, 1));
             setBorder(new EmptyBorder(0, 0, 0, 0));
             setBackground(Constants.BACKGROUND_COLOR);
             setPreferredSize(dimensions);
