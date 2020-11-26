@@ -62,12 +62,13 @@ public class SidePanel extends JPanel implements CalendarListener {
 
     public HighlightInformation getHighlightInformationOrNull(LocalDate localDate) {
         int reservations = MainWindow.timetable.getNumOfReservations(localDate);
-        HighlightInformation highlight = new HighlightInformation();
         if (reservations == 0) {
             return null;
-        } else if (reservations == Constants.NUMBER_OF_ROOMS) {
+        }
+        HighlightInformation highlight = new HighlightInformation(Color.white);
+        if (reservations == Constants.NUMBER_OF_ROOMS) {
             highlight.colorBackground = new Color(250, 40, 40);
-        } else if (reservations > Constants.NUMBER_OF_ROOMS * 2 / 3) {
+        } else if (reservations >= Constants.NUMBER_OF_ROOMS * 2 / 3) {
             highlight.colorBackground = Color.orange;
         }
         return highlight;
