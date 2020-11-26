@@ -15,6 +15,9 @@ public class Main {
 
     public static void main(String[] args) {
         reservationDao = new ReservationDao(createDataSource());
+        if(reservationDao.findAll().size() != 0){
+            System.out.println("Something is saved");
+        }
         new MainWindow();
     }
 

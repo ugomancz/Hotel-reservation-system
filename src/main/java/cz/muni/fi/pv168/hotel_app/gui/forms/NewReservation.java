@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -161,7 +162,8 @@ public class NewReservation {
             } else {
                 int usedPeople = parseInt(people.getText());
                 if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
-                    reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
+                    reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to, ReservationStatus.PLANNED.name());
+                    reservation.moveToNewDate(reservation.getArrival());
                     Main.reservationDao.create(reservation);
                     MainWindow.frame.setEnabled(true);
                     frame.dispose();
