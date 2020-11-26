@@ -50,8 +50,10 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
     public void selectedDateChanged(CalendarSelectionEvent calendarSelectionEvent) {
         if (calendarSelectionEvent.getNewDate() != null) {
             MainWindow.timetable.drawWeek(calendarSelectionEvent.getNewDate());
+            MainWindow.DayNames.changeDates(calendarSelectionEvent.getNewDate());
         } else {
             MainWindow.timetable.drawWeek(LocalDate.now());
+            MainWindow.DayNames.changeDates(LocalDate.now());
         }
     }
 
@@ -65,12 +67,10 @@ public class SidePanel extends JPanel implements CalendarListener, DateHighlight
         HighlightInformation highlight = new HighlightInformation();
         if (reservations == 0) {
             return null;
-        } else if (reservations < Constants.NUMBER_OF_ROOMS *2/3) {
-            highlight.colorBackground = Color.green;
-        } else if (reservations < Constants.NUMBER_OF_ROOMS) {
-            highlight.colorBackground = Color.orange;
-        } else {
+        } else if (reservations == Constants.NUMBER_OF_ROOMS){
             highlight.colorBackground = new Color(250, 40, 40);
+        } else if (reservations > Constants.NUMBER_OF_ROOMS*2/3) {
+            highlight.colorBackground = Color.orange;
         }
         return highlight;
     }
