@@ -16,8 +16,7 @@ import static cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus.PAST;
 
 public class Timetable extends JPanel {
 
-    static JPanel[][] panels = new JPanel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
-    public LocalDate selectedDate = LocalDate.now();
+    private static final JPanel[][] panels = new JPanel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
 
     public Timetable() {
         super();
@@ -25,7 +24,7 @@ public class Timetable extends JPanel {
         setBorder(new EmptyBorder(0, 0, 0, 0));
         setBackground(Constants.BACKGROUND_COLOR);
         initPanels();
-        drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+        drawWeek(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
     }
 
     private void initPanels() {
