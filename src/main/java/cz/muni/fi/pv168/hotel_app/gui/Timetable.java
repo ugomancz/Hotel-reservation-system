@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.hotel_app.gui;
 import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.Main;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,6 +18,7 @@ import static cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus.PAST;
 public class Timetable extends JPanel {
 
     private static final JPanel[][] panels = new JPanel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
+    private static final JLabel[][] labels = new JLabel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
 
     public Timetable() {
         super();
@@ -24,33 +26,31 @@ public class Timetable extends JPanel {
         setBorder(new EmptyBorder(0, 0, 0, 0));
         setBackground(Constants.BACKGROUND_COLOR);
         initPanels();
-        drawWeek(LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+        drawWeek(LocalDate.now());
     }
 
     private void initPanels() {
         for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
             for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
                 JPanel panel = new JPanel();
+                JLabel label = new JLabel("", SwingConstants.CENTER);
                 panel.setBorder(new LineBorder(Color.black, 1));
+                panel.add(label);
                 panels[i][j] = panel;
+                labels[i][j] = label;
                 add(panel);
             }
         }
     }
 
-    private void setPanelName(JPanel panel, String name) {
-        if (panel.getComponentCount() > 0)
-            ((JLabel) panel.getComponent(0)).setText(name);
-        else {
-            panel.add(new JLabel(name, SwingConstants.CENTER));
-        }
+    private void clearPanel(int room, int day) {
+        panels[room][day].setBackground(Color.white);
+        labels[room][day].setText("");
     }
 
-    private void clearPanel(JPanel panel) {
-        panel.setBackground(Color.white);
-        if (panel.getComponentCount() > 0) {
-            ((JLabel) panel.getComponent(0)).setText("");
-        }
+    private void fillPanel(int room, int day, String name, ReservationStatus status) {
+        labels[room][day].setText(name);
+        panels[room][day].setBackground(status.getColor());
     }
 
     private boolean isInterfering(LocalDate newArrival, LocalDate newDeparture, LocalDate arrival, LocalDate departure) {
@@ -95,16 +95,15 @@ public class Timetable extends JPanel {
         return date.isEqual(arrival) || date.isEqual(departure) || (date.isAfter(arrival) && date.isBefore(departure));
     }
 
-    public void drawWeek(LocalDate arrival) {
-        LocalDate monday = arrival.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    public void drawWeek(LocalDate date) {
+        LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         for (int room = 0; room < Constants.NUMBER_OF_ROOMS; room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
                 Reservation reservation = getReservation(room + 1, monday.plusDays(day));
                 if (reservation != null) {
-                    setPanelName(panels[room][day], reservation.getName());
-                    panels[room][day].setBackground(reservation.getStatus().getColor());
+                    fillPanel(room, day, reservation.getName(), reservation.getStatus());
                 } else {
-                    clearPanel(panels[room][day]);
+                    clearPanel(room, day);
                 }
             }
         }
