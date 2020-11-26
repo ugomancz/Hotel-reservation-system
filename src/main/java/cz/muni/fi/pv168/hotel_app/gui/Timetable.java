@@ -44,8 +44,8 @@ public class Timetable extends JPanel {
     }
 
     private void clearPanel(int room, int day) {
-        panels[room][day].setBackground(Color.white);
         labels[room][day].setText("");
+        panels[room][day].setBackground(Color.white);
     }
 
     private void fillPanel(int room, int day, String name, ReservationStatus status) {
