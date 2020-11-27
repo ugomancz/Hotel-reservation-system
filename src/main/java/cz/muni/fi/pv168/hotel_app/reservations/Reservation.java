@@ -6,30 +6,43 @@ import cz.muni.fi.pv168.hotel_app.gui.SidePanel;
 import java.time.LocalDate;
 
 public class Reservation {
-    private final LocalDate arrival;
-    private final LocalDate departure;
-    private final int roomNumber;
-    private final int hosts;
+    private Long id;
     private final String name;
     private final String phone;
     private final String email;
+    private final int hosts;
+    private final int roomNumber;
+    private final LocalDate arrival;
+    private final LocalDate departure;
     private ReservationStatus status;
     private final int length;
 
     public Reservation(String name, String phone, String email, int hosts,
-                       int roomNumber, LocalDate arrival, LocalDate departure) {
+                       int roomNumber, LocalDate arrival, LocalDate departure, String status) {
         this.name = name;
         this.hosts = hosts;
         this.roomNumber = roomNumber;
         this.arrival = arrival;
         this.departure = departure;
-        this.status = ReservationStatus.PLANNED;
+        this.status = ReservationStatus.valueOf(status.toUpperCase());
         this.phone = phone;
         this.email = email;
         this.length = departure.compareTo(arrival);
         Main.reservations.add(this);
-        SidePanel.getCalendar().setSelectedDate(arrival);
     }
+
+    public void moveToNewDate(LocalDate newDate) {
+        SidePanel.getCalendar().setSelectedDate(newDate);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
     public LocalDate getArrival() {
         return arrival;
