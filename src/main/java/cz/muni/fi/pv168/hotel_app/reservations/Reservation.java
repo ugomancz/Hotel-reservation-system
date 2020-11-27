@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.hotel_app.gui.SidePanel;
 import java.time.LocalDate;
 
 public class Reservation {
+    private final int length;
     private Long id;
     private String name;
     private String phone;
@@ -15,7 +16,6 @@ public class Reservation {
     private LocalDate arrival;
     private LocalDate departure;
     private ReservationStatus status;
-    private final int length;
 
     public Reservation(String name, String phone, String email, int hosts,
                        int roomNumber, LocalDate arrival, LocalDate departure, String status) {
