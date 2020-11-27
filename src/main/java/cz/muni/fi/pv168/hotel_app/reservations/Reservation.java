@@ -7,13 +7,13 @@ import java.time.LocalDate;
 
 public class Reservation {
     private Long id;
-    private final String name;
-    private final String phone;
-    private final String email;
-    private final int hosts;
-    private final int roomNumber;
-    private final LocalDate arrival;
-    private final LocalDate departure;
+    private String name;
+    private String phone;
+    private String email;
+    private int hosts;
+    private int roomNumber;
+    private LocalDate arrival;
+    private LocalDate departure;
     private ReservationStatus status;
     private final int length;
 
