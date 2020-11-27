@@ -59,6 +59,8 @@ public class ChangeReservation extends JDialog {
         addTextFields();
         addDatePickers();
         addComboBoxes();
+
+        displayInfo(map.get(reservationPicker.getItemAt(0)));
     }
 
     private void addComponent(JComponent component, GridBagConstraints gbc, int x, int y) {
@@ -147,11 +149,31 @@ public class ChangeReservation extends JDialog {
         roomPicker.setSelectedIndex(reservation.getRoomNumber() - 1);
     }
 
+    private boolean updateReservation(Reservation reservation) {
+        reservation.setName(name.getText());
+        reservation.setPhone(phone.getText());
+        reservation.setEmail(email.getText());
+        try {
+            reservation.setHosts(Integer.parseInt(people.getText()));
+        } catch (Exception e) {
+            JOptionPane.showInternalMessageDialog(null, "Field \"Hosts\" has to be a number");
+            return false;
+        }
+        reservation.setArrival(arrival.getDate());
+        reservation.setDeparture(departure.getDate());
+        reservation.setRoomNumber(roomPicker.getSelectedIndex() + 1);
+        MainWindow.timetable.drawWeek(arrival.getDate());
+        return true;
+    }
+
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
             dispose();
         } else if (e.getSource().equals(okayButton)) {
-            // update reservation
+            String selected = (String) reservationPicker.getSelectedItem();
+            if (updateReservation(map.get(selected))) {
+                dispose();
+            }
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(map.get(selected));
