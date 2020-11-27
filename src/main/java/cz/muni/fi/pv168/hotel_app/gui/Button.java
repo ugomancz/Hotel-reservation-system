@@ -5,10 +5,13 @@ import java.awt.*;
 
 public class Button extends JButton {
 
+    public static final Font font = new Font("Tahoma", Font.BOLD, 14);
+    public static final Color background = new Color(240,240,240);
+
     public Button(String name) {
         super(name);
         setFocusPainted(false);
-        setBackground(new Color(240,240,240));
-        setFont(new Font("Tahoma", Font.BOLD, 14));
+        setBackground(background);
+        setFont(font);
     }
 }
