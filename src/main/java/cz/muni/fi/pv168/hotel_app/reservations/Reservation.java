@@ -111,4 +111,11 @@ public class Reservation {
     public int getLength() {
         return length;
     }
+
+    @Override
+	public String toString() {
+		return "Reservation [length=" + length + ", id=" + id + ", name=" + name + ", phone=" + phone + ", email="
+				+ email + ", hosts=" + hosts + ", roomNumber=" + roomNumber + ", arrival=" + arrival + ", departure="
+				+ departure + ", status=" + status + "]";
+	}
 }
