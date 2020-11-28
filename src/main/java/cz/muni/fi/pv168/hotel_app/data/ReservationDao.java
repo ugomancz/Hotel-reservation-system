@@ -73,8 +73,8 @@ public final class ReservationDao {
                             rs.getString("NAME"),
                             rs.getString("PHONE"),
                             rs.getString("EMAIL"),
-                            rs.getInt("ROOMNUMBER"),
                             rs.getInt("HOSTS"),
+                            rs.getInt("ROOMNUMBER"),
                             rs.getDate("ARRIVAL").toLocalDate(),
                             rs.getDate("DEPARTURE").toLocalDate(),
                             rs.getString("STATUS")

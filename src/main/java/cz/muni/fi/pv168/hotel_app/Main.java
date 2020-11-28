@@ -22,7 +22,7 @@ public class Main {
     }
 
     private static DataSource createDataSource() {
-        String dbPath = System.getProperty("user.home") + "/employee-evidence";
+        String dbPath = System.getProperty("user.home") + "/hotel-app";
         EmbeddedDataSource dataSource = new EmbeddedDataSource();
         dataSource.setDatabaseName(dbPath);
         dataSource.setCreateDatabase("create");
