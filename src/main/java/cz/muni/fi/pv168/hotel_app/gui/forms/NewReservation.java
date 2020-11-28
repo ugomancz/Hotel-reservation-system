@@ -155,6 +155,7 @@ public class NewReservation extends JDialog {
                 if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
                     reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
                             ReservationStatus.PLANNED.toString());
+                    MainWindow.timetable.drawWeek(LocalDate.now());
                     MainWindow.frame.setEnabled(true);
                     dispose();
                 } else {
