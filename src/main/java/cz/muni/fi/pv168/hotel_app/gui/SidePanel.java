@@ -61,7 +61,7 @@ public class SidePanel extends JPanel implements CalendarListener {
     }
 
     public HighlightInformation getHighlightInformationOrNull(LocalDate localDate) {
-        int reservations = MainWindow.timetable.getNumOfReservations(localDate);
+        int reservations = Main.reservationDao.getNumOfReservations(localDate);
         if (reservations == 0) {
             return null;
         }
