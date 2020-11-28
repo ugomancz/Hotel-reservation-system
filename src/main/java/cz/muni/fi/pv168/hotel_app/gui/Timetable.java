@@ -17,55 +17,40 @@ import static cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus.PAST;
 
 public class Timetable extends JPanel {
 
-    static JPanel[][] panels = new JPanel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
-    public LocalDate selectedDate = LocalDate.now();
+    private static final JPanel[][] panels = new JPanel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
+    private static final JLabel[][] labels = new JLabel[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
 
     public Timetable() {
         super();
-        this.setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK, 0, 0));
-        this.setBorder(new EmptyBorder(0, 0, 0, 0));
-        this.setBackground(Constants.BACKGROUND_COLOR);
-        this.initPanels(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK);
-        this.drawWeek(selectedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+        setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK, 0, 0));
+        setBorder(new EmptyBorder(0, 0, 0, 0));
+        setBackground(Constants.BACKGROUND_COLOR);
+        initPanels();
+        drawWeek(LocalDate.now());
     }
 
-    private void initPanels(int y, int x) {
-        for (int i = 0; i < y; i++) {
-            for (int j = 0; j < x; j++) {
+    private void initPanels() {
+        for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
+            for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
                 JPanel panel = new JPanel();
+                JLabel label = new JLabel("", SwingConstants.CENTER);
                 panel.setBorder(new LineBorder(Color.black, 1));
+                panel.add(label);
                 panels[i][j] = panel;
-                this.add(panel);
+                labels[i][j] = label;
+                add(panel);
             }
         }
     }
 
-    private void setPanelColor(JPanel panel, ReservationStatus status) {
-        switch (status) {
-            case PLANNED:
-                panel.setBackground(Color.green);
-                return;
-            case ONGOING:
-                panel.setBackground(Color.orange);
-                return;
-            case PAST:
-                panel.setBackground(Color.lightGray);
-        }
+    private void clearPanel(int room, int day) {
+        labels[room][day].setText("");
+        panels[room][day].setBackground(Color.white);
     }
 
-    private void setPanelName(JPanel panel, String name) {
-        if (panel.getComponentCount() > 0)
-            ((JLabel) panel.getComponent(0)).setText(name);
-        else {
-            panel.add(new JLabel(name, SwingConstants.CENTER));
-        }
-    }
-
-    private void clearPanel(JPanel panel) {
-        panel.setBackground(Color.white);
-        if (panel.getComponentCount() > 0) {
-            ((JLabel) panel.getComponent(0)).setText("");
-        }
+    private void fillPanel(int room, int day, String name, ReservationStatus status) {
+        labels[room][day].setText(name);
+        panels[room][day].setBackground(status.getColor());
     }
 
     private boolean isInterfering(LocalDate newArrival, LocalDate newDeparture, LocalDate arrival, LocalDate departure) {
@@ -110,19 +95,17 @@ public class Timetable extends JPanel {
         return date.isEqual(arrival) || date.isEqual(departure) || (date.isAfter(arrival) && date.isBefore(departure));
     }
 
-    public void drawWeek(LocalDate arrival) {
-        LocalDate monday = arrival.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    public void drawWeek(LocalDate date) {
+        LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         for (int room = 0; room < Constants.NUMBER_OF_ROOMS; room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
-                Reservation reservation = getReservation(room+1, monday.plusDays(day));
+                Reservation reservation = getReservation(room + 1, monday.plusDays(day));
                 if (reservation != null) {
-                    setPanelName(panels[room][day], reservation.getName());
-                    setPanelColor(panels[room][day], reservation.getStatus());
+                    fillPanel(room, day, reservation.getName(), reservation.getStatus());
                 } else {
-                    clearPanel(panels[room][day]);
+                    clearPanel(room, day);
                 }
             }
         }
-        this.revalidate();
     }
 }

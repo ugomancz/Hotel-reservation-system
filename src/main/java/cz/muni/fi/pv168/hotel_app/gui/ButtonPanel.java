@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui;
 
 import cz.muni.fi.pv168.hotel_app.Constants;
+import cz.muni.fi.pv168.hotel_app.gui.forms.ChangeReservation;
 import cz.muni.fi.pv168.hotel_app.gui.forms.CheckIn;
 import cz.muni.fi.pv168.hotel_app.gui.forms.CheckOut;
 import cz.muni.fi.pv168.hotel_app.gui.forms.NewReservation;
@@ -15,11 +16,11 @@ public class ButtonPanel extends JPanel {
     private Button newReservation, changeReservation, cancelReservation,
             checkIn, checkOut, roomInfo, reservationInfo, settings;
 
-    public ButtonPanel() {
+    public ButtonPanel(Dimension dimension) {
         super();
         setLayout(new GridLayout(numOfButtons, 1, 5, 5));
         setBackground(Constants.BACKGROUND_COLOR);
-        setPreferredSize(new Dimension(Button.dimension.width, 500));
+        setPreferredSize(dimension);
 
         addButtons();
     }
@@ -58,7 +59,7 @@ public class ButtonPanel extends JPanel {
         if (e.getSource().equals(newReservation)) {
             new NewReservation();
         } else if (e.getSource().equals(changeReservation)) {
-            notImplemented();
+            new ChangeReservation();
         } else if (e.getSource().equals(cancelReservation)) {
             notImplemented();
         } else if (e.getSource().equals(checkIn)) {

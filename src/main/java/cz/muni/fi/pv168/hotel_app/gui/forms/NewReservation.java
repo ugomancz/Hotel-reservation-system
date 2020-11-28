@@ -4,6 +4,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -76,22 +77,18 @@ public class NewReservation extends JDialog {
 
         name = new JTextField(16);
         name.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        name.setEditable(true);
         placeComponent(5,0, name);
 
         phone = new JTextField(16);
         phone.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        phone.setEditable(true);
         placeComponent(5, 10, phone);
 
         email = new JTextField(16);
         email.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        email.setEditable(true);
         placeComponent(5, 20, email);
 
         people = new JTextField(16);
         people.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
-        people.setEditable(true);
         placeComponent(5, 30, people);
 
         fromDate = new DatePicker();
@@ -149,10 +146,15 @@ public class NewReservation extends JDialog {
                 JOptionPane.showInternalMessageDialog(null, "Phone cannot be empty");
             } else if (tryParse(people.getText()) == null) {
                 JOptionPane.showInternalMessageDialog(null, "Number of people is not number");
+            } else if (fromDate.getDate().isBefore(LocalDate.now())){
+                JOptionPane.showInternalMessageDialog(null, "Arrival date is before today");
+            } else if(fromDate.getDate().isAfter(toDate.getDate())){
+                JOptionPane.showInternalMessageDialog(null, "Departure need to be later than arrival");
             } else {
                 int usedPeople = parseInt(people.getText());
                 if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
-                    reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to);
+                    reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
+                            ReservationStatus.PLANNED.toString());
                     MainWindow.frame.setEnabled(true);
                     dispose();
                 } else {

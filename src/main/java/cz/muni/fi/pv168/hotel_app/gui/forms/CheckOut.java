@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class CheckOut extends JDialog {
+
     private JButton outButton, cancelButton;
     private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private JComboBox<String> pickReservation;
@@ -29,15 +30,15 @@ public class CheckOut extends JDialog {
 
     public CheckOut() {
         super(MainWindow.frame, "Check-out", ModalityType.APPLICATION_MODAL);
-        setSize(new Dimension(250, 250));
-        setResizable(false);
         setLayout(new BorderLayout(0, 0));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
+        setMinimumSize(new Dimension(250,250));
 
         add(label, BorderLayout.CENTER);
         add(addButtons(), BorderLayout.SOUTH);
         add(addComboBox(), BorderLayout.NORTH);
+        pack();
         setVisible(true);
     }
 
@@ -78,6 +79,7 @@ public class CheckOut extends JDialog {
             dispose();
         } else if (e.getSource().equals(pickReservation)) {
             displayDetails((String) pickReservation.getSelectedItem());
+            pack();
         } else if (e.getSource().equals(cancelButton)) {
             dispose();
         }
