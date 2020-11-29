@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui;
 
 import cz.muni.fi.pv168.hotel_app.Constants;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -12,13 +13,13 @@ import java.time.temporal.TemporalAdjusters;
 
 public class MainWindow {
 
-    public static Timetable timetable = new Timetable();
+    public static Timetable timetable;
     public static JFrame frame;
     private static JPanel panel;
 
-    public MainWindow() {
+    public MainWindow(ReservationDao reservationDao) {
         frame = initFrame();
-        panel = initPanel();
+        panel = initPanel(reservationDao);
         frame.add(panel);
         frame.setVisible(true);
     }
@@ -30,13 +31,14 @@ public class MainWindow {
         return frame;
     }
 
-    private JPanel initPanel() {
+    private JPanel initPanel(ReservationDao reservationDao) {
         panel = new JPanel();
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
         panel.setLayout(new BorderLayout(5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
 
-        panel.add(new SidePanel(), BorderLayout.EAST);
+        timetable = new Timetable(reservationDao);
+        panel.add(new SidePanel(reservationDao), BorderLayout.EAST);
         panel.add(timetable, BorderLayout.CENTER);
         panel.add(new RoomNames(), BorderLayout.WEST);
         panel.add(new DayNames(LocalDate.now()), BorderLayout.NORTH);

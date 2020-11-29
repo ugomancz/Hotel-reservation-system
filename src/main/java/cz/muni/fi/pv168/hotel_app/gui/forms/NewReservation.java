@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
@@ -21,16 +22,16 @@ public class NewReservation extends JDialog {
     JTextField name, phone, email, people;
     JComboBox<Integer> rooms;
     DatePicker fromDate, toDate;
-    Reservation reservation;
     Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
+    private final ReservationDao reservationDao;
     GridBagConstraints gbc = new GridBagConstraints();
 
-    public NewReservation() {
+    public NewReservation(ReservationDao reservationDao) {
         super(MainWindow.frame, "New reservation", Dialog.ModalityType.APPLICATION_MODAL);
+        this.reservationDao = reservationDao;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
-
         setEnabled(true);
         setLayout(new GridBagLayout());
 
@@ -152,9 +153,9 @@ public class NewReservation extends JDialog {
                 JOptionPane.showInternalMessageDialog(null, "Departure need to be later than arrival");
             } else {
                 int usedPeople = parseInt(people.getText());
-                if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
-                    reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
-                            ReservationStatus.PLANNED.toString());
+                if (reservationDao.isFree(parseInt(room), from, to)) {
+                    reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
+                            ReservationStatus.PLANNED.toString()));
                     MainWindow.timetable.drawWeek(LocalDate.now());
                     MainWindow.frame.setEnabled(true);
                     dispose();

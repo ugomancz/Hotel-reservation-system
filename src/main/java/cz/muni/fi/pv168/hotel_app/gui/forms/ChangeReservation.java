@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel_app.Constants;
-import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
@@ -19,17 +19,18 @@ import java.util.Map;
  */
 public class ChangeReservation extends JDialog {
 
-    Button cancelButton, okayButton;
-    JTextField nameField, phoneField, emailField, guestsField;
-    JComboBox<Integer> roomPicker;
-    JComboBox<String> reservationPicker;
-    DatePicker arrival, departure;
+    private final ReservationDao reservationDao;
+    private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private final GridBagConstraints gbc = new GridBagConstraints();
+    private Button cancelButton, okayButton;
+    private JTextField nameField, phoneField, emailField, guestsField;
+    private JComboBox<Integer> roomPicker;
+    private JComboBox<String> reservationPicker;
+    private DatePicker arrival, departure;
 
-    Map<String, Reservation> reservationMap = new HashMap<>();
-    GridBagConstraints gbc = new GridBagConstraints();
-
-    public ChangeReservation() {
+    public ChangeReservation(ReservationDao reservationDao) {
         super(MainWindow.frame, "Change Reservation", ModalityType.APPLICATION_MODAL);
+        this.reservationDao = reservationDao;
         setLocationRelativeTo(MainWindow.frame);
         setLayout(new GridBagLayout());
         initMap();
@@ -37,6 +38,12 @@ public class ChangeReservation extends JDialog {
         setSize(400, 400);
         setResizable(false);
         setVisible(true);
+    }
+
+    private void initMap() {
+        for (Reservation reservation : reservationDao.findAll()) {
+            reservationMap.put(reservation.toString(), reservation);
+        }
     }
 
     private void initLayout() {
@@ -101,7 +108,7 @@ public class ChangeReservation extends JDialog {
             reservationPicker.addItem(name);
         }
         reservationPicker.setSelectedIndex(0);
-        reservationPicker.setPreferredSize(new Dimension(223,20));
+        reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
         reservationPicker.setFont(Button.font);
         addComponent(reservationPicker, 5, 0);
@@ -116,12 +123,6 @@ public class ChangeReservation extends JDialog {
         addComponent(roomPicker, 5, 70);
     }
 
-    private void initMap() {
-        for (Reservation reservation : Main.reservations) {
-            reservationMap.put(reservation.getName(), reservation);
-        }
-    }
-
     private void displayInfo(Reservation reservation) {
         nameField.setText(reservation.getName());
         phoneField.setText(reservation.getPhone());
@@ -133,16 +134,16 @@ public class ChangeReservation extends JDialog {
     }
 
     private boolean updateReservation(Reservation reservation) {
-        reservation.setName(nameField.getText());
-        reservation.setPhone(phoneField.getText());
-        reservation.setEmail(emailField.getText());
         try {
             reservation.setHosts(Integer.parseInt(guestsField.getText()));
         } catch (Exception e) {
-            JOptionPane.showInternalMessageDialog(null,
+            JOptionPane.showMessageDialog(this,
                     "Field \"Guests\" has to be a number");
             return false;
         }
+        reservation.setName(nameField.getText());
+        reservation.setPhone(phoneField.getText());
+        reservation.setEmail(emailField.getText());
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
         reservation.setRoomNumber(roomPicker.getSelectedIndex() + 1);

@@ -7,6 +7,7 @@ import com.github.lgooddatepicker.zinternaltools.CalendarSelectionEvent;
 import com.github.lgooddatepicker.zinternaltools.HighlightInformation;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
 import cz.muni.fi.pv168.hotel_app.Constants;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,14 +18,16 @@ public class SidePanel extends JPanel implements CalendarListener {
 
     final static Dimension dimension = new Dimension(220, 30);
     private static CalendarPanel calendar;
+    private final ReservationDao reservationDao;
 
-    public SidePanel() {
+    public SidePanel(ReservationDao reservationDao) {
         super();
         setBackground(Constants.BACKGROUND_COLOR);
         setLayout(new BorderLayout(0, 10));
         setPreferredSize(dimension);
+        this.reservationDao = reservationDao;
 
-        add(new ButtonPanel(dimension), BorderLayout.CENTER);
+        add(new ButtonPanel(dimension, reservationDao), BorderLayout.CENTER);
         add(initCalendar(), BorderLayout.SOUTH);
     }
 
@@ -61,7 +64,7 @@ public class SidePanel extends JPanel implements CalendarListener {
     }
 
     public HighlightInformation getHighlightInformationOrNull(LocalDate localDate) {
-        int reservations = Main.reservationDao.getNumOfReservations(localDate);
+        int reservations = reservationDao.getNumOfReservations(localDate);
         if (reservations == 0) {
             return null;
         }
