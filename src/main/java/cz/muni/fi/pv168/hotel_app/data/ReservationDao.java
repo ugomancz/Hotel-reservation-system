@@ -96,6 +96,30 @@ public final class ReservationDao {
         }
     }
 
+	public List<Reservation> getReservation(int room, LocalDate date) {
+		try (var connection = dataSource.getConnection();
+				var st = connection.prepareStatement("SELECT ID, NAME, PHONE, EMAIL, HOSTS,"
+						+ " ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS FROM RESERVATION WHERE roomnumber=? AND ((ARRIVAL<=? AND ?<=DEPARTURE))")) {
+			st.setInt(1, room);
+			st.setDate(2, Date.valueOf(date));
+			st.setDate(3, Date.valueOf(date));
+			List<Reservation> reservations = new ArrayList<>();
+			try (var rs = st.executeQuery()) {
+				while (rs.next()) {
+					Reservation reservation = new Reservation(rs.getString("NAME"), rs.getString("PHONE"),
+							rs.getString("EMAIL"), rs.getInt("HOSTS"), rs.getInt("ROOMNUMBER"),
+							rs.getDate("ARRIVAL").toLocalDate(), rs.getDate("DEPARTURE").toLocalDate(),
+							rs.getString("STATUS"));
+					reservation.setId(rs.getLong("ID"));
+					reservations.add(reservation);
+				}
+			}
+			return reservations;
+		} catch (SQLException ex) {
+			throw new DataAccessException("Failed to load all reservations", ex);
+		}
+	}
+
 	public int getNumOfReservations(LocalDate date) {
 		int count = 0;
 		try (var connection = dataSource.getConnection();
