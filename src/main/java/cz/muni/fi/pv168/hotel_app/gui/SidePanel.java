@@ -17,7 +17,6 @@ import java.time.LocalDate;
 public class SidePanel extends JPanel implements CalendarListener {
 
     final static Dimension dimension = new Dimension(220, 30);
-    private static CalendarPanel calendar;
     private final ReservationDao reservationDao;
 
     public SidePanel(ReservationDao reservationDao) {
@@ -31,10 +30,6 @@ public class SidePanel extends JPanel implements CalendarListener {
         add(initCalendar(), BorderLayout.SOUTH);
     }
 
-    public static CalendarPanel getCalendar() {
-        return calendar;
-    }
-
     private CalendarPanel initCalendar() {
         DatePickerSettings settings = new DatePickerSettings();
         settings.setFirstDayOfWeek(DayOfWeek.MONDAY);
@@ -42,8 +37,8 @@ public class SidePanel extends JPanel implements CalendarListener {
         settings.setVisiblePreviousYearButton(false);
         settings.setHighlightPolicy(this::getHighlightInformationOrNull);
         settings.setVisibleClearButton(false);
-        calendar = new CalendarPanel(settings);
-        calendar.setBackground(new Color(240, 240, 240));
+        CalendarPanel calendar = new CalendarPanel(settings);
+        calendar.setBackground(Button.background);
         calendar.addCalendarListener(this);
         return calendar;
     }
@@ -51,10 +46,10 @@ public class SidePanel extends JPanel implements CalendarListener {
     @Override
     public void selectedDateChanged(CalendarSelectionEvent calendarSelectionEvent) {
         if (calendarSelectionEvent.getNewDate() != null) {
-            MainWindow.timetable.drawWeek(calendarSelectionEvent.getNewDate());
+            Timetable.drawWeek(calendarSelectionEvent.getNewDate());
             MainWindow.DayNames.changeDates(calendarSelectionEvent.getNewDate());
         } else {
-            MainWindow.timetable.drawWeek(LocalDate.now());
+            Timetable.drawWeek(LocalDate.now());
             MainWindow.DayNames.changeDates(LocalDate.now());
         }
     }

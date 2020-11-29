@@ -13,7 +13,6 @@ import java.time.temporal.TemporalAdjusters;
 
 public class MainWindow {
 
-    public static Timetable timetable;
     public static JFrame frame;
     private static JPanel panel;
 
@@ -37,9 +36,8 @@ public class MainWindow {
         panel.setLayout(new BorderLayout(5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
 
-        timetable = new Timetable(reservationDao);
         panel.add(new SidePanel(reservationDao), BorderLayout.EAST);
-        panel.add(timetable, BorderLayout.CENTER);
+        panel.add(new Timetable(reservationDao), BorderLayout.CENTER);
         panel.add(new RoomNames(), BorderLayout.WEST);
         panel.add(new DayNames(LocalDate.now()), BorderLayout.NORTH);
         return panel;

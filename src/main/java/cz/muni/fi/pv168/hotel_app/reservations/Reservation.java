@@ -107,7 +107,8 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return name + ", " + DateTimeFormatter.ofPattern("dd.MM.").format(arrival)
-                + " - " + DateTimeFormatter.ofPattern("dd.MM.").format(departure);
+        return getName() + ", room: " + getRoomNumber() + ", "
+                + DateTimeFormatter.ofPattern("dd.MM.").format(getArrival())
+                + " - " + DateTimeFormatter.ofPattern("dd.MM.").format(getDeparture());
     }
 }
