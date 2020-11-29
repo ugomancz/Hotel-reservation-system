@@ -1,9 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.reservations;
 
-import cz.muni.fi.pv168.hotel_app.Main;
-import cz.muni.fi.pv168.hotel_app.gui.SidePanel;
-
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Reservation {
     private final int length;
@@ -28,11 +26,6 @@ public class Reservation {
         this.phone = phone;
         this.email = email;
         this.length = departure.compareTo(arrival);
-        Main.reservations.add(this);
-    }
-
-    public void moveToNewDate(LocalDate newDate) {
-        SidePanel.getCalendar().setSelectedDate(newDate);
     }
 
     public Long getId() {
@@ -113,9 +106,8 @@ public class Reservation {
     }
 
     @Override
-	public String toString() {
-		return "Reservation [length=" + length + ", id=" + id + ", name=" + name + ", phone=" + phone + ", email="
-				+ email + ", hosts=" + hosts + ", roomNumber=" + roomNumber + ", arrival=" + arrival + ", departure="
-				+ departure + ", status=" + status + "]";
-	}
+    public String toString() {
+        return name + ", " + DateTimeFormatter.ofPattern("dd.MM.").format(arrival)
+                + " - " + DateTimeFormatter.ofPattern("dd.MM.").format(departure);
+    }
 }
