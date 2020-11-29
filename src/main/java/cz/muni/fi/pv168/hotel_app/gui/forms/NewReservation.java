@@ -111,13 +111,13 @@ public class NewReservation extends JDialog {
 
         gbc.anchor = GridBagConstraints.SOUTH;
 
-        okay = new Button("OK");
+        okay = new Button("Confirm");
         okay.addActionListener(this::actionPerformed);
-        placeComponent(0, 70, okay);
+        placeComponent(5, 70, okay);
 
         cancelled = new Button("Cancel");
         cancelled.addActionListener(this::actionPerformed);
-        placeComponent(5, 70, cancelled);
+        placeComponent(0, 70, cancelled);
 
     }
 
