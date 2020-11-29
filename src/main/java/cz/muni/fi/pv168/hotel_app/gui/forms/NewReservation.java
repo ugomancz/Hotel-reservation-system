@@ -4,6 +4,7 @@ import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
+import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
@@ -156,7 +157,7 @@ public class NewReservation extends JDialog {
                 if (reservationDao.isFree(parseInt(room), from, to)) {
                     reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
                             ReservationStatus.PLANNED.toString()));
-                    MainWindow.timetable.drawWeek(LocalDate.now());
+                    Timetable.drawWeek(LocalDate.now());
                     MainWindow.frame.setEnabled(true);
                     dispose();
                 } else {

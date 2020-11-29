@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
+import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 
 import javax.swing.*;
@@ -95,11 +96,11 @@ public class ChangeReservation extends JDialog {
     private void addButtons() {
         okayButton = new Button("OK");
         okayButton.addActionListener(this::actionPerformed);
-        addComponent(okayButton, 0, 80);
+        addComponent(okayButton, 5, 80);
 
         cancelButton = new Button("Cancel");
         cancelButton.addActionListener(this::actionPerformed);
-        addComponent(cancelButton, 5, 80);
+        addComponent(cancelButton, 0, 80);
     }
 
     private void addComboBoxes() {
@@ -110,7 +111,6 @@ public class ChangeReservation extends JDialog {
         reservationPicker.setSelectedIndex(0);
         reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
-        reservationPicker.setFont(Button.font);
         addComponent(reservationPicker, 5, 0);
 
         roomPicker = new JComboBox<>();
@@ -119,7 +119,6 @@ public class ChangeReservation extends JDialog {
         }
         roomPicker.setSelectedIndex(0);
         roomPicker.addActionListener(this::actionPerformed);
-        roomPicker.setFont(Button.font);
         addComponent(roomPicker, 5, 70);
     }
 
@@ -147,7 +146,7 @@ public class ChangeReservation extends JDialog {
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
         reservation.setRoomNumber(roomPicker.getSelectedIndex() + 1);
-        MainWindow.timetable.drawWeek(arrival.getDate());
+        Timetable.drawWeek(arrival.getDate());
         return true;
     }
 

@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.hotel_app.gui.forms;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
+import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
@@ -53,8 +54,8 @@ public class CheckOut extends JDialog {
         cancelButton.addActionListener(this::actionPerformed);
 
         JPanel panel = new JPanel();
-        panel.add(outButton);
         panel.add(cancelButton);
+        panel.add(outButton);
         return panel;
     }
 
@@ -84,7 +85,7 @@ public class CheckOut extends JDialog {
         } else {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);
-            MainWindow.timetable.drawWeek(LocalDate.now());
+            Timetable.drawWeek(LocalDate.now());
             dispose();
         }
     }
