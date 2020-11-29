@@ -1,37 +1,58 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
-import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
-import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.gui.Button;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
-import java.time.Period;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+/**
+ * @author Lukas Hasik
+ */
 
 public class CheckIn extends JDialog {
 
     private final GridBagConstraints gbc = new GridBagConstraints();
-    private JTextField nameField, phoneField, lengthField, guestField, emailField;
-    private JComboBox<Integer> roomBox;
-    private Button confirm;
-    private Reservation reservation;
+    private JLabel nameLabel, phoneLabel, emailLabel, guestLabel, roomLabel, lengthLabel;
+    private Button confirm, cancel;
+    private final ReservationDao reservationDao;
+    private JComboBox<String> reservationPicker;
+    private final Map<String, Reservation> reservationMap = new HashMap<>();
 
 
-    public CheckIn() {
+
+    public CheckIn(ReservationDao reservationDao) {
         super(MainWindow.frame, "Check-in", ModalityType.APPLICATION_MODAL);
-        setSize(new Dimension(500, 400));
+        this.reservationDao = reservationDao;
+        setSize(400, 300);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
         setEnabled(true);
 
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
+        initMap();
         fillOutFrame();
         setVisible(true);
 
+    }
+
+    /**
+     * fills map with reservations starting today
+     */
+    private void initMap() {
+        for (Reservation reservation : reservationDao.findAll().stream()
+                .filter(x -> x.getArrival().equals(LocalDate.now()))
+                .collect(Collectors.toList())) {
+            reservationMap.put(reservation.toString(), reservation);
+        }
     }
 
 
@@ -51,140 +72,75 @@ public class CheckIn extends JDialog {
      * Sets layout in frame using GridBagLayout
      */
     private void fillOutFrame() {
-        gbc.weightx = 0;
-        gbc.weighty = 0.1;
+        reservationPicker = new JComboBox<>();
+        for (String name : reservationMap.keySet()) {
+            reservationPicker.addItem(name);
+        }
+        reservationPicker.setSelectedIndex(0);
+        reservationPicker.setPreferredSize(new Dimension(300, 20));
+        reservationPicker.addActionListener(this::actionPerformed);
+        reservationPicker.setFont(cz.muni.fi.pv168.hotel_app.gui.Button.font);
+        gbc.anchor = GridBagConstraints.CENTER;
+        placeComponent(0, 1, reservationPicker);
+
+        String selected = (String) reservationPicker.getSelectedItem();
+        Reservation res = reservationMap.get(selected);
 
         gbc.anchor = GridBagConstraints.WEST;
-        JLabel IDnumber = new JLabel("ID number ");
-        placeComponent(0, 0, IDnumber);
+        nameLabel = new JLabel();
+        placeComponent(0, 2, nameLabel);
 
-        JLabel nameLabel = new JLabel("Name ");
-        placeComponent(0, 1, nameLabel);
+        phoneLabel = new JLabel();
+        placeComponent(0, 3, phoneLabel);
 
-        JLabel phoneLabel = new JLabel("Phone number ");
-        placeComponent(0, 2, phoneLabel);
+        emailLabel = new JLabel();
+        placeComponent(0, 4, emailLabel);
 
-        JLabel emailLabel = new JLabel("E-mail ");
-        placeComponent(0, 3, emailLabel);
+        guestLabel = new JLabel();
+        placeComponent(0, 5, guestLabel);
 
-        JLabel roomLabel = new JLabel("Room number ");
-        placeComponent(0, 4, roomLabel);
+        lengthLabel = new JLabel();
+        placeComponent(0, 6, lengthLabel);
 
-        JLabel lengthLabel = new JLabel("Length of stay ");
-        placeComponent(0, 5, lengthLabel);
+        roomLabel = new JLabel();
+        placeComponent(0, 7, roomLabel);
+        fillReservation(res);
 
-        JLabel guestLabel = new JLabel("Number of guests");
-        placeComponent(0, 6, guestLabel);
 
-        gbc.anchor = GridBagConstraints.CENTER;
-        JTextField IDfield = new JTextField(16);
-        IDfield.setEditable(false);
-        placeComponent(1, 0, IDfield);
-
-        nameField = new JTextField(16);
-        nameField.setEditable(true);
-        placeComponent(1, 1, nameField);
-
-        phoneField = new JTextField(16);
-        phoneField.setEditable(false);
-        placeComponent(1, 2, phoneField);
-
-        emailField = new JTextField(16);
-        emailField.setEditable(false);
-        placeComponent(1,3, emailField);
-
-        Integer[] rooms = new Integer[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-        roomBox = new JComboBox<>(rooms);
-        roomBox.setSelectedIndex(0);
-        roomBox.addActionListener(this::actionPerformed);
-        placeComponent(1, 4, roomBox);
-
-        lengthField = new JTextField(4);
-        lengthField.setEditable(false);
-        placeComponent(1, 5, lengthField);
-
-        guestField = new JTextField(4);
-        guestField.setEditable(false);
-        placeComponent(1, 6, guestField);
-
-        gbc.anchor = GridBagConstraints.EAST;
-        Button findReservation = new Button("Find reservation");
-        placeComponent(2, 0, findReservation);
-        findReservation.addActionListener(this::actionPerformed);
-
-        Button change = new Button("Change Reservation");
-        placeComponent(2, 1, change);
-        change.addActionListener(this::actionPerformed);
-        change.setEnabled(false);
-
-        JLabel nights = new JLabel(" nights");
-        placeComponent(2, 5, nights);
-
-        gbc.anchor = GridBagConstraints.SOUTH;
         confirm = new Button("Confirm");
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        placeComponent(0, 7, confirm);
+        placeComponent(0, 8, confirm);
         confirm.addActionListener(this::actionPerformed);
-        confirm.setEnabled(false);
 
-        Button cancel = new Button("Cancel");
-        placeComponent(2, 7, cancel);
+        cancel = new Button("Cancel");
+        placeComponent(1, 8, cancel);
         cancel.addActionListener(this::actionPerformed);
+
     }
 
     /**
-     * In case of a found existing reservation, fills out all the information
+     * Fills labels with information obtained from selected reservation
      */
-    private void fillReservation() {
-        int length = Period.between(reservation.getArrival(), reservation.getDeparture()).getDays();
-
-        nameField.setText(reservation.getName());
-        roomBox.setSelectedIndex(reservation.getRoomNumber() - 1);
-        phoneField.setText(reservation.getPhone());
-        lengthField.setText(String.valueOf(length));
-        emailField.setText(reservation.getEmail());
-        guestField.setText(String.valueOf(reservation.getHosts()));
-        confirm.setEnabled(true);
-    }
-
-    /**
-     * searches for an existing reservation using name and Today date as keys
-     * @param name : key for searching for an existing reservation
-     * @return existing reservation
-     */
-    private Reservation findReservation(String name) {
-        for (Reservation reservation : Main.reservations) {
-            if (reservation.getName().equals(name) && reservation.getArrival().equals(LocalDate.now())) {
-                return reservation;
-            }
-        }
-        return null;
+    private void fillReservation(Reservation res) {
+        nameLabel.setText("Name and Surname: " + res.getName());
+        phoneLabel.setText("Phone number: " + res.getPhone());
+        emailLabel.setText("Email: " + res.getEmail());
+        guestLabel.setText("Number of guests: " + res.getHosts());
+        lengthLabel.setText("Length of stay: " + res.getLength() + " nights");
+        roomLabel.setText("Room number: " + res.getRoomNumber());
     }
 
     private void actionPerformed(ActionEvent e) {
-        String action = e.getActionCommand();
-        //maybe switch to e.getSource().equals(cancel)
-        if (action.equals("Cancel")) {
-            dispose();
-        }
-        if (action.equals("Confirm")) {
-            //if a reservation is confirmed it's status is changed
-            reservation.setStatus(ReservationStatus.ONGOING);
-            MainWindow.timetable.drawWeek(LocalDate.now());
-            dispose();
-        }
-        if (action.equals("Change reservation")) {
-            JOptionPane.showMessageDialog(this, "This function is not implemented yet");
-        }
-        if (action.equals("Find reservation")) {
-            reservation = findReservation(nameField.getText());
-            //reservation was found
-            if (reservation != null) {
-                fillReservation();
-            } else {
-                JOptionPane.showMessageDialog(this, "No check-in scheduled for today");
-            }
 
+        if (e.getSource().equals(cancel)) {
+            dispose();
+        }
+        if (e.getSource().equals(confirm)) {
+            dispose();
+        }
+        if (e.getSource().equals(reservationPicker)) {
+            String selected = (String) reservationPicker.getSelectedItem();
+            Reservation res = reservationMap.get(selected);
+            fillReservation(res);
         }
     }
 }
