@@ -78,7 +78,11 @@ public class MainWindow {
             LocalDate day = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
             for (int i = 0; i < Constants.DAYS_IN_WEEK; i++) {
                 String labelText = DateTimeFormatter.ofPattern("E dd.MM.").format(day); // e.g. Mon 23.11.
-                labels[i].setText(labelText);
+                if (day.isEqual(LocalDate.now())) { // current date gets highlighted
+                    labels[i].setText(String.format("<html><u>%s</u></html>", labelText));
+                } else {
+                    labels[i].setText(labelText);
+                }
                 day = day.plusDays(1);
             }
         }
