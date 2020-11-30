@@ -94,13 +94,14 @@ public class ChangeReservation extends JDialog {
     }
 
     private void addButtons() {
-        okayButton = new Button("OK");
+        okayButton = new Button("Confirm");
         okayButton.addActionListener(this::actionPerformed);
-        addComponent(okayButton, 5, 80);
+        addComponent(okayButton, 0, 80);
 
+        gbc.anchor = GridBagConstraints.LINE_END;
         cancelButton = new Button("Cancel");
         cancelButton.addActionListener(this::actionPerformed);
-        addComponent(cancelButton, 0, 80);
+        addComponent(cancelButton, 5, 80);
     }
 
     private void addComboBoxes() {

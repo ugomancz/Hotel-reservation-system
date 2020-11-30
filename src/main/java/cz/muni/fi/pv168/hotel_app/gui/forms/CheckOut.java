@@ -54,8 +54,8 @@ public class CheckOut extends JDialog {
         cancelButton.addActionListener(this::actionPerformed);
 
         JPanel panel = new JPanel();
-        panel.add(cancelButton);
         panel.add(outButton);
+        panel.add(cancelButton);
         return panel;
     }
 
