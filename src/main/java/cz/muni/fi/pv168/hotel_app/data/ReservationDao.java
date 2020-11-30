@@ -144,7 +144,7 @@ public final class ReservationDao {
 	public List<Reservation> getReservation(int room, LocalDate date) {
 		try (var connection = dataSource.getConnection();
 				var st = connection.prepareStatement("SELECT ID, NAME, PHONE, EMAIL, HOSTS,"
-						+ " ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS FROM RESERVATION WHERE roomnumber=? AND ((ARRIVAL<=? AND ?<=DEPARTURE))")) {
+						+ " ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS, GUESTID FROM RESERVATION WHERE roomnumber=? AND ((ARRIVAL<=? AND ?<=DEPARTURE))")) {
 			st.setInt(1, room);
 			st.setDate(2, Date.valueOf(date));
 			st.setDate(3, Date.valueOf(date));
@@ -156,6 +156,7 @@ public final class ReservationDao {
 							rs.getDate("ARRIVAL").toLocalDate(), rs.getDate("DEPARTURE").toLocalDate(),
 							rs.getString("STATUS"));
 					reservation.setId(rs.getLong("ID"));
+					reservation.setGuestID(rs.getString("GUESTID"));
 					reservations.add(reservation);
 				}
 			}
