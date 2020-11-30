@@ -79,13 +79,14 @@ public final class ReservationDao {
 		}
 	}
 
-	public void update(Reservation reservation) {
+		public void update(Reservation reservation) {
 		if (reservation.getId() == null) {
 			throw new IllegalArgumentException("Reservation has null ID");
 		}
 		try (var connection = dataSource.getConnection();
 				var st = connection.prepareStatement(
-						"UPDATE RESERVATION SET NAME = ?, PHONE = ?, EMAIL = ?, HOSTS = ?, ROOMNUMBER = ?, ARRIVAL = ?, DEPARTURE = ?, STATUS = ? WHERE ID = ?")) {
+						"UPDATE RESERVATION SET NAME = ?, PHONE = ?, EMAIL = ?, HOSTS = ?,"
+						+ " ROOMNUMBER = ?, ARRIVAL = ?, DEPARTURE = ?, STATUS = ?, GUESTID = ? WHERE ID = ?")) {
 			st.setString(1, reservation.getName());
 			st.setString(2, reservation.getPhone());
 			st.setString(3, reservation.getEmail());
@@ -94,7 +95,8 @@ public final class ReservationDao {
 			st.setDate(6, Date.valueOf(reservation.getArrival()));
 			st.setDate(7, Date.valueOf(reservation.getDeparture()));
 			st.setString(8, reservation.getStatus().name());
-			st.setLong(9, reservation.getId());
+			st.setString(9, reservation.getGuestID());
+			st.setLong(10, reservation.getId());
 			int rowsUpdated = st.executeUpdate();
 			if (rowsUpdated == 0) {
 				throw new DataAccessException("Failed to update non-existing reservation: " + reservation);
