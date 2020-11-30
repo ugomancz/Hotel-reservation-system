@@ -79,7 +79,7 @@ public final class ReservationDao {
 		}
 	}
 
-		public void update(Reservation reservation) {
+	public void update(Reservation reservation) {
 		if (reservation.getId() == null) {
 			throw new IllegalArgumentException("Reservation has null ID");
 		}
