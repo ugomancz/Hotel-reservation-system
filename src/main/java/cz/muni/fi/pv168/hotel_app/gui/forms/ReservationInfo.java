@@ -18,18 +18,18 @@ import java.util.Map;
 /**
  * @author Ondrej Kostik
  */
-public class ChangeReservation extends JDialog {
+public class ReservationInfo extends JDialog {
 
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
-    private Button cancelButton, okayButton;
+    private Button cancelButton, confirmButton, editButton;
     private JTextField nameField, phoneField, emailField, guestsField;
     private JComboBox<Integer> roomPicker;
     private JComboBox<String> reservationPicker;
     private DatePicker arrival, departure;
 
-    public ChangeReservation(ReservationDao reservationDao) {
+    public ReservationInfo(ReservationDao reservationDao) {
         super(MainWindow.frame, "Change Reservation", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(MainWindow.frame);
@@ -53,22 +53,23 @@ public class ChangeReservation extends JDialog {
 
         gbc.anchor = GridBagConstraints.CENTER;
         addComponent(new JLabel("Reservation: "), 0, 0);
-        addComponent(new JLabel("Name and surname: "), 0, 10);
-        addComponent(new JLabel("Phone: "), 0, 20);
-        addComponent(new JLabel("Email: "), 0, 30);
-        addComponent(new JLabel("Guests: "), 0, 40);
-        addComponent(new JLabel("From: "), 0, 50);
-        addComponent(new JLabel("To: "), 0, 60);
-        addComponent(new JLabel("Room number: "), 0, 70);
+        addComponent(new JLabel("Name and surname: "), 0, 1);
+        addComponent(new JLabel("Phone: "), 0, 2);
+        addComponent(new JLabel("Email: "), 0, 3);
+        addComponent(new JLabel("Guests: "), 0, 4);
+        addComponent(new JLabel("From: "), 0, 5);
+        addComponent(new JLabel("To: "), 0, 6);
+        addComponent(new JLabel("Room number: "), 0, 7);
         addButtons();
 
         gbc.anchor = GridBagConstraints.LINE_START;
-        nameField = (JTextField) addComponent(new JTextField(20), 5, 10);
-        phoneField = (JTextField) addComponent(new JTextField(20), 5, 20);
-        emailField = (JTextField) addComponent(new JTextField(20), 5, 30);
-        guestsField = (JTextField) addComponent(new JTextField(2), 5, 40);
+        nameField = (JTextField) addComponent(new JTextField(20), 1, 1);
+        phoneField = (JTextField) addComponent(new JTextField(20), 1, 2);
+        emailField = (JTextField) addComponent(new JTextField(20), 1, 3);
+        guestsField = (JTextField) addComponent(new JTextField(2), 1, 4);
         addDatePickers();
         addComboBoxes();
+        textFieldsEditable(false);
     }
 
     private JComponent addComponent(JComponent component, int x, int y) {
@@ -84,24 +85,32 @@ public class ChangeReservation extends JDialog {
         arrival.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
         arrival.getComponentToggleCalendarButton().setBackground(Button.background);
         arrival.getComponentToggleCalendarButton().setFont(Button.font);
-        addComponent(arrival, 5, 50);
+        arrival.getComponentDateTextField().setDisabledTextColor(Color.black);
+        addComponent(arrival, 1, 5);
 
         departure = new DatePicker();
         departure.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
         departure.getComponentToggleCalendarButton().setBackground(Button.background);
         departure.getComponentToggleCalendarButton().setFont(Button.font);
-        addComponent(departure, 5, 60);
+        departure.getComponentDateTextField().setDisabledTextColor(Color.black);
+        addComponent(departure, 1, 6);
     }
 
     private void addButtons() {
-        okayButton = new Button("Confirm");
-        okayButton.addActionListener(this::actionPerformed);
-        addComponent(okayButton, 0, 80);
+        confirmButton = new Button("Confirm");
+        confirmButton.addActionListener(this::actionPerformed);
+        addComponent(confirmButton, 0, 8);
+
+        gbc.anchor = GridBagConstraints.LINE_START;
+        editButton = new Button("Edit");
+        editButton.addActionListener(this::actionPerformed);
+        addComponent(editButton, 1, 8);
 
         gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.insets = new Insets(0, 10, 0, 10);
         cancelButton = new Button("Cancel");
         cancelButton.addActionListener(this::actionPerformed);
-        addComponent(cancelButton, 5, 80);
+        addComponent(cancelButton, 1, 8);
     }
 
     private void addComboBoxes() {
@@ -112,7 +121,7 @@ public class ChangeReservation extends JDialog {
         reservationPicker.setSelectedIndex(0);
         reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
-        addComponent(reservationPicker, 5, 0);
+        addComponent(reservationPicker, 1, 0);
 
         roomPicker = new JComboBox<>();
         for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
@@ -120,7 +129,14 @@ public class ChangeReservation extends JDialog {
         }
         roomPicker.setSelectedIndex(0);
         roomPicker.addActionListener(this::actionPerformed);
-        addComponent(roomPicker, 5, 70);
+        roomPicker.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public void paint(Graphics g) {
+                setForeground(Color.BLACK);
+                super.paint(g);
+            }
+        });
+        addComponent(roomPicker, 1, 7);
     }
 
     private void displayInfo(Reservation reservation) {
@@ -147,18 +163,31 @@ public class ChangeReservation extends JDialog {
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
         reservation.setRoomNumber(roomPicker.getSelectedIndex() + 1);
+        reservationDao.update(reservation);
         Timetable.drawWeek(arrival.getDate());
         return true;
+    }
+
+    private void textFieldsEditable(boolean value) {
+        nameField.setEditable(value);
+        phoneField.setEditable(value);
+        emailField.setEditable(value);
+        arrival.setEnabled(value);
+        departure.setEnabled(value);
+        roomPicker.setEnabled(value);
+        guestsField.setEditable(value);
     }
 
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
             dispose();
-        } else if (e.getSource().equals(okayButton)) {
+        } else if (e.getSource().equals(confirmButton)) {
             String selected = (String) reservationPicker.getSelectedItem();
             if (updateReservation(reservationMap.get(selected))) {
                 dispose();
             }
+        } else if (e.getSource().equals(editButton)) {
+            textFieldsEditable(true);
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));

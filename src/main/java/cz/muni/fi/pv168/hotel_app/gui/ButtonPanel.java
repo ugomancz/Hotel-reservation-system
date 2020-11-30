@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui;
 
 import cz.muni.fi.pv168.hotel_app.Constants;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.forms.*;
 
 import javax.swing.*;
@@ -9,10 +10,10 @@ import java.awt.event.ActionEvent;
 
 public class ButtonPanel extends JPanel {
 
-    private static final int numOfButtons = 8;
-    private Button newReservation, changeReservation, cancelReservation,
-            checkIn, checkOut, roomInfo, reservationInfo, settings;
+    private static final int numOfButtons = 7;
     private final ReservationDao reservationDao;
+    private Button newReservation, cancelReservation,
+            checkIn, checkOut, roomInfo, reservationInfo, settings;
 
     public ButtonPanel(Dimension dimension, ReservationDao reservationDao) {
         super();
@@ -30,21 +31,19 @@ public class ButtonPanel extends JPanel {
 
     private void addButtons() {
         newReservation = initButton("New reservation");
-        changeReservation = initButton("Change reservation");
         cancelReservation = initButton("Cancel reservation");
         checkIn = initButton("Check in");
         checkOut = initButton("Check out");
-        roomInfo = initButton("Room info");
         reservationInfo = initButton("Reservation info");
+        roomInfo = initButton("Room info");
         settings = initButton("Settings");
 
         add(newReservation);
-        add(changeReservation);
         add(cancelReservation);
         add(checkIn);
         add(checkOut);
-        add(roomInfo);
         add(reservationInfo);
+        add(roomInfo);
         add(settings);
     }
 
@@ -57,17 +56,15 @@ public class ButtonPanel extends JPanel {
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(newReservation)) {
             new NewReservation(reservationDao);
-        } else if (e.getSource().equals(changeReservation)) {
-            new ChangeReservation(reservationDao);
+        } else if (e.getSource().equals(reservationInfo)) {
+            new ReservationInfo(reservationDao);
         } else if (e.getSource().equals(cancelReservation)) {
-            new CancelReservation();
+            new CancelReservation(reservationDao);
         } else if (e.getSource().equals(checkIn)) {
             new CheckIn(reservationDao);
         } else if (e.getSource().equals(checkOut)) {
             new CheckOut(reservationDao);
         } else if (e.getSource().equals(roomInfo)) {
-            notImplemented();
-        } else if (e.getSource().equals(reservationInfo)) {
             notImplemented();
         } else if (e.getSource().equals(settings)) {
             notImplemented();

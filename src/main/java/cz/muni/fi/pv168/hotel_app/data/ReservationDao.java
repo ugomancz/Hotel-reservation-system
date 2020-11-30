@@ -1,16 +1,15 @@
 package cz.muni.fi.pv168.hotel_app.data;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 
+import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 
 /**
@@ -107,10 +106,10 @@ public final class ReservationDao {
 	}
 
     public void printAll(List<Reservation> list) {
-		for (Reservation entry : list) {
-			System.out.println(entry);
-		}
-	}
+        for (Reservation entry : list) {
+            System.out.println(entry);
+        }
+    }
 
 	public List<Reservation> findAll() {
         try (var connection = dataSource.getConnection();
@@ -187,36 +186,36 @@ public final class ReservationDao {
 	}
 
     public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
-		// Date.valueOf(arrival)
-		try (var connection = dataSource.getConnection();
-				var st = connection.prepareStatement(
-						"SELECT count(*) as totalRows FROM RESERVATION WHERE STATUS<>? AND ROOMNUMBER=? " + "AND ("
-								+ "(DEPARTURE>? AND ARRIVAL<?)"
-								// + "(ARRIVAL<=? AND DEPARTURE>=?) OR "
-								// + "(ARRIVAL>? AND DEPARTURE>?) OR "
-								+ ")")) {
-			st.setString(1, "PAST");
-			st.setInt(2, room);
-			st.setDate(3, Date.valueOf(arrival));
-			st.setDate(4, Date.valueOf(departure));
-			// st.setDate(5, Date.valueOf(arrival));
-			// st.setDate(6, Date.valueOf(arrival));
-			// st.setDate(7, Date.valueOf(arrival));
-			// st.setDate(8, Date.valueOf(departure));
+        // Date.valueOf(arrival)
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement(
+                     "SELECT count(*) as totalRows FROM RESERVATION WHERE STATUS<>? AND ROOMNUMBER=? " + "AND ("
+                             + "(DEPARTURE>? AND ARRIVAL<?)"
+                             // + "(ARRIVAL<=? AND DEPARTURE>=?) OR "
+                             // + "(ARRIVAL>? AND DEPARTURE>?) OR "
+                             + ")")) {
+            st.setString(1, "PAST");
+            st.setInt(2, room);
+            st.setDate(3, Date.valueOf(arrival));
+            st.setDate(4, Date.valueOf(departure));
+            // st.setDate(5, Date.valueOf(arrival));
+            // st.setDate(6, Date.valueOf(arrival));
+            // st.setDate(7, Date.valueOf(arrival));
+            // st.setDate(8, Date.valueOf(departure));
 
-			int result;
-			try (var rs = st.executeQuery()) {
-				if (rs.next()) {
-					result = rs.getInt("totalRows");
-				} else {
-					result = 0;
-				}
-			}
-			return result == 0;
-		} catch (SQLException ex) {
-			throw new DataAccessException("Failed to load all reservations", ex);
-		}
-	}
+            int result;
+            try (var rs = st.executeQuery()) {
+                if (rs.next()) {
+                    result = rs.getInt("totalRows");
+                } else {
+                    result = 0;
+                }
+            }
+            return result == 0;
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all reservations", ex);
+        }
+    }
 
     private void createTable() {
         try (var connection = dataSource.getConnection();
