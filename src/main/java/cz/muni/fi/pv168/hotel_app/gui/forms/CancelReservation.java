@@ -81,13 +81,12 @@ public class CancelReservation extends JDialog {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
-            MainWindow.frame.setEnabled(true);
             dispose();
         } else if (e.getSource().equals(okayButton)) {
             if (confirm.isSelected()) {
-                JOptionPane.showInternalMessageDialog(null, "tu sa niečo vykona");
+                JOptionPane.showMessageDialog(this, "tu sa niečo vykona");
             } else {
-                JOptionPane.showInternalMessageDialog(null, "Confirmation needed");
+                JOptionPane.showMessageDialog(this, "Confirmation needed");
             }
         }
     }

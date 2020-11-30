@@ -126,7 +126,6 @@ public class NewReservation extends JDialog {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
-            MainWindow.frame.setEnabled(true);
             dispose();
         } else if (e.getSource().equals(okayButton)) {
             String usedName = name.getText();
@@ -136,15 +135,15 @@ public class NewReservation extends JDialog {
             LocalDate from = fromDate.getDate();
             LocalDate to = toDate.getDate();
             if (usedName.length() == 0) {
-                JOptionPane.showInternalMessageDialog(null, "Name cannot be empty");
+                JOptionPane.showMessageDialog(this, "Name cannot be empty");
             } else if (usedPhone.length() == 0) {
-                JOptionPane.showInternalMessageDialog(null, "Phone cannot be empty");
+                JOptionPane.showMessageDialog(this, "Phone cannot be empty");
             } else if (tryParse(people.getText()) == null) {
-                JOptionPane.showInternalMessageDialog(null, "Number of people is not number");
+                JOptionPane.showMessageDialog(this, "Number of people is not number");
             } else if (fromDate.getDate().isBefore(LocalDate.now())) {
-                JOptionPane.showInternalMessageDialog(null, "Arrival date is before today");
+                JOptionPane.showMessageDialog(this, "Arrival date is before today");
             } else if (fromDate.getDate().isAfter(toDate.getDate())) {
-                JOptionPane.showInternalMessageDialog(null, "Departure need to be later than arrival");
+                JOptionPane.showMessageDialog(this, "Departure need to be later than arrival");
             } else {
                 int usedPeople = parseInt(people.getText());
                 if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
