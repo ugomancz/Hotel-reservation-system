@@ -14,6 +14,7 @@ public class Reservation {
     private LocalDate arrival;
     private LocalDate departure;
     private ReservationStatus status;
+    private String guestID;
 
     public Reservation(String name, String phone, String email, int hosts,
                        int roomNumber, LocalDate arrival, LocalDate departure, String status) {
@@ -36,6 +37,13 @@ public class Reservation {
         this.id = id;
     }
 
+	public String getGuestID() {
+		return guestID;
+	}
+
+	public void setGuestID(String guestID) {
+		this.guestID = guestID;
+	}
 
     public LocalDate getArrival() {
         return arrival;
