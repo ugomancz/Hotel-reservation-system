@@ -62,6 +62,22 @@ public final class ReservationDao {
         }
     }
 
+    public void delete(Reservation reservation) {
+        if (reservation.getId() == null) {
+            throw new IllegalArgumentException("Reservation has null ID");
+        }
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement("DELETE FROM RESERVATION WHERE ID = ?")) {
+            st.setLong(1, reservation.getId());
+            int rowsDeleted = st.executeUpdate();
+            if (rowsDeleted == 0) {
+                throw new DataAccessException("Failed to delete non-existing reservation: " + reservation);
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to delete reservation " + reservation, ex);
+        }
+    }    
+
     public void printAll(List<Reservation> list) {
 		for (Reservation entry : list) {
 			System.out.println(entry);
