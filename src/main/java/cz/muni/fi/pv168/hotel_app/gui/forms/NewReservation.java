@@ -1,8 +1,10 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
+import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
@@ -21,13 +23,14 @@ public class NewReservation extends JDialog {
     JTextField name, phone, email, people;
     JComboBox<Integer> rooms;
     DatePicker fromDate, toDate;
-    Reservation reservation;
     Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
+    private final ReservationDao reservationDao;
     GridBagConstraints gbc = new GridBagConstraints();
 
-    public NewReservation() {
+    public NewReservation(ReservationDao reservationDao) {
         super(MainWindow.frame, "New reservation", Dialog.ModalityType.APPLICATION_MODAL);
+        this.reservationDao = reservationDao;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
         setSize(400, 400);

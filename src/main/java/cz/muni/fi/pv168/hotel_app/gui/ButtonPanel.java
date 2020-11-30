@@ -12,18 +12,20 @@ public class ButtonPanel extends JPanel {
     private static final int numOfButtons = 8;
     private Button newReservation, changeReservation, cancelReservation,
             checkIn, checkOut, roomInfo, reservationInfo, settings;
+    private final ReservationDao reservationDao;
 
-    public ButtonPanel(Dimension dimension) {
+    public ButtonPanel(Dimension dimension, ReservationDao reservationDao) {
         super();
         setLayout(new GridLayout(numOfButtons, 1, 5, 5));
         setBackground(Constants.BACKGROUND_COLOR);
         setPreferredSize(dimension);
+        this.reservationDao = reservationDao;
 
         addButtons();
     }
 
     private static void notImplemented() {
-        JOptionPane.showInternalMessageDialog(null, "Not yet implemented");
+        JOptionPane.showMessageDialog(MainWindow.frame, "Not yet implemented");
     }
 
     private void addButtons() {
@@ -54,15 +56,15 @@ public class ButtonPanel extends JPanel {
 
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(newReservation)) {
-            new NewReservation();
+            new NewReservation(reservationDao);
         } else if (e.getSource().equals(changeReservation)) {
-            new ChangeReservation();
+            new ChangeReservation(reservationDao);
         } else if (e.getSource().equals(cancelReservation)) {
             new CancelReservation();
         } else if (e.getSource().equals(checkIn)) {
-            new CheckIn();
+            new CheckIn(reservationDao);
         } else if (e.getSource().equals(checkOut)) {
-            new CheckOut();
+            new CheckOut(reservationDao);
         } else if (e.getSource().equals(roomInfo)) {
             notImplemented();
         } else if (e.getSource().equals(reservationInfo)) {

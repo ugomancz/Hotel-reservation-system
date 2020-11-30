@@ -1,15 +1,16 @@
 package cz.muni.fi.pv168.hotel_app.data;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
-import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
-
-import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import javax.sql.DataSource;
+
+import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 
 
 /**
@@ -61,6 +62,12 @@ public final class ReservationDao {
         }
     }
 
+    public void printAll(List<Reservation> list) {
+		for (Reservation entry : list) {
+			System.out.println(entry);
+		}
+	}
+
     public List<Reservation> findAll() {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement("SELECT ID, NAME, PHONE, EMAIL, HOSTS," +
@@ -89,6 +96,88 @@ public final class ReservationDao {
         }
     }
 
+	public List<Reservation> getReservation(int room, LocalDate date) {
+		try (var connection = dataSource.getConnection();
+				var st = connection.prepareStatement("SELECT ID, NAME, PHONE, EMAIL, HOSTS,"
+						+ " ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS FROM RESERVATION WHERE roomnumber=? AND ((ARRIVAL<=? AND ?<=DEPARTURE))")) {
+			st.setInt(1, room);
+			st.setDate(2, Date.valueOf(date));
+			st.setDate(3, Date.valueOf(date));
+			List<Reservation> reservations = new ArrayList<>();
+			try (var rs = st.executeQuery()) {
+				while (rs.next()) {
+					Reservation reservation = new Reservation(rs.getString("NAME"), rs.getString("PHONE"),
+							rs.getString("EMAIL"), rs.getInt("HOSTS"), rs.getInt("ROOMNUMBER"),
+							rs.getDate("ARRIVAL").toLocalDate(), rs.getDate("DEPARTURE").toLocalDate(),
+							rs.getString("STATUS"));
+					reservation.setId(rs.getLong("ID"));
+					reservations.add(reservation);
+				}
+			}
+			return reservations;
+		} catch (SQLException ex) {
+			throw new DataAccessException("Failed to load all reservations", ex);
+		}
+	}
+
+	public int getNumOfReservations(LocalDate date) {
+		int count = 0;
+		try (var connection = dataSource.getConnection();
+				var st = connection.prepareStatement("SELECT count(DISTINCT roomnumber) as totalRows FROM RESERVATION WHERE STATUS<>? "
+						+ "AND (" + "(ARRIVAL<=? AND ?<=DEPARTURE)"
+						// + "(ARRIVAL<=? AND DEPARTURE>=?) OR "
+						// + "(ARRIVAL>? AND DEPARTURE>?) OR "
+						+ ")")) {
+			st.setString(1, "PAST");
+			st.setDate(2, Date.valueOf(date));
+			st.setDate(3, Date.valueOf(date));
+			// st.setDate(5, Date.valueOf(arrival));
+			// st.setDate(6, Date.valueOf(arrival));
+			// st.setDate(7, Date.valueOf(arrival));
+			// st.setDate(8, Date.valueOf(departure));
+
+			try (var rs = st.executeQuery()) {
+				if (rs.next()) {
+					count = rs.getInt("totalRows");
+				}
+			}
+			return count;
+		} catch (SQLException ex) {
+			throw new DataAccessException("Failed to load all reservations", ex);
+		}
+	}
+
+    public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
+		// Date.valueOf(arrival)
+		try (var connection = dataSource.getConnection();
+				var st = connection.prepareStatement(
+						"SELECT count(*) as totalRows FROM RESERVATION WHERE STATUS<>? AND ROOMNUMBER=? " + "AND ("
+								+ "(DEPARTURE>? AND ARRIVAL<?)"
+								// + "(ARRIVAL<=? AND DEPARTURE>=?) OR "
+								// + "(ARRIVAL>? AND DEPARTURE>?) OR "
+								+ ")")) {
+			st.setString(1, "PAST");
+			st.setInt(2, room);
+			st.setDate(3, Date.valueOf(arrival));
+			st.setDate(4, Date.valueOf(departure));
+			// st.setDate(5, Date.valueOf(arrival));
+			// st.setDate(6, Date.valueOf(arrival));
+			// st.setDate(7, Date.valueOf(arrival));
+			// st.setDate(8, Date.valueOf(departure));
+
+			int result;
+			try (var rs = st.executeQuery()) {
+				if (rs.next()) {
+					result = rs.getInt("totalRows");
+				} else {
+					result = 0;
+				}
+			}
+			return result == 0;
+		} catch (SQLException ex) {
+			throw new DataAccessException("Failed to load all reservations", ex);
+		}
+	}
 
     private void createTable() {
         try (var connection = dataSource.getConnection();
