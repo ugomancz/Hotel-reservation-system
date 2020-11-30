@@ -37,18 +37,19 @@ public final class ReservationDao {
     }
 
     public void create(Reservation reservation) {
-        try (var connection = dataSource.getConnection();
-             var st = connection.prepareStatement(
-                     "INSERT INTO RESERVATION (NAME, PHONE, EMAIL, HOSTS, ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                     RETURN_GENERATED_KEYS)) {
-            st.setString(1, reservation.getName());
-            st.setString(2, reservation.getPhone());
-            st.setString(3, reservation.getEmail());
-            st.setLong(4, reservation.getHosts());
-            st.setLong(5, reservation.getRoomNumber());
-            st.setDate(6, Date.valueOf(reservation.getArrival()));
-            st.setDate(7, Date.valueOf(reservation.getDeparture()));
-            st.setString(8, reservation.getStatus().name());
+ 		try (var connection = dataSource.getConnection();
+				var st = connection.prepareStatement(
+						"INSERT INTO RESERVATION (NAME, PHONE, EMAIL, HOSTS, ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS, GUESTID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+						RETURN_GENERATED_KEYS)) {
+			st.setString(1, reservation.getName());
+			st.setString(2, reservation.getPhone());
+			st.setString(3, reservation.getEmail());
+			st.setLong(4, reservation.getHosts());
+			st.setLong(5, reservation.getRoomNumber());
+			st.setDate(6, Date.valueOf(reservation.getArrival()));
+			st.setDate(7, Date.valueOf(reservation.getDeparture()));
+			st.setString(8, reservation.getStatus().name());
+			st.setString(9, reservation.getGuestID());
             st.executeUpdate();
             try (var rs = st.getGeneratedKeys()) {
                 if (rs.next()) {
