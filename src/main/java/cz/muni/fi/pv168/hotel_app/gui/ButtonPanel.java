@@ -1,10 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui;
 
 import cz.muni.fi.pv168.hotel_app.Constants;
-import cz.muni.fi.pv168.hotel_app.gui.forms.ChangeReservation;
-import cz.muni.fi.pv168.hotel_app.gui.forms.CheckIn;
-import cz.muni.fi.pv168.hotel_app.gui.forms.CheckOut;
-import cz.muni.fi.pv168.hotel_app.gui.forms.NewReservation;
+import cz.muni.fi.pv168.hotel_app.gui.forms.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,7 +58,7 @@ public class ButtonPanel extends JPanel {
         } else if (e.getSource().equals(changeReservation)) {
             new ChangeReservation();
         } else if (e.getSource().equals(cancelReservation)) {
-            notImplemented();
+            new CancelReservation();
         } else if (e.getSource().equals(checkIn)) {
             new CheckIn();
         } else if (e.getSource().equals(checkOut)) {
