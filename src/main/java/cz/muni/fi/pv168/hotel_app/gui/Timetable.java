@@ -15,6 +15,7 @@ import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 
 public class Timetable extends JPanel {
 
@@ -31,40 +32,39 @@ public class Timetable extends JPanel {
         drawWeek(LocalDate.now());
     }
 
-    private static void clearPanel(int room, int day) {
+    private static void clearPane(int room, int day) {
         TEXT_PANES[room][day].setText("");
         TEXT_PANES[room][day].setBackground(Color.white);
     }
 
-    private static void fillPanel(int room, int day, String name, ReservationStatus status) {
+    private static void fillPane(int room, int day, String name, ReservationStatus status) {
         TEXT_PANES[room][day].setText(name);
         TEXT_PANES[room][day].setBackground(status.getColor());
     }
 
-    private static Reservation getReservation(int room, LocalDate date) {
-        for (Reservation reservation : reservationDao.findAll()) {
-            if (reservation.getRoomNumber() == room
-                    && dateInReservation(date, reservation.getArrival(), reservation.getDeparture())) {
-                return reservation;
-            }
-        }
-        return null;
+    private static void fillPaneWithTwo(int room, int day, String nameOne, String nameTwo) {
+        TEXT_PANES[room][day].setText(nameOne + " / " + nameTwo);
+        TEXT_PANES[room][day].setBackground(new Color(45,180,200));
     }
 
-    private static boolean dateInReservation(LocalDate date, LocalDate arrival, LocalDate departure) {
-        return date.isEqual(arrival) || date.isEqual(departure) || (date.isAfter(arrival) && date.isBefore(departure));
+    private static void updatePane(List<Reservation> reservations, int room, int day) {
+        if (reservations.size() == 0) {
+            clearPane(room, day);
+        } else if (reservations.size() == 1) {
+            Reservation reservation = reservations.get(0);
+            fillPane(room, day, reservation.getName(), reservation.getStatus());
+        } else {
+            Reservation reservationOne = reservations.get(0);
+            Reservation reservationTwo = reservations.get(1);
+            fillPaneWithTwo(room, day, reservationOne.getName(), reservationTwo.getName());
+        }
     }
 
     public static void drawWeek(LocalDate date) {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         for (int room = 0; room < Constants.NUMBER_OF_ROOMS; room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
-                Reservation reservation = getReservation(room + 1, monday.plusDays(day));
-                if (reservation != null) {
-                    fillPanel(room, day, reservation.getName(), reservation.getStatus());
-                } else {
-                    clearPanel(room, day);
-                }
+                updatePane(reservationDao.getReservation(room + 1, monday.plusDays(day)), room, day);
             }
         }
     }
