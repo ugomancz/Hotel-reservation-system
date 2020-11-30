@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Reservation {
-    private final int length;
     private Long id;
     private String name;
     private String phone;
@@ -26,7 +25,6 @@ public class Reservation {
         this.status = ReservationStatus.valueOf(status.toUpperCase());
         this.phone = phone;
         this.email = email;
-        this.length = departure.compareTo(arrival);
     }
 
     public Long getId() {
@@ -37,13 +35,13 @@ public class Reservation {
         this.id = id;
     }
 
-	public String getGuestID() {
-		return guestID;
-	}
+    public String getGuestID() {
+        return guestID;
+    }
 
-	public void setGuestID(String guestID) {
-		this.guestID = guestID;
-	}
+    public void setGuestID(String guestID) {
+        this.guestID = guestID;
+    }
 
     public LocalDate getArrival() {
         return arrival;
@@ -110,7 +108,7 @@ public class Reservation {
     }
 
     public int getLength() {
-        return length;
+        return getDeparture().compareTo(getArrival());
     }
 
     @Override
