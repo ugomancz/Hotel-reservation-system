@@ -150,7 +150,6 @@ public class NewReservation extends JDialog {
                     reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
                             ReservationStatus.PLANNED.toString());
                     MainWindow.timetable.drawWeek(LocalDate.now());
-                    MainWindow.frame.setEnabled(true);
                     dispose();
                 } else {
                     JOptionPane.showInternalMessageDialog(null, "Room full");
