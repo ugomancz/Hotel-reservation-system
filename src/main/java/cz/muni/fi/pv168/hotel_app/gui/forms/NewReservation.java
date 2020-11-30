@@ -19,13 +19,12 @@ import static java.lang.Integer.parseInt;
 
 public class NewReservation extends JDialog {
 
+    private final ReservationDao reservationDao;
     Button cancelButton, okayButton;
     JTextField name, phone, email, people;
     JComboBox<Integer> rooms;
     DatePicker fromDate, toDate;
     Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-
-    private final ReservationDao reservationDao;
     GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation(ReservationDao reservationDao) {
@@ -149,10 +148,10 @@ public class NewReservation extends JDialog {
                 JOptionPane.showMessageDialog(this, "Departure need to be later than arrival");
             } else {
                 int usedPeople = parseInt(people.getText());
-                if (MainWindow.timetable.isFree(parseInt(room), from, to)) {
-                    reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
-                            ReservationStatus.PLANNED.toString());
-                    MainWindow.timetable.drawWeek(LocalDate.now());
+                if (reservationDao.isFree(parseInt(room), from, to)) {
+                    reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
+                            ReservationStatus.PLANNED.toString()));
+                    Timetable.drawWeek(LocalDate.now());
                     dispose();
                 } else {
                     JOptionPane.showInternalMessageDialog(null, "Room full");

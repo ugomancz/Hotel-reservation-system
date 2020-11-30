@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
-import cz.muni.fi.pv168.hotel_app.Main;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
@@ -17,9 +17,11 @@ public class CancelReservation extends JDialog {
     JCheckBox confirm;
     Map<String, Reservation> reservationMap = new HashMap<>();
     GridBagConstraints gbc = new GridBagConstraints();
+    ReservationDao reservationDao;
 
-    public CancelReservation() {
+    public CancelReservation(ReservationDao reservationDao) {
         super(MainWindow.frame, "Change Reservation", ModalityType.APPLICATION_MODAL);
+        this.reservationDao = reservationDao;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
         setSize(300, 200);
@@ -36,7 +38,7 @@ public class CancelReservation extends JDialog {
     }
 
     private void setupComboBox() {
-        for (Reservation reservation : Main.reservations) {
+        for (Reservation reservation : reservationDao.findAll()) {
             reservationMap.put(reservation.getName(), reservation);
         }
         reservationPicker = new JComboBox<>();
@@ -85,6 +87,7 @@ public class CancelReservation extends JDialog {
         } else if (e.getSource().equals(okayButton)) {
             if (confirm.isSelected()) {
                 JOptionPane.showMessageDialog(this, "tu sa niečo vykona");
+                dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Confirmation needed");
             }

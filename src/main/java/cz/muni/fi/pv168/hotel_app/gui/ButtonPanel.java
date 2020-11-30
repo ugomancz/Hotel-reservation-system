@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.gui;
 
 import cz.muni.fi.pv168.hotel_app.Constants;
+import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.forms.*;
 
 import javax.swing.*;
@@ -41,8 +42,8 @@ public class ButtonPanel extends JPanel {
         add(cancelReservation);
         add(checkIn);
         add(checkOut);
-        add(roomInfo);
         add(reservationInfo);
+        add(roomInfo);
         add(settings);
     }
 
@@ -58,7 +59,7 @@ public class ButtonPanel extends JPanel {
         } else if (e.getSource().equals(reservationInfo)) {
             new ReservationInfo(reservationDao);
         } else if (e.getSource().equals(cancelReservation)) {
-            new CancelReservation();
+            new CancelReservation(reservationDao);
         } else if (e.getSource().equals(checkIn)) {
             new CheckIn(reservationDao);
         } else if (e.getSource().equals(checkOut)) {

@@ -107,7 +107,7 @@ public class ReservationInfo extends JDialog {
         addComponent(editButton, 1, 8);
 
         gbc.anchor = GridBagConstraints.LINE_END;
-        gbc.insets = new Insets(0,10,0,10);
+        gbc.insets = new Insets(0, 10, 0, 10);
         cancelButton = new Button("Cancel");
         cancelButton.addActionListener(this::actionPerformed);
         addComponent(cancelButton, 1, 8);
@@ -163,6 +163,7 @@ public class ReservationInfo extends JDialog {
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
         reservation.setRoomNumber(roomPicker.getSelectedIndex() + 1);
+        reservationDao.update(reservation);
         Timetable.drawWeek(arrival.getDate());
         return true;
     }
