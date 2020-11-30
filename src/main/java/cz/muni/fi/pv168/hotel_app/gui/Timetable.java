@@ -3,7 +3,6 @@ package cz.muni.fi.pv168.hotel_app.gui;
 import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
-import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -37,13 +36,20 @@ public class Timetable extends JPanel {
         TEXT_PANES[room][day].setBackground(Color.white);
     }
 
-    private static void fillPane(int room, int day, String name, ReservationStatus status) {
-        TEXT_PANES[room][day].setText(name);
-        TEXT_PANES[room][day].setBackground(status.getColor());
+    private static void fillPane(int room, int day, Reservation reservation) {
+        TEXT_PANES[room][day].setText(reservation.getName());
+        if (reservation.getArrival().isEqual(LocalDate.now())) {
+            //TEXT_PANES[room][day].setBackground();
+        }
+        TEXT_PANES[room][day].setBackground(reservation.getStatus().getColor());
     }
 
-    private static void fillPaneWithTwo(int room, int day, String nameOne, String nameTwo) {
-        TEXT_PANES[room][day].setText(nameOne + " / " + nameTwo);
+    private static void fillPaneWithTwo(int room, int day, Reservation reservationOne, Reservation reservationTwo) {
+        if (reservationOne.getArrival().isBefore(reservationTwo.getArrival())) {
+            TEXT_PANES[room][day].setText(reservationOne.getName() + " / " + reservationTwo.getName());
+        } else {
+            TEXT_PANES[room][day].setText(reservationTwo.getName() + " / " + reservationOne.getName());
+        }
         TEXT_PANES[room][day].setBackground(new Color(45,180,200));
     }
 
@@ -52,11 +58,11 @@ public class Timetable extends JPanel {
             clearPane(room, day);
         } else if (reservations.size() == 1) {
             Reservation reservation = reservations.get(0);
-            fillPane(room, day, reservation.getName(), reservation.getStatus());
+            fillPane(room, day, reservation);
         } else {
             Reservation reservationOne = reservations.get(0);
             Reservation reservationTwo = reservations.get(1);
-            fillPaneWithTwo(room, day, reservationOne.getName(), reservationTwo.getName());
+            fillPaneWithTwo(room, day, reservationOne, reservationTwo);
         }
     }
 
