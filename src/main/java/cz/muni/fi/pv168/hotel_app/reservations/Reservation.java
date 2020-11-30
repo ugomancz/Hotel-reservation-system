@@ -35,13 +35,13 @@ public class Reservation {
         this.id = id;
     }
 
-    public String getGuestID() {
-        return guestID;
-    }
+	public String getGuestID() {
+		return guestID;
+	}
 
-    public void setGuestID(String guestID) {
-        this.guestID = guestID;
-    }
+	public void setGuestID(String guestID) {
+		this.guestID = guestID;
+	}
 
     public LocalDate getArrival() {
         return arrival;
@@ -108,7 +108,7 @@ public class Reservation {
     }
 
     public int getLength() {
-        return getDeparture().compareTo(getArrival());
+        return departure.compareTo(arrival);
     }
 
     @Override
