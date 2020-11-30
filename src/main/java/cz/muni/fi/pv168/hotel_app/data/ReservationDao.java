@@ -233,8 +233,8 @@ public final class ReservationDao {
                     "ROOMNUMBER INT NOT NULL," +
                     "ARRIVAL DATE NOT NULL," +
                     "DEPARTURE DATE NOT NULL," +
-                    "STATUS VARCHAR(100) NOT NULL" +
-                    ")");
+                    "STATUS VARCHAR(100) NOT NULL," +
+                    "GUESTID VARCHAR(100))");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create RESERVATION table", ex);
         }
