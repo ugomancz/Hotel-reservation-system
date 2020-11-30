@@ -112,10 +112,10 @@ public final class ReservationDao {
 		}
 	}
 
-    public List<Reservation> findAll() {
+	public List<Reservation> findAll() {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement("SELECT ID, NAME, PHONE, EMAIL, HOSTS," +
-                     " ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS FROM RESERVATION")) {
+                     " ROOMNUMBER, ARRIVAL, DEPARTURE, STATUS, GUESTID FROM RESERVATION")) {
 
             List<Reservation> reservations = new ArrayList<>();
             try (var rs = st.executeQuery()) {
@@ -131,6 +131,7 @@ public final class ReservationDao {
                             rs.getString("STATUS")
                     );
                     reservation.setId(rs.getLong("ID"));
+					reservation.setGuestID(rs.getString("GUESTID"));
                     reservations.add(reservation);
                 }
             }
