@@ -62,21 +62,46 @@ public final class ReservationDao {
         }
     }
 
-    public void delete(Reservation reservation) {
-        if (reservation.getId() == null) {
-            throw new IllegalArgumentException("Reservation has null ID");
-        }
-        try (var connection = dataSource.getConnection();
-             var st = connection.prepareStatement("DELETE FROM RESERVATION WHERE ID = ?")) {
-            st.setLong(1, reservation.getId());
-            int rowsDeleted = st.executeUpdate();
-            if (rowsDeleted == 0) {
-                throw new DataAccessException("Failed to delete non-existing reservation: " + reservation);
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException("Failed to delete reservation " + reservation, ex);
-        }
-    }    
+	public void delete(Reservation reservation) {
+		if (reservation.getId() == null) {
+			throw new IllegalArgumentException("Reservation has null ID");
+		}
+		try (var connection = dataSource.getConnection();
+				var st = connection.prepareStatement("DELETE FROM RESERVATION WHERE ID = ?")) {
+			st.setLong(1, reservation.getId());
+			int rowsDeleted = st.executeUpdate();
+			if (rowsDeleted == 0) {
+				throw new DataAccessException("Failed to delete non-existing reservation: " + reservation);
+			}
+		} catch (SQLException ex) {
+			throw new DataAccessException("Failed to delete reservation " + reservation, ex);
+		}
+	}
+
+	public void update(Reservation reservation) {
+		if (reservation.getId() == null) {
+			throw new IllegalArgumentException("Reservation has null ID");
+		}
+		try (var connection = dataSource.getConnection();
+				var st = connection.prepareStatement(
+						"UPDATE RESERVATION SET NAME = ?, PHONE = ?, EMAIL = ?, HOSTS = ?, ROOMNUMBER = ?, ARRIVAL = ?, DEPARTURE = ?, STATUS = ? WHERE ID = ?")) {
+			st.setString(1, reservation.getName());
+			st.setString(2, reservation.getPhone());
+			st.setString(3, reservation.getEmail());
+			st.setInt(4, reservation.getHosts());
+			st.setInt(5, reservation.getRoomNumber());
+			st.setDate(6, Date.valueOf(reservation.getArrival()));
+			st.setDate(7, Date.valueOf(reservation.getDeparture()));
+			st.setString(8, reservation.getStatus().name());
+			st.setLong(9, reservation.getId());
+			int rowsUpdated = st.executeUpdate();
+			if (rowsUpdated == 0) {
+				throw new DataAccessException("Failed to update non-existing reservation: " + reservation);
+			}
+		} catch (SQLException ex) {
+			throw new DataAccessException("Failed to update reservation " + reservation, ex);
+		}
+	}
 
     public void printAll(List<Reservation> list) {
 		for (Reservation entry : list) {
