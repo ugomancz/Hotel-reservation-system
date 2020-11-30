@@ -36,12 +36,14 @@ public class Timetable extends JPanel {
         TEXT_PANES[room][day].setBackground(Color.white);
     }
 
-    private static void fillPane(int room, int day, Reservation reservation) {
-        TEXT_PANES[room][day].setText(reservation.getName());
-        if (reservation.getArrival().isEqual(LocalDate.now())) {
-            //TEXT_PANES[room][day].setBackground();
+    private static void fillPane(int room, int day, LocalDate today, Reservation reservation) {
+        if (reservation.getArrival().isEqual(today)) {
+            TEXT_PANES[room][day].setBackground(Constants.CONCURRING_RESERVATIONS);
+        } else {
+            TEXT_PANES[room][day].setBackground(reservation.getStatus().getColor());
         }
-        TEXT_PANES[room][day].setBackground(reservation.getStatus().getColor());
+        TEXT_PANES[room][day].setText(reservation.getName());
+
     }
 
     private static void fillPaneWithTwo(int room, int day, Reservation reservationOne, Reservation reservationTwo) {
@@ -50,15 +52,15 @@ public class Timetable extends JPanel {
         } else {
             TEXT_PANES[room][day].setText(reservationTwo.getName() + " / " + reservationOne.getName());
         }
-        TEXT_PANES[room][day].setBackground(new Color(45,180,200));
+        TEXT_PANES[room][day].setBackground(Constants.CONCURRING_RESERVATIONS);
     }
 
-    private static void updatePane(List<Reservation> reservations, int room, int day) {
+    private static void updatePane(List<Reservation> reservations, LocalDate today, int room, int day) {
         if (reservations.size() == 0) {
             clearPane(room, day);
         } else if (reservations.size() == 1) {
             Reservation reservation = reservations.get(0);
-            fillPane(room, day, reservation);
+            fillPane(room, day, today, reservation);
         } else {
             Reservation reservationOne = reservations.get(0);
             Reservation reservationTwo = reservations.get(1);
@@ -70,7 +72,8 @@ public class Timetable extends JPanel {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         for (int room = 0; room < Constants.NUMBER_OF_ROOMS; room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
-                updatePane(reservationDao.getReservation(room + 1, monday.plusDays(day)), room, day);
+                LocalDate currentDay = monday.plusDays(day);
+                updatePane(reservationDao.getReservation(room + 1, currentDay), currentDay, room, day);
             }
         }
     }
