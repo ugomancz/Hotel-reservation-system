@@ -171,17 +171,10 @@ public final class ReservationDao {
 		try (var connection = dataSource.getConnection();
 				var st = connection.prepareStatement("SELECT count(DISTINCT roomnumber) as totalRows FROM RESERVATION WHERE STATUS<>? "
 						+ "AND (" + "(ARRIVAL<=? AND ?<=DEPARTURE)"
-						// + "(ARRIVAL<=? AND DEPARTURE>=?) OR "
-						// + "(ARRIVAL>? AND DEPARTURE>?) OR "
 						+ ")")) {
 			st.setString(1, "PAST");
 			st.setDate(2, Date.valueOf(date));
 			st.setDate(3, Date.valueOf(date));
-			// st.setDate(5, Date.valueOf(arrival));
-			// st.setDate(6, Date.valueOf(arrival));
-			// st.setDate(7, Date.valueOf(arrival));
-			// st.setDate(8, Date.valueOf(departure));
-
 			try (var rs = st.executeQuery()) {
 				if (rs.next()) {
 					count = rs.getInt("totalRows");
