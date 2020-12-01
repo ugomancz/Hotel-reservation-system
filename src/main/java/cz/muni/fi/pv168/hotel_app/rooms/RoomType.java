@@ -2,8 +2,8 @@ package cz.muni.fi.pv168.hotel_app.rooms;
 
 public class RoomType {
     private int pricePerNight;
-    private BedType bedType;
-    private int numOfBeds;
+    private final BedType bedType;
+    private final int numOfBeds;
 
     public RoomType(int pricePerNight, BedType bedType, int numOfBeds) {
         this.pricePerNight = pricePerNight;
