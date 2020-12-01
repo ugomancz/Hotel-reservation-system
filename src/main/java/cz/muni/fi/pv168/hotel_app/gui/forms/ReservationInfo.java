@@ -122,7 +122,6 @@ public class ReservationInfo extends JDialog {
         for (String name : reservationMap.keySet()) {
             reservationPicker.addItem(name);
         }
-        reservationPicker.setSelectedIndex(0);
         reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
         addComponent(reservationPicker, 1, 0);
@@ -131,7 +130,6 @@ public class ReservationInfo extends JDialog {
         for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
             roomPicker.addItem(i + 1);
         }
-        roomPicker.setSelectedIndex(0);
         roomPicker.addActionListener(this::actionPerformed);
         roomPicker.setRenderer(new DefaultListCellRenderer() {
             @Override
@@ -186,12 +184,20 @@ public class ReservationInfo extends JDialog {
         if (e.getSource().equals(cancelButton)) {
             dispose();
         } else if (e.getSource().equals(confirmButton)) {
-            String selected = (String) reservationPicker.getSelectedItem();
-            if (updateReservation(reservationMap.get(selected))) {
-                dispose();
+            if (reservationPicker.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "A reservation has to be selected");
+            } else {
+                String selected = (String) reservationPicker.getSelectedItem();
+                if (updateReservation(reservationMap.get(selected))) {
+                    dispose();
+                }
             }
         } else if (e.getSource().equals(editButton)) {
-            textFieldsEditable(true);
+            if (reservationPicker.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "A reservation has to be selected");
+            } else {
+                textFieldsEditable(true);
+            }
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
