@@ -3,11 +3,14 @@ package cz.muni.fi.pv168.hotel_app.gui.forms;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
+import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,9 +27,8 @@ public class CancelReservation extends JDialog {
         this.reservationDao = reservationDao;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
-        setSize(300, 200);
+        setMinimumSize(new Dimension(350,200));
         setLayout(new GridBagLayout());
-        setupComboBox();
         initLayout();
         setVisible(true);
     }
@@ -39,7 +41,9 @@ public class CancelReservation extends JDialog {
 
     private void setupComboBox() {
         for (Reservation reservation : reservationDao.findAll()) {
-            reservationMap.put(reservation.getName(), reservation);
+            if (reservation.getStatus().equals(ReservationStatus.PLANNED)) {
+                reservationMap.put(reservation.toString(), reservation);
+            }
         }
         reservationPicker = new JComboBox<>();
         for (String name : reservationMap.keySet()) {
@@ -48,7 +52,6 @@ public class CancelReservation extends JDialog {
         reservationPicker.setSelectedIndex(0);
         reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
-        reservationPicker.setFont(Button.font);
     }
 
     private void addButtons() {
@@ -57,14 +60,17 @@ public class CancelReservation extends JDialog {
         okayButton.addActionListener(this::actionPerformed);
         placeComponent(0, 10, okayButton);
 
+        gbc.anchor = GridBagConstraints.LINE_END;
         cancelButton = new Button("Cancel");
         cancelButton.addActionListener(this::actionPerformed);
         placeComponent(5, 10, cancelButton);
     }
 
     private void initLayout() {
+        setupComboBox();
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
+        gbc.insets = new Insets(5,5,5,5);
 
         gbc.anchor = GridBagConstraints.CENTER;
 
@@ -86,7 +92,8 @@ public class CancelReservation extends JDialog {
             dispose();
         } else if (e.getSource().equals(okayButton)) {
             if (confirm.isSelected()) {
-                JOptionPane.showMessageDialog(this, "tu sa niečo vykona");
+                reservationDao.delete(reservationMap.get(reservationPicker.getSelectedItem()));
+                Timetable.drawWeek(LocalDate.now());
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Confirmation needed");
