@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.hotel_app.gui;
 import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -37,8 +38,8 @@ public class Timetable extends JPanel {
     }
 
     private static void fillPane(int room, int day, LocalDate today, Reservation reservation) {
-        if (reservation.getArrival().isEqual(today)) {
-            TEXT_PANES[room][day].setBackground(Constants.CONCURRING_RESERVATIONS);
+        if (reservation.getArrival().isEqual(today) && reservation.getStatus() != ReservationStatus.PAST) {
+            TEXT_PANES[room][day].setBackground(Constants.FIRST_DAY_OF_RESERVATION);
         } else {
             TEXT_PANES[room][day].setBackground(reservation.getStatus().getColor());
         }
@@ -52,7 +53,7 @@ public class Timetable extends JPanel {
         } else {
             TEXT_PANES[room][day].setText(reservationTwo.getName() + " / " + reservationOne.getName());
         }
-        TEXT_PANES[room][day].setBackground(Constants.CONCURRING_RESERVATIONS);
+        TEXT_PANES[room][day].setBackground(Constants.FIRST_DAY_OF_RESERVATION);
     }
 
     private static void updatePane(List<Reservation> reservations, LocalDate today, int room, int day) {
