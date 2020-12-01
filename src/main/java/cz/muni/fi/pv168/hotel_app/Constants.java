@@ -11,8 +11,7 @@ public final class Constants {
     public final static Color PLANNED_RESERVATION = new Color(13, 218, 13);
     public final static Color ONGOING_RESERVATION = Color.orange;
     public final static Color PAST_RESERVATION = Color.lightGray;
-    public final static Color CONCURRING_RESERVATIONS = new Color(60, 160, 50);
-
+    public final static Color FIRST_DAY_OF_RESERVATION = new Color(60,160,50);
 
     public Constants() {
         throw new AssertionError();
