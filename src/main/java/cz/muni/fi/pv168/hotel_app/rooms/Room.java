@@ -1,8 +1,8 @@
 package cz.muni.fi.pv168.hotel_app.rooms;
 
 public class Room {
-    private int roomNumber;
-    private RoomType roomType;
+    private final int roomNumber;
+    private final RoomType roomType;
 
     public Room(int roomNumber, RoomType roomType) {
         this.roomNumber = roomNumber;

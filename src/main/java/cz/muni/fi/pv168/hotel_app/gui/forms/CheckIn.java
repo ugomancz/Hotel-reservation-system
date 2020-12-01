@@ -75,10 +75,8 @@ public class CheckIn extends JDialog {
         for (String name : reservationMap.keySet()) {
             reservationPicker.addItem(name);
         }
-        //reservationPicker.setSelectedIndex(0);
         reservationPicker.setPreferredSize(new Dimension(300, 20));
         reservationPicker.addActionListener(this::actionPerformed);
-        //reservationPicker.setFont(cz.muni.fi.pv168.hotel_app.gui.Button.font);
         gbc.anchor = GridBagConstraints.CENTER;
     }
 
