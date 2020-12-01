@@ -23,15 +23,7 @@ public class RoomType {
         return bedType;
     }
 
-    public void setBedType(BedType bedType) {
-        this.bedType = bedType;
-    }
-
     public int getNumOfBeds() {
         return numOfBeds;
-    }
-
-    public void setNumOfBeds(int numOfBeds) {
-        this.numOfBeds = numOfBeds;
     }
 }

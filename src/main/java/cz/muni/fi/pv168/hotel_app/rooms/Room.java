@@ -11,16 +11,7 @@ public class Room {
     public int getRoomNumber() {
         return roomNumber;
     }
-
-    public void setRoomNumber(int roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-
     public RoomType getRoomType() {
         return roomType;
-    }
-
-    public void setRoomType(RoomType roomType) {
-        this.roomType = roomType;
     }
 }
