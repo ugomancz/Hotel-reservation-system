@@ -13,50 +13,64 @@ import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+/**
+ * @author Ondrej Kostik
+ */
 public class CheckOut extends JDialog {
 
     private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
+    GridBagConstraints gbc = new GridBagConstraints();
     private JButton outButton, cancelButton;
     private JComboBox<String> pickReservation;
 
     public CheckOut(ReservationDao reservationDao) {
         super(MainWindow.frame, "Check-out", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setLayout(new BorderLayout(0, 0));
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setLayout(new GridBagLayout());
         setLocationRelativeTo(MainWindow.frame);
         setMinimumSize(new Dimension(250, 250));
 
         initMap();
-        add(label, BorderLayout.CENTER);
-        add(addButtons(), BorderLayout.SOUTH);
-        add(addComboBox(), BorderLayout.NORTH);
-
-        pack();
+        initLayout();
         setVisible(true);
     }
 
-    private void initMap() {
-        for (Reservation reservation : reservationDao.findAll()) {
-            if (reservation.getStatus() == ReservationStatus.ONGOING) {
-                reservationMap.put(reservation.toString(), reservation);
-            }
-        }
+    private void initLayout() {
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = 0;
+        addComponent(addComboBox(), 0);
+        label.setPreferredSize(new Dimension(215, 120));
+        addComponent(label, 1);
+        addButtons();
     }
 
-    private JPanel addButtons() {
+    private void addButtons() {
         outButton = new Button("Check-out");
         outButton.addActionListener(this::actionPerformed);
         cancelButton = new Button("Cancel");
         cancelButton.addActionListener(this::actionPerformed);
 
-        JPanel panel = new JPanel();
-        panel.add(outButton);
-        panel.add(cancelButton);
-        return panel;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        addComponent(outButton, 2);
+        gbc.anchor = GridBagConstraints.LINE_END;
+        addComponent(cancelButton, 2);
+    }
+
+    private void initMap() {
+        for (Reservation reservation : reservationDao.findAll().stream()
+                .filter((x) -> x.getStatus() == ReservationStatus.ONGOING)
+                .collect(Collectors.toList())) {
+            reservationMap.put(reservation.toString(), reservation);
+        }
+    }
+
+    private void addComponent(JComponent component, int y) {
+        gbc.gridy = y;
+        add(component, gbc);
     }
 
     private JComboBox<String> addComboBox() {
@@ -80,11 +94,11 @@ public class CheckOut extends JDialog {
 
     private void closeReservation(Reservation reservation) {
         if (reservation == null) {
-            JOptionPane.showMessageDialog(this,
-                    "No reservation picked");
+            JOptionPane.showMessageDialog(this, "No reservation picked");
         } else {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);
+            reservationDao.update(reservation);
             Timetable.drawWeek(LocalDate.now());
             dispose();
         }
