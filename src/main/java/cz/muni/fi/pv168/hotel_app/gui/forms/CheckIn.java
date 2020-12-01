@@ -2,8 +2,10 @@ package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
+import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,13 +27,14 @@ public class CheckIn extends JDialog {
     private final ReservationDao reservationDao;
     private JComboBox<String> reservationPicker;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private JTextField idTextField;
 
 
 
     public CheckIn(ReservationDao reservationDao) {
         super(MainWindow.frame, "Check-in", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setSize(400, 300);
+        setSize(500, 300);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
         setEnabled(true);
@@ -39,7 +42,7 @@ public class CheckIn extends JDialog {
         GridBagLayout layout = new GridBagLayout();
         setLayout(layout);
         initMap();
-        fillOutFrame();
+        initLayout();
         setVisible(true);
 
     }
@@ -68,51 +71,68 @@ public class CheckIn extends JDialog {
         add(component, gbc);
     }
 
-    /**
-     * Sets layout in frame using GridBagLayout
-     */
-    private void fillOutFrame() {
-        reservationPicker = new JComboBox<>();
+    private void initComboBox( ) {
         for (String name : reservationMap.keySet()) {
             reservationPicker.addItem(name);
         }
         reservationPicker.setSelectedIndex(0);
         reservationPicker.setPreferredSize(new Dimension(300, 20));
         reservationPicker.addActionListener(this::actionPerformed);
-        reservationPicker.setFont(cz.muni.fi.pv168.hotel_app.gui.Button.font);
+        //reservationPicker.setFont(cz.muni.fi.pv168.hotel_app.gui.Button.font);
         gbc.anchor = GridBagConstraints.CENTER;
-        placeComponent(0, 1, reservationPicker);
+    }
+
+    /**
+     * Sets layout in frame using GridBagLayout
+     */
+    private void initLayout() {
+        gbc.weighty = 0.5;
+        gbc.insets = new Insets(0, 30, 0, 0);
+
+        reservationPicker = new JComboBox<>();
+        initComboBox();
+        placeComponent(0, 0, reservationPicker);
+
+        idTextField = new JTextField(16);
+        placeComponent(0, 10, idTextField);
 
         String selected = (String) reservationPicker.getSelectedItem();
         Reservation res = reservationMap.get(selected);
 
+
         gbc.anchor = GridBagConstraints.WEST;
+
+        JLabel idLabel = new JLabel("ID number: ");
+        placeComponent(0, 10, idLabel);
+
         nameLabel = new JLabel();
-        placeComponent(0, 2, nameLabel);
+        placeComponent(0, 20, nameLabel);
 
         phoneLabel = new JLabel();
-        placeComponent(0, 3, phoneLabel);
+        placeComponent(0, 30, phoneLabel);
 
         emailLabel = new JLabel();
-        placeComponent(0, 4, emailLabel);
+        placeComponent(0, 40, emailLabel);
 
         guestLabel = new JLabel();
-        placeComponent(0, 5, guestLabel);
+        placeComponent(0, 50, guestLabel);
 
         lengthLabel = new JLabel();
-        placeComponent(0, 6, lengthLabel);
+        placeComponent(0, 60, lengthLabel);
 
         roomLabel = new JLabel();
-        placeComponent(0, 7, roomLabel);
+        placeComponent(0, 70, roomLabel);
         fillReservation(res);
 
 
         confirm = new Button("Confirm");
-        placeComponent(0, 8, confirm);
+        placeComponent(0, 80, confirm);
         confirm.addActionListener(this::actionPerformed);
 
+        gbc.insets = new Insets(0, 0, 0, 30);
+        gbc.anchor = GridBagConstraints.EAST;
         cancel = new Button("Cancel");
-        placeComponent(1, 8, cancel);
+        placeComponent(5, 80, cancel);
         cancel.addActionListener(this::actionPerformed);
 
     }
@@ -129,13 +149,24 @@ public class CheckIn extends JDialog {
         roomLabel.setText("Room number: " + res.getRoomNumber());
     }
 
+
     private void actionPerformed(ActionEvent e) {
 
         if (e.getSource().equals(cancel)) {
             dispose();
         }
         if (e.getSource().equals(confirm)) {
-            dispose();
+            String selected = (String) reservationPicker.getSelectedItem();
+            Reservation res = reservationMap.get(selected);
+            res.setStatus(ReservationStatus.ONGOING);
+            if (idTextField.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Guest ID can't be empty");
+            } else {
+                res.setGuestID(idTextField.getText());
+                reservationDao.update(res);
+                Timetable.drawWeek(LocalDate.now());
+                dispose();
+            }
         }
         if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
