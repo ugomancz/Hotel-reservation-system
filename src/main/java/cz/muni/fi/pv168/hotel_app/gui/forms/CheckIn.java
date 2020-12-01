@@ -30,7 +30,6 @@ public class CheckIn extends JDialog {
     private JTextField idTextField;
 
 
-
     public CheckIn(ReservationDao reservationDao) {
         super(MainWindow.frame, "Check-in", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
@@ -60,9 +59,8 @@ public class CheckIn extends JDialog {
 
 
     /**
-     *
-     * @param x coordination for gbc
-     * @param y coordination for gbc
+     * @param x         coordination for gbc
+     * @param y         coordination for gbc
      * @param component to be placed onto frame
      */
     private void placeComponent(int x, int y, Component component) {
@@ -71,7 +69,7 @@ public class CheckIn extends JDialog {
         add(component, gbc);
     }
 
-    private void initComboBox( ) {
+    private void initComboBox() {
         for (String name : reservationMap.keySet()) {
             reservationPicker.addItem(name);
         }
