@@ -7,6 +7,7 @@ import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
+import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Ondrej Kostik
@@ -42,7 +44,9 @@ public class ReservationInfo extends JDialog {
     }
 
     private void initMap() {
-        for (Reservation reservation : reservationDao.findAll()) {
+        for (Reservation reservation : reservationDao.findAll().stream()
+                .filter((x) -> x.getStatus() == ReservationStatus.PLANNED)
+                .collect(Collectors.toList())) {
             reservationMap.put(reservation.toString(), reservation);
         }
     }
