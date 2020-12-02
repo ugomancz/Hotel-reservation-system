@@ -24,6 +24,14 @@ public final class RoomDao {
             Map.entry(15, new Room(15, DOUBLE))
     ));
 
+    private RoomDao() {
+        throw new AssertionError();
+    }
+
+    public static Room getRoom(int roomNumber) {
+        return rooms.get(roomNumber);
+    }
+
     public static int getPricePerNight(int roomNumber) {
         return rooms.get(roomNumber).getRoomType().getPricePerNight();
     }

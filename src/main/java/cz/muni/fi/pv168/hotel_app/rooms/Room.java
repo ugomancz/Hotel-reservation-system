@@ -16,4 +16,10 @@ public class Room {
     public RoomType getRoomType() {
         return roomType;
     }
+
+    @Override
+    public String toString() {
+        return "Room n." + getRoomNumber() + ", bed type: " + getRoomType().getBedType().toString()
+                + ", price per night: " + getRoomType().getPricePerNight();
+    }
 }
