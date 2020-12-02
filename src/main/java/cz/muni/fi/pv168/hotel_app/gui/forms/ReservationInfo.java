@@ -8,6 +8,7 @@ import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -152,19 +153,26 @@ public class ReservationInfo extends JDialog {
     }
 
     private boolean updateReservation(Reservation reservation) {
+        int guests;
         try {
-            reservation.setHosts(Integer.parseInt(guestsField.getText()));
+            guests = Integer.parseInt(guestsField.getText());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
                     "Field \"Guests\" has to be a number");
             return false;
         }
+        int room = roomPicker.getSelectedIndex() + 1;
+        if (RoomDao.numberOfBeds(room) < guests) {
+            JOptionPane.showMessageDialog(this, guests + " guests can't fit into room n." + room);
+            return false;
+        }
+        reservation.setHosts(guests);
         reservation.setName(nameField.getText());
         reservation.setPhone(phoneField.getText());
         reservation.setEmail(emailField.getText());
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
-        reservation.setRoomNumber(roomPicker.getSelectedIndex() + 1);
+        reservation.setRoomNumber(room);
         reservationDao.update(reservation);
         Timetable.drawWeek(arrival.getDate());
         return true;
