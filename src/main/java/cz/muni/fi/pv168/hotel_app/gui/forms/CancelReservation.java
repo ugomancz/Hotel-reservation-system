@@ -25,7 +25,6 @@ public class CancelReservation extends JDialog {
     public CancelReservation(ReservationDao reservationDao) {
         super(MainWindow.frame, "Change Reservation", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
         setMinimumSize(new Dimension(350,200));
         setLayout(new GridBagLayout());
@@ -49,7 +48,6 @@ public class CancelReservation extends JDialog {
         for (String name : reservationMap.keySet()) {
             reservationPicker.addItem(name);
         }
-        reservationPicker.setSelectedIndex(0);
         reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
     }
@@ -60,7 +58,7 @@ public class CancelReservation extends JDialog {
         okayButton.addActionListener(this::actionPerformed);
         placeComponent(0, 10, okayButton);
 
-        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.anchor = GridBagConstraints.LAST_LINE_END;
         cancelButton = new Button("Cancel");
         cancelButton.addActionListener(this::actionPerformed);
         placeComponent(5, 10, cancelButton);
@@ -92,7 +90,8 @@ public class CancelReservation extends JDialog {
             dispose();
         } else if (e.getSource().equals(okayButton)) {
             if (confirm.isSelected()) {
-                reservationDao.delete(reservationMap.get(reservationPicker.getSelectedItem()));
+                String picked = (String) reservationPicker.getSelectedItem();
+                reservationDao.delete(reservationMap.get(picked));
                 Timetable.drawWeek(LocalDate.now());
                 dispose();
             } else {
