@@ -52,6 +52,7 @@ public class CheckIn extends JDialog {
     private void initMap() {
         for (Reservation reservation : reservationDao.findAll().stream()
                 .filter(x -> x.getArrival().equals(LocalDate.now()))
+                .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
                 .collect(Collectors.toList())) {
             reservationMap.put(reservation.toString(), reservation);
         }
