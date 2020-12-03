@@ -94,12 +94,29 @@ public class ReservationDaoTest {
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
 
         reservationDao.create(res);
-
         reservationDao.delete(res);
 
         assertThat(reservationDao.findAll())
                 .isEmpty();
     }
+
+    @Test
+    void update() {
+        var updatedRes = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+                LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
+
+        reservationDao.create(updatedRes);
+
+        updatedRes.setArrival(LocalDate.now().plusDays(4));
+        updatedRes.setName("Ben Dover");
+        updatedRes.setRoomNumber(6);
+
+        reservationDao.update(updatedRes);
+        assertThat(reservationDao.findAll())
+                .usingFieldByFieldElementComparator()
+                .containsExactly(updatedRes);
+    }
+
 
 
 
