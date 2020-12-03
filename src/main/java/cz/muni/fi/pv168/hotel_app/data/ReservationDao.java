@@ -236,4 +236,14 @@ public final class ReservationDao {
             throw new DataAccessException("Failed to create RESERVATION table", ex);
         }
     }
+
+    public void dropTable() {
+        try (var connection = dataSource.getConnection();
+             var st = connection.createStatement()) {
+
+            st.executeUpdate("DROP TABLE APP.RESERVATION");
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to drop RESERVATION table", ex);
+        }
+    }
 }
