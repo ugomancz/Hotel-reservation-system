@@ -100,6 +100,7 @@ public class NewReservation extends JDialog {
     }
 
     private void fillOutFrame() {
+        gbc.insets = new Insets(5,5,5,5);
         gbc.anchor = GridBagConstraints.CENTER;
         placeComponent(0, 0, new JLabel("Name and surname: "));
         placeComponent(0, 10, new JLabel("Phone: "));
