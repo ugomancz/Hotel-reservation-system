@@ -23,7 +23,7 @@ public class CancelReservation extends JDialog {
     ReservationDao reservationDao;
 
     public CancelReservation(ReservationDao reservationDao) {
-        super(MainWindow.frame, "Change Reservation", ModalityType.APPLICATION_MODAL);
+        super(MainWindow.frame, "Cancel Reservation", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(MainWindow.frame);
         setMinimumSize(new Dimension(350,200));

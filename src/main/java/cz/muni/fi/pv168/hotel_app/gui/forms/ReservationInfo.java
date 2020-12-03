@@ -33,7 +33,7 @@ public class ReservationInfo extends JDialog {
     private DatePicker arrival, departure;
 
     public ReservationInfo(ReservationDao reservationDao) {
-        super(MainWindow.frame, "Change Reservation", ModalityType.APPLICATION_MODAL);
+        super(MainWindow.frame, "Reservation info", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(MainWindow.frame);
         setLayout(new GridBagLayout());
