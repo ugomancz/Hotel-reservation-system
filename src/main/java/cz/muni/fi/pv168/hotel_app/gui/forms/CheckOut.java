@@ -80,6 +80,7 @@ public class CheckOut extends JDialog {
         for (String reservation : reservationMap.keySet()) {
             pickReservation.addItem(reservation);
         }
+        pickReservation.setPreferredSize(new Dimension(220,22));
         pickReservation.addActionListener(this::actionPerformed);
         return pickReservation;
     }
