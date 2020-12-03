@@ -16,7 +16,7 @@ import java.time.LocalDate;
 
 public class SidePanel extends JPanel implements CalendarListener {
 
-    final static Dimension dimension = new Dimension(220, 30);
+    final static Dimension dimension = new Dimension(255, 30);
     private final ReservationDao reservationDao;
 
     public SidePanel(ReservationDao reservationDao) {
