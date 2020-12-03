@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 
 /**
@@ -98,6 +99,17 @@ public class ReservationDaoTest {
 
         assertThat(reservationDao.findAll())
                 .isEmpty();
+    }
+
+    @Test
+    void deleteNonExisting() {
+        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+                LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
+        res.setId(123L);
+
+        assertThatExceptionOfType(DataAccessException.class)
+                .isThrownBy(() -> reservationDao.delete(res))
+                .withMessage("Failed to delete non-existing reservation: %s", res);
     }
 
     @Test
