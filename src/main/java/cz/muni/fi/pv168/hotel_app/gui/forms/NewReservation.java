@@ -7,6 +7,7 @@ import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -146,7 +147,10 @@ public class NewReservation extends JDialog {
                 JOptionPane.showMessageDialog(this, "Arrival date is before today");
             } else if (fromDate.getDate().isAfter(toDate.getDate())) {
                 JOptionPane.showMessageDialog(this, "Departure need to be later than arrival");
-            } else {
+            } else if (parseInt(people.getText()) >  RoomDao.numberOfBeds(parseInt(room))) {
+                JOptionPane.showMessageDialog(this, "Not enough beds in chosen room");
+            }
+        else {
                 int usedPeople = parseInt(people.getText());
                 if (reservationDao.isFree(parseInt(room), from, to)) {
                     reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
