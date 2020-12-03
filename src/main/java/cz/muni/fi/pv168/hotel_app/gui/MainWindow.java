@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.hotel_app.gui;
 
 import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
+import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -49,11 +50,11 @@ public class MainWindow {
 
         private RoomNames() {
             super();
-            setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, 1, 0, 1));
+            setLayout(new GridLayout(RoomDao.numberOfRooms(), 1, 0, 1));
             setBorder(new EmptyBorder(0, 0, 0, 0));
             setBackground(Constants.BACKGROUND_COLOR);
             setPreferredSize(dimensions);
-            for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
+            for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
                 JLabel label = new JLabel("Room n." + (i + 1), SwingConstants.CENTER);
                 label.setBackground(Constants.BACKGROUND_COLOR);
                 add(label);
@@ -119,10 +120,10 @@ public class MainWindow {
 
             JPanel buttons = new JPanel();
             buttons.setBackground(Constants.BACKGROUND_COLOR);
-            buttons.setPreferredSize(new Dimension(SidePanel.dimension.width,20));
-            buttons.setLayout(new GridLayout(1,2, 5,0));
+            buttons.setPreferredSize(new Dimension(SidePanel.dimension.width, 20));
+            buttons.setLayout(new GridLayout(1, 2, 5, 0));
             initButtons(buttons);
-            add(buttons,BorderLayout.EAST);
+            add(buttons, BorderLayout.EAST);
         }
 
         private void actionPerformed(ActionEvent e) {

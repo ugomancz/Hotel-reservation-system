@@ -14,7 +14,7 @@ public class RoomInfo extends JDialog {
         super(MainWindow.frame, "Room info", Dialog.ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(MainWindow.frame);
-        setMinimumSize(new Dimension(400,360));
+        setMinimumSize(new Dimension(400, 360));
         area.setEditable(false);
         area.setBorder(new EmptyBorder(5, 5, 5, 5));
         setBackground(new Color(240, 240, 240));

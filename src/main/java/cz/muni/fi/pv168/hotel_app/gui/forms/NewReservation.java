@@ -101,7 +101,7 @@ public class NewReservation extends JDialog {
     }
 
     private void fillOutFrame() {
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.CENTER;
         placeComponent(0, 0, new JLabel("Name and surname: "));
         placeComponent(0, 10, new JLabel("Phone: "));
@@ -148,10 +148,9 @@ public class NewReservation extends JDialog {
                 JOptionPane.showMessageDialog(this, "Arrival date is before today");
             } else if (fromDate.getDate().isAfter(toDate.getDate())) {
                 JOptionPane.showMessageDialog(this, "Departure need to be later than arrival");
-            } else if (parseInt(people.getText()) >  RoomDao.numberOfBeds(parseInt(room))) {
+            } else if (parseInt(people.getText()) > RoomDao.numberOfBeds(parseInt(room))) {
                 JOptionPane.showMessageDialog(this, "Not enough beds in chosen room");
-            }
-        else {
+            } else {
                 int usedPeople = parseInt(people.getText());
                 if (reservationDao.isFree(parseInt(room), from, to)) {
                     reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
@@ -159,7 +158,7 @@ public class NewReservation extends JDialog {
                     Timetable.drawWeek(LocalDate.now());
                     dispose();
                 } else {
-                    JOptionPane.showInternalMessageDialog(null, "Room full");
+                    JOptionPane.showMessageDialog(this, "Room full");
                 }
             }
         }

@@ -1,10 +1,10 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
+import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
-import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
 
 import javax.swing.*;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 public class CheckIn extends JDialog {
 
     private final GridBagConstraints gbc = new GridBagConstraints();
+    private final ReservationDao reservationDao;
+    private final Map<String, Reservation> reservationMap = new HashMap<>();
     private JLabel nameLabel, phoneLabel, emailLabel, guestLabel, roomLabel, lengthLabel;
     private Button confirm, cancel;
-    private final ReservationDao reservationDao;
     private JComboBox<String> reservationPicker;
-    private final Map<String, Reservation> reservationMap = new HashMap<>();
     private JTextField idTextField;
 
 
@@ -60,8 +60,8 @@ public class CheckIn extends JDialog {
 
 
     /**
-     * @param x coordination for gbc
-     * @param y coordination for gbc
+     * @param x         coordination for gbc
+     * @param y         coordination for gbc
      * @param component to be placed onto frame
      */
     private void placeComponent(int x, int y, Component component) {

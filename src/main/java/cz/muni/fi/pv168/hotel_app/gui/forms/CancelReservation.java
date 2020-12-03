@@ -26,7 +26,7 @@ public class CancelReservation extends JDialog {
         super(MainWindow.frame, "Cancel Reservation", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(MainWindow.frame);
-        setMinimumSize(new Dimension(350,200));
+        setMinimumSize(new Dimension(350, 200));
         setLayout(new GridBagLayout());
         initLayout();
         setVisible(true);
@@ -68,7 +68,7 @@ public class CancelReservation extends JDialog {
         setupComboBox();
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         gbc.anchor = GridBagConstraints.CENTER;
 

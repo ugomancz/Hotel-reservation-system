@@ -4,6 +4,7 @@ import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -19,12 +20,12 @@ import java.util.List;
 
 public class Timetable extends JPanel {
 
-    private static final JTextPane[][] TEXT_PANES = new JTextPane[Constants.NUMBER_OF_ROOMS][Constants.DAYS_IN_WEEK];
+    private static final JTextPane[][] TEXT_PANES = new JTextPane[RoomDao.numberOfRooms()][Constants.DAYS_IN_WEEK];
     private static ReservationDao reservationDao;
 
     public Timetable(ReservationDao reservationDao) {
         super();
-        setLayout(new GridLayout(Constants.NUMBER_OF_ROOMS, Constants.DAYS_IN_WEEK, 0, 0));
+        setLayout(new GridLayout(RoomDao.numberOfRooms(), Constants.DAYS_IN_WEEK, 0, 0));
         setBorder(new EmptyBorder(0, 0, 0, 0));
         setBackground(Constants.BACKGROUND_COLOR);
         Timetable.reservationDao = reservationDao;
@@ -71,7 +72,7 @@ public class Timetable extends JPanel {
 
     public static void drawWeek(LocalDate date) {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        for (int room = 0; room < Constants.NUMBER_OF_ROOMS; room++) { // for every room
+        for (int room = 0; room < RoomDao.numberOfRooms(); room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
                 LocalDate currentDay = monday.plusDays(day);
                 updatePane(reservationDao.getReservation(room + 1, currentDay), currentDay, room, day);
@@ -80,7 +81,7 @@ public class Timetable extends JPanel {
     }
 
     private void initPanels() {
-        for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
+        for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
             for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
                 JTextPane textPane = new JTextPane();
                 StyledDocument styledDocument = textPane.getStyledDocument();

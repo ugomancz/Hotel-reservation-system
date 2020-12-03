@@ -1,7 +1,6 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
 import com.github.lgooddatepicker.components.DatePicker;
-import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
@@ -128,7 +127,7 @@ public class ReservationInfo extends JDialog {
         addComponent(reservationPicker, 1, 0);
 
         roomPicker = new JComboBox<>();
-        for (int i = 0; i < Constants.NUMBER_OF_ROOMS; i++) {
+        for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
             roomPicker.addItem(i + 1);
         }
         roomPicker.addActionListener(this::actionPerformed);
@@ -162,7 +161,7 @@ public class ReservationInfo extends JDialog {
             return false;
         }
         if (RoomDao.numberOfBeds(room) < guests) {
-            showError(guests + " guests can't fit into room n." + room);
+            showError("Not enough beds in chosen room");
             return false;
         }
         if (!reservationDao.isFree(room, arrival.getDate(), departure.getDate())) {

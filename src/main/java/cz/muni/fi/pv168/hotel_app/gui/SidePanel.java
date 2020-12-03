@@ -8,6 +8,7 @@ import com.github.lgooddatepicker.zinternaltools.HighlightInformation;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
 import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
+import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,9 +65,9 @@ public class SidePanel extends JPanel implements CalendarListener {
             return null;
         }
         HighlightInformation highlight = new HighlightInformation(Color.white);
-        if (reservations == Constants.NUMBER_OF_ROOMS) {
+        if (reservations == RoomDao.numberOfRooms()) {
             highlight.colorBackground = new Color(250, 40, 40);
-        } else if (reservations >= Constants.NUMBER_OF_ROOMS * 2 / 3) {
+        } else if (reservations >= RoomDao.numberOfRooms() * 2 / 3) {
             highlight.colorBackground = Color.orange;
         }
         return highlight;

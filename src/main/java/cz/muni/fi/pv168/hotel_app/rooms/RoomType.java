@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.hotel_app.rooms;
 
 public class RoomType {
-    private int pricePerNight;
+    private final int pricePerNight;
     private final BedType bedType;
     private final int numOfBeds;
 
@@ -13,10 +13,6 @@ public class RoomType {
 
     public int getPricePerNight() {
         return pricePerNight;
-    }
-
-    public void setPricePerNight(int pricePerNight) {
-        this.pricePerNight = pricePerNight;
     }
 
     public BedType getBedType() {

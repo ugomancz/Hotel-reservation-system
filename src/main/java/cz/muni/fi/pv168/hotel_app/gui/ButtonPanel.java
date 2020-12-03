@@ -3,7 +3,6 @@ package cz.muni.fi.pv168.hotel_app.gui;
 import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.forms.*;
-import cz.muni.fi.pv168.hotel_app.gui.forms.RoomInfo;
 
 import javax.swing.*;
 import java.awt.*;
