@@ -88,6 +88,20 @@ public class ReservationDaoTest {
     }
 
 
+    @Test
+    void delete() {
+        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+                LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
+
+        reservationDao.create(res);
+
+        reservationDao.delete(res);
+
+        assertThat(reservationDao.findAll())
+                .isEmpty();
+    }
+
+
 
 
 
