@@ -33,7 +33,7 @@ public class ReservationInfo extends JDialog {
     private DatePicker arrival, departure;
 
     public ReservationInfo(ReservationDao reservationDao) {
-        super(MainWindow.frame, "Change Reservation", ModalityType.APPLICATION_MODAL);
+        super(MainWindow.frame, "Reservation info", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(MainWindow.frame);
         setLayout(new GridBagLayout());
@@ -154,16 +154,19 @@ public class ReservationInfo extends JDialog {
 
     private boolean updateReservation(Reservation reservation) {
         int guests;
+        int room = roomPicker.getSelectedIndex() + 1;
         try {
             guests = Integer.parseInt(guestsField.getText());
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Field \"Guests\" has to be a number");
+            showError("Field \"Guests\" has to be a number");
             return false;
         }
-        int room = roomPicker.getSelectedIndex() + 1;
         if (RoomDao.numberOfBeds(room) < guests) {
-            JOptionPane.showMessageDialog(this, guests + " guests can't fit into room n." + room);
+            showError(guests + " guests can't fit into room n." + room);
+            return false;
+        }
+        if (!reservationDao.isFree(room, arrival.getDate(), departure.getDate())) {
+            showError("Selected room isn't free at that time");
             return false;
         }
         reservation.setHosts(guests);
@@ -188,12 +191,16 @@ public class ReservationInfo extends JDialog {
         guestsField.setEditable(value);
     }
 
+    private void showError(String error) {
+        JOptionPane.showMessageDialog(this, error);
+    }
+
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
             dispose();
         } else if (e.getSource().equals(confirmButton)) {
             if (reservationPicker.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(this, "A reservation has to be selected");
+                showError("A reservation has to be selected");
             } else {
                 String selected = (String) reservationPicker.getSelectedItem();
                 if (updateReservation(reservationMap.get(selected))) {
@@ -202,7 +209,7 @@ public class ReservationInfo extends JDialog {
             }
         } else if (e.getSource().equals(editButton)) {
             if (reservationPicker.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(this, "A reservation has to be selected");
+                showError("A reservation has to be selected");
             } else {
                 textFieldsEditable(true);
             }

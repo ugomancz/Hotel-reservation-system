@@ -1,11 +1,13 @@
 package cz.muni.fi.pv168.hotel_app.gui.forms;
 
+import cz.muni.fi.pv168.hotel_app.Constants;
 import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
 import cz.muni.fi.pv168.hotel_app.gui.Button;
 import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
 import cz.muni.fi.pv168.hotel_app.gui.Timetable;
 import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
 import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -82,13 +84,20 @@ public class CheckOut extends JDialog {
         return pickReservation;
     }
 
+    private int calculateTotalPrice(Reservation reservation) {
+        return reservation.getLength() * RoomDao.getPricePerNight(reservation.getRoomNumber()) +
+                reservation.getLength() * Constants.LOCAL_FEE * reservation.getHosts();
+    }
+
     private void displayDetails(Reservation reservation) {
         String receipt = "<html>Client: %s<br/><br/>" +
                 "Nights spent: %d<br/>" +
                 "Room cost per night: %d<br/>" +
                 "Local fees per person per night: %d<br/><br/>" +
                 "<u>Total: %d</u></html>";
-        label.setText(String.format(receipt, reservation.getName(), reservation.getLength(), 1200, 50, 5200));
+        label.setText(String.format(receipt, reservation.getName(), reservation.getLength(),
+                RoomDao.getPricePerNight(reservation.getRoomNumber()),
+                Constants.LOCAL_FEE, calculateTotalPrice(reservation)));
         pack();
     }
 
