@@ -105,7 +105,7 @@ public class ReservationDaoTest {
     void deleteNonExisting() {
         var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
-        res.setId(123L);
+        res.setId(420L);
 
         assertThatExceptionOfType(DataAccessException.class)
                 .isThrownBy(() -> reservationDao.delete(res))
@@ -127,6 +127,17 @@ public class ReservationDaoTest {
         assertThat(reservationDao.findAll())
                 .usingFieldByFieldElementComparator()
                 .containsExactly(updatedRes);
+    }
+
+    @Test
+    void updateNonExisting() {
+        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+                LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
+        res.setId(420L);
+
+        assertThatExceptionOfType(DataAccessException.class)
+                .isThrownBy(() -> reservationDao.update(res))
+                .withMessage("Failed to update non-existing reservation: %s", res);
     }
 
 
