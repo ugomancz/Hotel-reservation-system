@@ -53,6 +53,14 @@ public class ReservationDaoTest {
                 .containsExactly(testRes);
     }
 
+    @Test
+    void findAllEmpty() {
+        assertThat(reservationDao.findAll())
+                .isEmpty();
+    }
+
+
+
 
 
 
