@@ -52,6 +52,7 @@ public class CheckIn extends JDialog {
     private void initMap() {
         for (Reservation reservation : reservationDao.findAll().stream()
                 .filter(x -> x.getArrival().equals(LocalDate.now()))
+                .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
                 .collect(Collectors.toList())) {
             reservationMap.put(reservation.toString(), reservation);
         }
@@ -59,8 +60,8 @@ public class CheckIn extends JDialog {
 
 
     /**
-     * @param x         coordination for gbc
-     * @param y         coordination for gbc
+     * @param x coordination for gbc
+     * @param y coordination for gbc
      * @param component to be placed onto frame
      */
     private void placeComponent(int x, int y, Component component) {
@@ -98,7 +99,7 @@ public class CheckIn extends JDialog {
 
         gbc.anchor = GridBagConstraints.WEST;
 
-        JLabel idLabel = new JLabel("ID number: ");
+        JLabel idLabel = new JLabel("ID : ");
         placeComponent(0, 10, idLabel);
 
         nameLabel = new JLabel();
