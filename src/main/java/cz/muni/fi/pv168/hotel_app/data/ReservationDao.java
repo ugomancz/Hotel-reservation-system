@@ -186,22 +186,16 @@ public final class ReservationDao {
     }
 
     public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
-        // Date.valueOf(arrival)
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
                      "SELECT count(*) as totalRows FROM RESERVATION WHERE STATUS<>? AND ROOMNUMBER=? " + "AND ("
                              + "(DEPARTURE>? AND ARRIVAL<?)"
-                             // + "(ARRIVAL<=? AND DEPARTURE>=?) OR "
-                             // + "(ARRIVAL>? AND DEPARTURE>?) OR "
                              + ")")) {
             st.setString(1, "PAST");
             st.setInt(2, room);
             st.setDate(3, Date.valueOf(arrival));
             st.setDate(4, Date.valueOf(departure));
-            // st.setDate(5, Date.valueOf(arrival));
-            // st.setDate(6, Date.valueOf(arrival));
-            // st.setDate(7, Date.valueOf(arrival));
-            // st.setDate(8, Date.valueOf(departure));
+
 
             int result;
             try (var rs = st.executeQuery()) {
@@ -218,23 +212,19 @@ public final class ReservationDao {
     }
 
     public boolean isFree(int room, LocalDate arrival, LocalDate departure, long id) {
-        // Date.valueOf(arrival)
+
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
                      "SELECT count(*) as totalRows FROM RESERVATION WHERE STATUS<>? AND ROOMNUMBER=? " + "AND ("
                              + "(DEPARTURE>? AND ARRIVAL<?) AND ID<>?"
-                             // + "(ARRIVAL<=? AND DEPARTURE>=?) OR "
-                             // + "(ARRIVAL>? AND DEPARTURE>?) OR "
+
                              + ")")) {
             st.setString(1, "PAST");
             st.setInt(2, room);
             st.setDate(3, Date.valueOf(arrival));
             st.setDate(4, Date.valueOf(departure));
             st.setLong(5, id);
-            // st.setDate(5, Date.valueOf(arrival));
-            // st.setDate(6, Date.valueOf(arrival));
-            // st.setDate(7, Date.valueOf(arrival));
-            // st.setDate(8, Date.valueOf(departure));
+
 
             int result;
             try (var rs = st.executeQuery()) {
