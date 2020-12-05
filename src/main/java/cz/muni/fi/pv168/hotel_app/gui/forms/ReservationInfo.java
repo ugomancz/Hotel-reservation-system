@@ -164,7 +164,7 @@ public class ReservationInfo extends JDialog {
             showError("Not enough beds in chosen room");
             return false;
         }
-        if (!reservationDao.isFree(room, arrival.getDate(), departure.getDate())) {
+        if (!reservationDao.isFree(room, arrival.getDate(), departure.getDate(), reservation.getId())) {
             showError("Selected room isn't free at that time");
             return false;
         }
