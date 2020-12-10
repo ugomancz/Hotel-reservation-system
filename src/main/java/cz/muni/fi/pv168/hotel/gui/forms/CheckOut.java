@@ -3,14 +3,23 @@ package cz.muni.fi.pv168.hotel.gui.forms;
 import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
-import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -29,11 +38,11 @@ public class CheckOut extends JDialog {
     private JButton outButton, cancelButton;
     private JComboBox<String> pickReservation;
 
-    public CheckOut(ReservationDao reservationDao) {
-        super(MainWindow.frame, "Check-out", ModalityType.APPLICATION_MODAL);
+    public CheckOut(JFrame frame, ReservationDao reservationDao) {
+        super(frame, "Check-out", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLayout(new GridBagLayout());
-        setLocationRelativeTo(MainWindow.frame);
+        setLocationRelativeTo(frame);
         setMinimumSize(new Dimension(250, 250));
 
         initMap();
@@ -80,7 +89,7 @@ public class CheckOut extends JDialog {
         for (String reservation : reservationMap.keySet()) {
             pickReservation.addItem(reservation);
         }
-        pickReservation.setPreferredSize(new Dimension(220,22));
+        pickReservation.setPreferredSize(new Dimension(220, 22));
         pickReservation.addActionListener(this::actionPerformed);
         return pickReservation;
     }

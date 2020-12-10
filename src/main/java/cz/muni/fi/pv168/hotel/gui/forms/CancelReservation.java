@@ -2,19 +2,28 @@ package cz.muni.fi.pv168.hotel.gui.forms;
 
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
-import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CancelReservation extends JDialog {
+
     Button cancelButton, okayButton;
     JComboBox<String> reservationPicker;
     JCheckBox confirm;
@@ -22,10 +31,10 @@ public class CancelReservation extends JDialog {
     GridBagConstraints gbc = new GridBagConstraints();
     ReservationDao reservationDao;
 
-    public CancelReservation(ReservationDao reservationDao) {
-        super(MainWindow.frame, "Cancel Reservation", ModalityType.APPLICATION_MODAL);
+    public CancelReservation(JFrame frame, ReservationDao reservationDao) {
+        super(frame, "Cancel Reservation", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setLocationRelativeTo(MainWindow.frame);
+        setLocationRelativeTo(frame);
         setMinimumSize(new Dimension(350, 200));
         setLayout(new GridBagLayout());
         initLayout();

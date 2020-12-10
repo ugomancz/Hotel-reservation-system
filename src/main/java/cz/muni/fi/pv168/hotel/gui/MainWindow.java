@@ -4,9 +4,14 @@ import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -15,7 +20,7 @@ import java.time.temporal.TemporalAdjusters;
 
 public class MainWindow {
 
-    public static JFrame frame;
+    private static JFrame frame;
     private static JPanel panel;
 
     public MainWindow(ReservationDao reservationDao) {
@@ -38,7 +43,7 @@ public class MainWindow {
         panel.setLayout(new BorderLayout(5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
 
-        panel.add(new SidePanel(reservationDao).getPanel(), BorderLayout.EAST);
+        panel.add(new SidePanel(frame, reservationDao).getPanel(), BorderLayout.EAST);
         panel.add(new Timetable(reservationDao).getPanel(), BorderLayout.CENTER);
         panel.add(new RoomNames(), BorderLayout.WEST);
         panel.add(new DayNames(LocalDate.now()), BorderLayout.NORTH);
@@ -46,6 +51,7 @@ public class MainWindow {
     }
 
     private static class RoomNames extends JPanel {
+
         public Dimension dimensions = new Dimension(75, 500);
 
         private RoomNames() {

@@ -2,13 +2,22 @@ package cz.muni.fi.pv168.hotel.gui.forms;
 
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
-import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -30,12 +39,12 @@ public class CheckIn extends JDialog {
     private JTextField idTextField;
 
 
-    public CheckIn(ReservationDao reservationDao) {
-        super(MainWindow.frame, "Check-in", ModalityType.APPLICATION_MODAL);
+    public CheckIn(JFrame frame, ReservationDao reservationDao) {
+        super(frame, "Check-in", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setSize(500, 300);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(MainWindow.frame);
+        setLocationRelativeTo(frame);
         setEnabled(true);
 
         GridBagLayout layout = new GridBagLayout();

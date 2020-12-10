@@ -3,14 +3,26 @@ package cz.muni.fi.pv168.hotel.gui.forms;
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
-import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -28,11 +40,11 @@ public class NewReservation extends JDialog {
     Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     GridBagConstraints gbc = new GridBagConstraints();
 
-    public NewReservation(ReservationDao reservationDao) {
-        super(MainWindow.frame, "New reservation", Dialog.ModalityType.APPLICATION_MODAL);
+    public NewReservation(JFrame frame, ReservationDao reservationDao) {
+        super(frame, "New reservation", Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(MainWindow.frame);
+        setLocationRelativeTo(frame);
         setSize(400, 400);
 
         setEnabled(true);

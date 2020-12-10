@@ -3,14 +3,25 @@ package cz.muni.fi.pv168.hotel.gui.forms;
 import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
-import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.time.DayOfWeek;
 import java.util.HashMap;
@@ -31,10 +42,10 @@ public class ReservationInfo extends JDialog {
     private JComboBox<String> reservationPicker;
     private DatePicker arrival, departure;
 
-    public ReservationInfo(ReservationDao reservationDao) {
-        super(MainWindow.frame, "Reservation info", ModalityType.APPLICATION_MODAL);
+    public ReservationInfo(JFrame frame, ReservationDao reservationDao) {
+        super(frame, "Reservation info", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setLocationRelativeTo(MainWindow.frame);
+        setLocationRelativeTo(frame);
         setLayout(new GridBagLayout());
         initMap();
         initLayout();

@@ -1,19 +1,24 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dialog;
+import java.awt.Dimension;
 
 public class RoomInfo extends JDialog {
+
     JTextArea area = new JTextArea();
 
-    public RoomInfo() {
-        super(MainWindow.frame, "Room info", Dialog.ModalityType.APPLICATION_MODAL);
+    public RoomInfo(JFrame frame) {
+        super(frame, "Room info", Dialog.ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(MainWindow.frame);
+        setLocationRelativeTo(frame);
         setMinimumSize(new Dimension(400, 360));
         area.setEditable(false);
         area.setBorder(new EmptyBorder(5, 5, 5, 5));
