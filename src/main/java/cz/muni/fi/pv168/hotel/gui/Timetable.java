@@ -6,28 +6,44 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Map;
 
-public class Timetable extends JPanel {
+public class Timetable {
 
     private static final JTextPane[][] TEXT_PANES = new JTextPane[RoomDao.numberOfRooms()][Constants.DAYS_IN_WEEK];
+    private static final Color FIRST_DAY_OF_RESERVATION = new Color(60, 160, 50);
+    private static final Map<ReservationStatus, Color> STATUS_COLOR = Map.of(
+            ReservationStatus.PLANNED, new Color(13, 218, 13),
+            ReservationStatus.ONGOING, Color.orange,
+            ReservationStatus.PAST, Color.lightGray
+    );
     private static ReservationDao reservationDao;
+    private final JPanel panel;
+    private static final Map<ReservationStatus, Color> STATUS_COLOR = Map.of(
+            ReservationStatus.PLANNED, Constants.PLANNED_RESERVATION,
+            ReservationStatus.ONGOING, Constants.ONGOING_RESERVATION,
+            ReservationStatus.PAST, Constants.PAST_RESERVATION
+            );
 
-    public Timetable(ReservationDao reservationDao) {
-        super();
-        setLayout(new GridLayout(RoomDao.numberOfRooms(), Constants.DAYS_IN_WEEK, 0, 0));
-        setBorder(new EmptyBorder(0, 0, 0, 0));
-        setBackground(Constants.BACKGROUND_COLOR);
+    Timetable(ReservationDao reservationDao) {
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(RoomDao.numberOfRooms(), Constants.DAYS_IN_WEEK, 0, 0));
+        panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+        panel.setBackground(Constants.BACKGROUND_COLOR);
         Timetable.reservationDao = reservationDao;
         initPanels();
         drawWeek(LocalDate.now());
@@ -40,9 +56,9 @@ public class Timetable extends JPanel {
 
     private static void fillPane(int room, int day, LocalDate today, Reservation reservation) {
         if (reservation.getArrival().isEqual(today) && reservation.getStatus() != ReservationStatus.PAST) {
-            TEXT_PANES[room][day].setBackground(Constants.FIRST_DAY_OF_RESERVATION);
+            TEXT_PANES[room][day].setBackground(FIRST_DAY_OF_RESERVATION);
         } else {
-            TEXT_PANES[room][day].setBackground(reservation.getStatus().getColor());
+            TEXT_PANES[room][day].setBackground(STATUS_COLOR.get(reservation.getStatus()));
         }
         TEXT_PANES[room][day].setText(reservation.getName());
 
@@ -54,7 +70,12 @@ public class Timetable extends JPanel {
         } else {
             TEXT_PANES[room][day].setText(reservationTwo.getName() + " / " + reservationOne.getName());
         }
-        TEXT_PANES[room][day].setBackground(Constants.FIRST_DAY_OF_RESERVATION);
+        if (reservationOne.getStatus() == ReservationStatus.PAST
+                && reservationTwo.getStatus() == ReservationStatus.PAST) {
+            TEXT_PANES[room][day].setBackground(STATUS_COLOR.get(reservationOne.getStatus()));
+        } else {
+            TEXT_PANES[room][day].setBackground(FIRST_DAY_OF_RESERVATION);
+        }
     }
 
     private static void updatePane(List<Reservation> reservations, LocalDate today, int room, int day) {
@@ -80,6 +101,10 @@ public class Timetable extends JPanel {
         }
     }
 
+    public JPanel getPanel() {
+        return panel;
+    }
+
     private void initPanels() {
         for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
             for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
@@ -93,7 +118,7 @@ public class Timetable extends JPanel {
                 textPane.setEditable(false);
                 textPane.setBorder(new LineBorder(Color.black, 1));
                 TEXT_PANES[i][j] = textPane;
-                add(textPane);
+                panel.add(textPane);
             }
         }
     }

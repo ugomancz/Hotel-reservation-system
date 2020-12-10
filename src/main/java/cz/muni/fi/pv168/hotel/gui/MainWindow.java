@@ -39,7 +39,7 @@ public class MainWindow {
         panel.setBackground(Constants.BACKGROUND_COLOR);
 
         panel.add(new SidePanel(reservationDao), BorderLayout.EAST);
-        panel.add(new Timetable(reservationDao), BorderLayout.CENTER);
+        panel.add(new Timetable(reservationDao).getPanel(), BorderLayout.CENTER);
         panel.add(new RoomNames(), BorderLayout.WEST);
         panel.add(new DayNames(LocalDate.now()), BorderLayout.NORTH);
         return panel;
