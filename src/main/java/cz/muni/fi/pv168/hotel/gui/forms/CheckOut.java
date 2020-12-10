@@ -36,7 +36,7 @@ public class CheckOut extends JDialog {
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     GridBagConstraints gbc = new GridBagConstraints();
     private JButton outButton, cancelButton;
-    private JComboBox<String> pickReservation;
+    private JComboBox<String> reservationPicker;
 
     public CheckOut(JFrame frame, ReservationDao reservationDao) {
         super(frame, "Check-out", ModalityType.APPLICATION_MODAL);
@@ -57,6 +57,11 @@ public class CheckOut extends JDialog {
         label.setPreferredSize(new Dimension(215, 120));
         addComponent(label, 1);
         addButtons();
+        String selected = (String) reservationPicker.getSelectedItem();
+        Reservation reservation = reservationMap.get(selected);
+        if (reservation != null) {
+            displayInfo(reservation);
+        }
     }
 
     private void addButtons() {
@@ -85,13 +90,13 @@ public class CheckOut extends JDialog {
     }
 
     private JComboBox<String> addComboBox() {
-        pickReservation = new JComboBox<>();
+        reservationPicker = new JComboBox<>();
         for (String reservation : reservationMap.keySet()) {
-            pickReservation.addItem(reservation);
+            reservationPicker.addItem(reservation);
         }
-        pickReservation.setPreferredSize(new Dimension(220, 22));
-        pickReservation.addActionListener(this::actionPerformed);
-        return pickReservation;
+        reservationPicker.setPreferredSize(new Dimension(220, 22));
+        reservationPicker.addActionListener(this::actionPerformed);
+        return reservationPicker;
     }
 
     private int calculateTotalPrice(Reservation reservation) {
@@ -99,7 +104,7 @@ public class CheckOut extends JDialog {
                 reservation.getLength() * Constants.LOCAL_FEE * reservation.getHosts();
     }
 
-    private void displayDetails(Reservation reservation) {
+    private void displayInfo(Reservation reservation) {
         String receipt = "<html>Client: %s<br/><br/>" +
                 "Nights spent: %d<br/>" +
                 "Room cost per night: %d<br/>" +
@@ -113,7 +118,7 @@ public class CheckOut extends JDialog {
 
     private void closeReservation(Reservation reservation) {
         if (reservation == null) {
-            JOptionPane.showMessageDialog(this, "No reservation picked");
+            JOptionPane.showMessageDialog(this, "A reservation has to be selected");
         } else {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);
@@ -125,11 +130,11 @@ public class CheckOut extends JDialog {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(outButton)) {
-            String selected = (String) pickReservation.getSelectedItem();
+            String selected = (String) reservationPicker.getSelectedItem();
             closeReservation(reservationMap.get(selected));
-        } else if (e.getSource().equals(pickReservation)) {
-            String selected = (String) pickReservation.getSelectedItem();
-            displayDetails(reservationMap.get(selected));
+        } else if (e.getSource().equals(reservationPicker)) {
+            String selected = (String) reservationPicker.getSelectedItem();
+            displayInfo(reservationMap.get(selected));
         } else if (e.getSource().equals(cancelButton)) {
             dispose();
         }
