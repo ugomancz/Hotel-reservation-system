@@ -1,8 +1,8 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
+import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
@@ -20,7 +20,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.time.DayOfWeek;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,11 +32,12 @@ public class ReservationInfo extends JDialog {
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
+    private final DesignedDatePicker arrival = new DesignedDatePicker();
+    private final DesignedDatePicker departure = new DesignedDatePicker();
     private Button cancelButton, confirmButton;
     private JTextField nameField, phoneField, emailField, guestsField;
     private JComboBox<Integer> roomPicker;
     private JComboBox<String> reservationPicker;
-    private DatePicker arrival, departure;
 
     public ReservationInfo(JFrame frame, ReservationDao reservationDao) {
         super(frame, "Reservation info", ModalityType.APPLICATION_MODAL);
@@ -79,7 +79,8 @@ public class ReservationInfo extends JDialog {
         phoneField = (JTextField) addComponent(new JTextField(20), 1, 2);
         emailField = (JTextField) addComponent(new JTextField(20), 1, 3);
         guestsField = (JTextField) addComponent(new JTextField(2), 1, 4);
-        addDatePickers();
+        addComponent(arrival.getDatePicker(), 1, 5);
+        addComponent(departure.getDatePicker(), 1, 6);
         addComboBoxes();
         String selected = (String) reservationPicker.getSelectedItem();
         Reservation reservation = reservationMap.get(selected);
@@ -93,21 +94,6 @@ public class ReservationInfo extends JDialog {
         gbc.gridy = y;
         add(component, gbc);
         return component;
-    }
-
-
-    private void addDatePickers() {
-        arrival = new DatePicker();
-        arrival.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
-        arrival.getComponentToggleCalendarButton().setBackground(Button.background);
-        arrival.getComponentToggleCalendarButton().setFont(Button.font);
-        addComponent(arrival, 1, 5);
-
-        departure = new DatePicker();
-        departure.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
-        departure.getComponentToggleCalendarButton().setBackground(Button.background);
-        departure.getComponentToggleCalendarButton().setFont(Button.font);
-        addComponent(departure, 1, 6);
     }
 
     private void addButtons() {

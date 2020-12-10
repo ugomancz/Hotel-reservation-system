@@ -1,8 +1,8 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import com.github.lgooddatepicker.components.DatePicker;
 import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
+import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
@@ -15,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -24,7 +23,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -36,7 +34,7 @@ public class NewReservation extends JDialog {
     Button cancelButton, okayButton;
     JTextField name, phone, email, people;
     JComboBox<Integer> rooms;
-    DatePicker fromDate, toDate;
+    DesignedDatePicker fromDate, toDate;
     Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     GridBagConstraints gbc = new GridBagConstraints();
 
@@ -81,17 +79,11 @@ public class NewReservation extends JDialog {
     }
 
     private void addDatePickers() {
-        fromDate = new DatePicker();
-        fromDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
-        fromDate.getComponentToggleCalendarButton().setBackground(new Color(240, 240, 240));
-        fromDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
-        placeComponent(5, 40, fromDate);
+        fromDate = new DesignedDatePicker();
+        placeComponent(5, 40, fromDate.getDatePicker());
 
-        toDate = new DatePicker();
-        toDate.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
-        toDate.getComponentToggleCalendarButton().setBackground(new Color(240, 240, 240));
-        toDate.getComponentToggleCalendarButton().setFont(new Font("Tahoma", Font.BOLD, 14));
-        placeComponent(5, 50, toDate);
+        toDate = new DesignedDatePicker();
+        placeComponent(5, 50, toDate.getDatePicker());
     }
 
     private void addComboBox() {
@@ -158,8 +150,8 @@ public class NewReservation extends JDialog {
                 JOptionPane.showMessageDialog(this, "Number of people is not number");
             } else if (fromDate.getDate().isBefore(LocalDate.now())) {
                 JOptionPane.showMessageDialog(this, "Arrival date is before today");
-            } else if (fromDate.getDate().isAfter(toDate.getDate())) {
-                JOptionPane.showMessageDialog(this, "Departure need to be later than arrival");
+            } else if (!toDate.getDate().isAfter(fromDate.getDate())) {
+                JOptionPane.showMessageDialog(this, "Departure needs to be later than arrival");
             } else if (parseInt(people.getText()) > RoomDao.numberOfBeds(parseInt(room))) {
                 JOptionPane.showMessageDialog(this, "Not enough beds in chosen room");
             } else {
