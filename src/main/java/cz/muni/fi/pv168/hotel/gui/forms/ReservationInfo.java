@@ -8,7 +8,6 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -16,9 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -36,7 +33,7 @@ public class ReservationInfo extends JDialog {
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
-    private Button cancelButton, confirmButton, editButton;
+    private Button cancelButton, confirmButton;
     private JTextField nameField, phoneField, emailField, guestsField;
     private JComboBox<Integer> roomPicker;
     private JComboBox<String> reservationPicker;
@@ -84,7 +81,11 @@ public class ReservationInfo extends JDialog {
         guestsField = (JTextField) addComponent(new JTextField(2), 1, 4);
         addDatePickers();
         addComboBoxes();
-        textFieldsEditable(false);
+        String selected = (String) reservationPicker.getSelectedItem();
+        Reservation reservation = reservationMap.get(selected);
+        if (reservation != null) {
+            displayInfo(reservation);
+        }
     }
 
     private JComponent addComponent(JComponent component, int x, int y) {
@@ -100,14 +101,12 @@ public class ReservationInfo extends JDialog {
         arrival.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
         arrival.getComponentToggleCalendarButton().setBackground(Button.background);
         arrival.getComponentToggleCalendarButton().setFont(Button.font);
-        arrival.getComponentDateTextField().setDisabledTextColor(Color.black);
         addComponent(arrival, 1, 5);
 
         departure = new DatePicker();
         departure.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
         departure.getComponentToggleCalendarButton().setBackground(Button.background);
         departure.getComponentToggleCalendarButton().setFont(Button.font);
-        departure.getComponentDateTextField().setDisabledTextColor(Color.black);
         addComponent(departure, 1, 6);
     }
 
@@ -115,11 +114,6 @@ public class ReservationInfo extends JDialog {
         confirmButton = new Button("Confirm");
         confirmButton.addActionListener(this::actionPerformed);
         addComponent(confirmButton, 0, 8);
-
-        gbc.anchor = GridBagConstraints.LINE_START;
-        editButton = new Button("Edit");
-        editButton.addActionListener(this::actionPerformed);
-        addComponent(editButton, 1, 8);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.insets = new Insets(0, 10, 0, 10);
@@ -142,13 +136,6 @@ public class ReservationInfo extends JDialog {
             roomPicker.addItem(i + 1);
         }
         roomPicker.addActionListener(this::actionPerformed);
-        roomPicker.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public void paint(Graphics g) {
-                setForeground(Color.BLACK);
-                super.paint(g);
-            }
-        });
         addComponent(roomPicker, 1, 7);
     }
 
@@ -172,11 +159,15 @@ public class ReservationInfo extends JDialog {
             return false;
         }
         if (RoomDao.numberOfBeds(room) < guests) {
-            showError("Not enough beds in chosen room");
+            showError("Not enough beds in the chosen room");
             return false;
         }
         if (!reservationDao.isFree(room, arrival.getDate(), departure.getDate(), reservation.getId())) {
             showError("Selected room isn't free at that time");
+            return false;
+        }
+        if (!departure.getDate().isAfter(arrival.getDate())) {
+            showError("Please check the selected dates");
             return false;
         }
         reservation.setHosts(guests);
@@ -187,18 +178,8 @@ public class ReservationInfo extends JDialog {
         reservation.setDeparture(departure.getDate());
         reservation.setRoomNumber(room);
         reservationDao.update(reservation);
-        Timetable.drawWeek(arrival.getDate());
+        Timetable.drawWeek(reservation.getArrival());
         return true;
-    }
-
-    private void textFieldsEditable(boolean value) {
-        nameField.setEditable(value);
-        phoneField.setEditable(value);
-        emailField.setEditable(value);
-        arrival.setEnabled(value);
-        departure.setEnabled(value);
-        roomPicker.setEnabled(value);
-        guestsField.setEditable(value);
     }
 
     private void showError(String error) {
@@ -216,12 +197,6 @@ public class ReservationInfo extends JDialog {
                 if (updateReservation(reservationMap.get(selected))) {
                     dispose();
                 }
-            }
-        } else if (e.getSource().equals(editButton)) {
-            if (reservationPicker.getSelectedItem() == null) {
-                showError("A reservation has to be selected");
-            } else {
-                textFieldsEditable(true);
             }
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
