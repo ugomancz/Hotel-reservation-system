@@ -10,9 +10,6 @@ public class Main {
 
     public static void main(String[] args) {
         ReservationDao reservationDao = new ReservationDao(createDataSource());
-        if (reservationDao.findAll().size() != 0) {
-            System.out.println("Something is saved");
-        }
         new MainWindow(reservationDao);
     }
 
@@ -23,5 +20,4 @@ public class Main {
         dataSource.setCreateDatabase("create");
         return dataSource;
     }
-
 }
