@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.hotel_app.rooms;
+package cz.muni.fi.pv168.hotel.rooms;
 
 import java.util.HashMap;
 import java.util.Map;

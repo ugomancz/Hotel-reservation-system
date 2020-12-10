@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.hotel_app.reservations;
+package cz.muni.fi.pv168.hotel.reservations;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

@@ -1,7 +1,7 @@
-package cz.muni.fi.pv168.hotel_app.gui.forms;
+package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
-import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
+import cz.muni.fi.pv168.hotel.gui.MainWindow;
+import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

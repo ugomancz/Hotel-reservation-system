@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.hotel_app;
+package cz.muni.fi.pv168.hotel;
 
 
 import java.awt.*;

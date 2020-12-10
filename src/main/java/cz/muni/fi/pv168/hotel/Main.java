@@ -1,7 +1,7 @@
-package cz.muni.fi.pv168.hotel_app;
+package cz.muni.fi.pv168.hotel;
 
-import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
-import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
+import cz.muni.fi.pv168.hotel.data.ReservationDao;
+import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 
 import javax.sql.DataSource;

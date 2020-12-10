@@ -1,13 +1,13 @@
-package cz.muni.fi.pv168.hotel_app.gui.forms;
+package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel_app.Constants;
-import cz.muni.fi.pv168.hotel_app.data.ReservationDao;
-import cz.muni.fi.pv168.hotel_app.gui.Button;
-import cz.muni.fi.pv168.hotel_app.gui.MainWindow;
-import cz.muni.fi.pv168.hotel_app.gui.Timetable;
-import cz.muni.fi.pv168.hotel_app.reservations.Reservation;
-import cz.muni.fi.pv168.hotel_app.reservations.ReservationStatus;
-import cz.muni.fi.pv168.hotel_app.rooms.RoomDao;
+import cz.muni.fi.pv168.hotel.Constants;
+import cz.muni.fi.pv168.hotel.data.ReservationDao;
+import cz.muni.fi.pv168.hotel.gui.Button;
+import cz.muni.fi.pv168.hotel.gui.MainWindow;
+import cz.muni.fi.pv168.hotel.gui.Timetable;
+import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.*;
 import java.awt.*;

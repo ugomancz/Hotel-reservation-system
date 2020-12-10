@@ -1,6 +1,6 @@
-package cz.muni.fi.pv168.hotel_app.reservations;
+package cz.muni.fi.pv168.hotel.reservations;
 
-import cz.muni.fi.pv168.hotel_app.Constants;
+import cz.muni.fi.pv168.hotel.Constants;
 
 import java.awt.*;
 
