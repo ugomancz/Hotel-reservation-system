@@ -64,10 +64,10 @@ public class DesignedCalendar {
         public void selectedDateChanged(CalendarSelectionEvent calendarSelectionEvent) {
             if (calendarSelectionEvent.getNewDate() != null) {
                 Timetable.drawWeek(calendarSelectionEvent.getNewDate());
-                MainWindow.DayNames.changeDates(calendarSelectionEvent.getNewDate());
+                TimetableHeader.changeDates(calendarSelectionEvent.getNewDate());
             } else {
                 Timetable.drawWeek(LocalDate.now());
-                MainWindow.DayNames.changeDates(LocalDate.now());
+                TimetableHeader.changeDates(LocalDate.now());
             }
         }
 
