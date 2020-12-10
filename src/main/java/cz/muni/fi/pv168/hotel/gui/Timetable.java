@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
-import cz.muni.fi.pv168.hotel.data.ReservationDao;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
@@ -33,11 +33,6 @@ public class Timetable {
     );
     private static ReservationDao reservationDao;
     private final JPanel panel;
-    private static final Map<ReservationStatus, Color> STATUS_COLOR = Map.of(
-            ReservationStatus.PLANNED, Constants.PLANNED_RESERVATION,
-            ReservationStatus.ONGOING, Constants.ONGOING_RESERVATION,
-            ReservationStatus.PAST, Constants.PAST_RESERVATION
-            );
 
     Timetable(ReservationDao reservationDao) {
         panel = new JPanel();
@@ -45,7 +40,7 @@ public class Timetable {
         panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         panel.setBackground(Constants.BACKGROUND_COLOR);
         Timetable.reservationDao = reservationDao;
-        initPanels();
+        initPanes();
         drawWeek(LocalDate.now());
     }
 
@@ -105,7 +100,7 @@ public class Timetable {
         return panel;
     }
 
-    private void initPanels() {
+    private void initPanes() {
         for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
             for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
                 JTextPane textPane = new JTextPane();
@@ -114,7 +109,7 @@ public class Timetable {
                 StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
                 styledDocument.setParagraphAttributes(0, styledDocument.getLength(), center, false);
 
-                textPane.setFont(new Font("Helvetica", Font.BOLD, 13));
+                textPane.setFont(new Font("Helvetica", Font.BOLD, 12));
                 textPane.setEditable(false);
                 textPane.setBorder(new LineBorder(Color.black, 1));
                 TEXT_PANES[i][j] = textPane;

@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
-import cz.muni.fi.pv168.hotel.data.ReservationDao;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

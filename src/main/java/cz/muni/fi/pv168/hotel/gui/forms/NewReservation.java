@@ -1,10 +1,10 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel.data.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
@@ -35,7 +35,7 @@ public class NewReservation extends JDialog {
     JTextField name, phone, email, people;
     JComboBox<Integer> rooms;
     DesignedDatePicker fromDate, toDate;
-    Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
     GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation(JFrame frame, ReservationDao reservationDao) {

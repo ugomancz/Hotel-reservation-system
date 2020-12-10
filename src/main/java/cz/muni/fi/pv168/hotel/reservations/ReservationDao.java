@@ -1,6 +1,6 @@
-package cz.muni.fi.pv168.hotel.data;
+package cz.muni.fi.pv168.hotel.reservations;
 
-import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.DataAccessException;
 
 import javax.sql.DataSource;
 import java.sql.Date;

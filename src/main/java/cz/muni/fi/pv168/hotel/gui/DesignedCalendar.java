@@ -6,7 +6,7 @@ import com.github.lgooddatepicker.optionalusertools.CalendarListener;
 import com.github.lgooddatepicker.zinternaltools.CalendarSelectionEvent;
 import com.github.lgooddatepicker.zinternaltools.HighlightInformation;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
-import cz.muni.fi.pv168.hotel.data.ReservationDao;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import java.awt.Color;

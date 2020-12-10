@@ -1,4 +1,4 @@
-package cz.muni.fi.pv168.hotel.data;
+package cz.muni.fi.pv168.hotel;
 
 /**
  * @author Denis Kollar

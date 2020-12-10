@@ -1,7 +1,7 @@
 package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
-import cz.muni.fi.pv168.hotel.data.ReservationDao;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.forms.CancelReservation;
 import cz.muni.fi.pv168.hotel.gui.forms.CheckIn;
 import cz.muni.fi.pv168.hotel.gui.forms.CheckOut;

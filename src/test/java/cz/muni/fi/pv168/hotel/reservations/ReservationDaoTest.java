@@ -1,6 +1,6 @@
-package cz.muni.fi.pv168.hotel.data;
+package cz.muni.fi.pv168.hotel.reservations;
 
-import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.DataAccessException;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

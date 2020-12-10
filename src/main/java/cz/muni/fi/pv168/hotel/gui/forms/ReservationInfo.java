@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel.data.ReservationDao;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @author Ondrej Kostik
@@ -118,8 +119,8 @@ public class ReservationInfo extends JDialog {
         addComponent(reservationPicker, 1, 0);
 
         roomPicker = new JComboBox<>();
-        for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
-            roomPicker.addItem(i + 1);
+        for (int i : IntStream.range(1, RoomDao.numberOfRooms() + 1).toArray()) {
+            roomPicker.addItem(i);
         }
         roomPicker.addActionListener(this::actionPerformed);
         addComponent(roomPicker, 1, 7);
