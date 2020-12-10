@@ -10,7 +10,6 @@ import cz.muni.fi.pv168.hotel.gui.forms.ReservationInfo;
 import cz.muni.fi.pv168.hotel.gui.forms.RoomInfo;
 
 import javax.swing.JPanel;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 
@@ -20,12 +19,11 @@ public class ButtonPanel {
     private final JPanel panel;
     private final ReservationDao reservationDao;
 
-    public ButtonPanel(Dimension dimension, ReservationDao reservationDao) {
+    public ButtonPanel(ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
         panel = new JPanel();
         panel.setLayout(new GridLayout(numOfButtons, 1, 5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
-        panel.setPreferredSize(dimension);
         addButtons();
     }
 

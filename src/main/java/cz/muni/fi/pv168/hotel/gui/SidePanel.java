@@ -7,17 +7,22 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-public class SidePanel extends JPanel {
+public class SidePanel {
 
     final static Dimension dimension = new Dimension(255, 30);
+    private final JPanel panel;
 
     public SidePanel(ReservationDao reservationDao) {
-        super();
-        setBackground(Constants.BACKGROUND_COLOR);
-        setLayout(new BorderLayout(0, 10));
-        setPreferredSize(dimension);
+        panel = new JPanel();
+        panel.setBackground(Constants.BACKGROUND_COLOR);
+        panel.setLayout(new BorderLayout(0, 10));
+        panel.setPreferredSize(dimension);
 
-        add(new ButtonPanel(dimension, reservationDao).getPanel(), BorderLayout.CENTER);
-        add(new DesignedCalendar(reservationDao).getCalendar(), BorderLayout.SOUTH);
+        panel.add(new ButtonPanel(reservationDao).getPanel(), BorderLayout.CENTER);
+        panel.add(new DesignedCalendar(reservationDao).getCalendar(), BorderLayout.SOUTH);
+    }
+
+    public JPanel getPanel() {
+        return panel;
     }
 }
