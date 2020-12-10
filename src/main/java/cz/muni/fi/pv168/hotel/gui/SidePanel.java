@@ -27,7 +27,7 @@ public class SidePanel extends JPanel implements CalendarListener {
         setPreferredSize(dimension);
         this.reservationDao = reservationDao;
 
-        add(new ButtonPanel(dimension, reservationDao), BorderLayout.CENTER);
+        add(new ButtonPanel(dimension, reservationDao).getPanel(), BorderLayout.CENTER);
         add(initCalendar(), BorderLayout.SOUTH);
     }
 
