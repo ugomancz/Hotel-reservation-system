@@ -16,6 +16,7 @@
 !*.png
 !*.vpp
 !*.jpg
+!*.properties
 # etc.
 
 
