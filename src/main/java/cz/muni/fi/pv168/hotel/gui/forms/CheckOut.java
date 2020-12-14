@@ -1,10 +1,11 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
 import cz.muni.fi.pv168.hotel.Constants;
-import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
+import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
  */
 public class CheckOut extends JDialog {
 
+    private static final I18N I18N = new I18N(CheckOut.class);
     private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
@@ -39,7 +41,7 @@ public class CheckOut extends JDialog {
     private JComboBox<String> reservationPicker;
 
     public CheckOut(JFrame frame, ReservationDao reservationDao) {
-        super(frame, "Check-out", ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("title"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLayout(new GridBagLayout());
         setLocationRelativeTo(frame);
@@ -65,9 +67,9 @@ public class CheckOut extends JDialog {
     }
 
     private void addButtons() {
-        outButton = new Button("Check-out");
+        outButton = new Button(I18N.getString("confirmButton"));
         outButton.addActionListener(this::actionPerformed);
-        cancelButton = new Button("Cancel");
+        cancelButton = new Button(I18N.getString("cancelButton"));
         cancelButton.addActionListener(this::actionPerformed);
 
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -105,11 +107,11 @@ public class CheckOut extends JDialog {
     }
 
     private void displayInfo(Reservation reservation) {
-        String receipt = "<html>Client: %s<br/><br/>" +
-                "Nights spent: %d<br/>" +
-                "Room cost per night: %d<br/>" +
-                "Local fees per person per night: %d<br/><br/>" +
-                "<u>Total: %d</u></html>";
+        String receipt = "<html>" + I18N.getString("clientLabel") + ": %s<br/><br/>" +
+                I18N.getString("nightsLabel") + ": %d<br/>" +
+                I18N.getString("roomCostLabel") + ": %d<br/>" +
+                I18N.getString("feesLabel") + ": %d<br/><br/>" +
+                "<u>" + I18N.getString("totalLabel") + ": %d</u></html>";
         label.setText(String.format(receipt, reservation.getName(), reservation.getLength(),
                 RoomDao.getPricePerNight(reservation.getRoomNumber()),
                 Constants.LOCAL_FEE, calculateTotalPrice(reservation)));
@@ -118,7 +120,7 @@ public class CheckOut extends JDialog {
 
     private void closeReservation(Reservation reservation) {
         if (reservation == null) {
-            JOptionPane.showMessageDialog(this, "A reservation has to be selected");
+            JOptionPane.showMessageDialog(this, I18N.getString("selectionError"));
         } else {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);

@@ -16,10 +16,11 @@ import java.time.LocalDate;
 
 public class MainWindow {
 
+    private final static I18N I18N = new I18N(MainWindow.class);
     private static JFrame frame;
 
     public MainWindow(ReservationDao reservationDao) {
-        frame = new JFrame("HotelApp");
+        frame = new JFrame(I18N.getString("title"));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(1280, 720));
         frame.add(initPanel(reservationDao));
@@ -48,7 +49,7 @@ public class MainWindow {
             setBackground(Constants.BACKGROUND_COLOR);
             setPreferredSize(new Dimension(75, 500));
             for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
-                JLabel label = new JLabel("Room n." + (i + 1), SwingConstants.CENTER);
+                JLabel label = new JLabel(I18N.getString("roomLabel") + (i + 1), SwingConstants.CENTER);
                 label.setBackground(Constants.BACKGROUND_COLOR);
                 add(label);
             }

@@ -1,8 +1,11 @@
 package cz.muni.fi.pv168.hotel.rooms;
 
+import cz.muni.fi.pv168.hotel.gui.I18N;
+
 public class Room {
     private final int roomNumber;
     private final RoomType roomType;
+    private static final I18N I18N = new I18N(Room.class);
 
     public Room(int roomNumber, RoomType roomType) {
         this.roomNumber = roomNumber;
@@ -19,7 +22,7 @@ public class Room {
 
     @Override
     public String toString() {
-        return "Room n." + getRoomNumber() + ", bed type: " + getRoomType().getBedType().toString()
-                + ", price per night: " + getRoomType().getPricePerNight();
+        return I18N.getString("roomLabel") + getRoomNumber() + ", " + I18N.getString("type") + ": " + getRoomType().getBedType().toString()
+                + ", " + I18N.getString("pricePerNight") + ": " + getRoomType().getPricePerNight();
     }
 }

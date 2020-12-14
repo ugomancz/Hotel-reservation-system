@@ -1,9 +1,10 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
+import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
 import javax.swing.JCheckBox;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 public class CancelReservation extends JDialog {
 
+    private static final I18N I18N = new I18N(CancelReservation.class);
     Button cancelButton, okayButton;
     JComboBox<String> reservationPicker;
     JCheckBox confirm;
@@ -32,7 +34,7 @@ public class CancelReservation extends JDialog {
     ReservationDao reservationDao;
 
     public CancelReservation(JFrame frame, ReservationDao reservationDao) {
-        super(frame, "Cancel Reservation", ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("title"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(frame);
         setMinimumSize(new Dimension(350, 200));
@@ -63,12 +65,12 @@ public class CancelReservation extends JDialog {
 
     private void addButtons() {
         gbc.anchor = GridBagConstraints.SOUTH;
-        okayButton = new Button("OK");
+        okayButton = new Button(I18N.getString("confirmButton"));
         okayButton.addActionListener(this::actionPerformed);
         placeComponent(0, 10, okayButton);
 
         gbc.anchor = GridBagConstraints.LAST_LINE_END;
-        cancelButton = new Button("Cancel");
+        cancelButton = new Button(I18N.getString("cancelButton"));
         cancelButton.addActionListener(this::actionPerformed);
         placeComponent(5, 10, cancelButton);
     }
@@ -81,7 +83,7 @@ public class CancelReservation extends JDialog {
 
         gbc.anchor = GridBagConstraints.CENTER;
 
-        placeComponent(0, 0, new JLabel("Reservation: "));
+        placeComponent(0, 0, new JLabel(I18N.getString("reservation") + ": "));
         placeComponent(0, 5, new JLabel("Are u sure?"));
 
         gbc.anchor = GridBagConstraints.LINE_START;

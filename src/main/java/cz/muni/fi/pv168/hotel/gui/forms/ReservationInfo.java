@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import cz.muni.fi.pv168.hotel.gui.I18N;
 
 /**
  * @author Ondrej Kostik
@@ -39,9 +41,10 @@ public class ReservationInfo extends JDialog {
     private JTextField nameField, phoneField, emailField, guestsField;
     private JComboBox<Integer> roomPicker;
     private JComboBox<String> reservationPicker;
+    private static final I18N I18N = new I18N(ReservationInfo.class);
 
     public ReservationInfo(JFrame frame, ReservationDao reservationDao) {
-        super(frame, "Reservation info", ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("title"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(frame);
         setLayout(new GridBagLayout());
@@ -65,14 +68,14 @@ public class ReservationInfo extends JDialog {
         gbc.weighty = 0.5;
 
         gbc.anchor = GridBagConstraints.CENTER;
-        addComponent(new JLabel("Reservation: "), 0, 0);
-        addComponent(new JLabel("Name and surname: "), 0, 1);
-        addComponent(new JLabel("Phone: "), 0, 2);
-        addComponent(new JLabel("Email: "), 0, 3);
-        addComponent(new JLabel("Guests: "), 0, 4);
-        addComponent(new JLabel("From: "), 0, 5);
-        addComponent(new JLabel("To: "), 0, 6);
-        addComponent(new JLabel("Room number: "), 0, 7);
+        addComponent(new JLabel(I18N.getString("reservationLabel") + ": "), 0, 0);
+        addComponent(new JLabel(I18N.getString("nameLabel") + ": "), 0, 1);
+        addComponent(new JLabel(I18N.getString("phoneLabel") + ": "), 0, 2);
+        addComponent(new JLabel(I18N.getString("emailLabel") + ": "), 0, 3);
+        addComponent(new JLabel(I18N.getString("guestsLabel") + ": "), 0, 4);
+        addComponent(new JLabel(I18N.getString("fromLabel") + ": "), 0, 5);
+        addComponent(new JLabel(I18N.getString("toLabel") + ": "), 0, 6);
+        addComponent(new JLabel(I18N.getString("roomNumber") + ": "), 0, 7);
         addButtons();
 
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -98,13 +101,13 @@ public class ReservationInfo extends JDialog {
     }
 
     private void addButtons() {
-        confirmButton = new Button("Confirm");
+        confirmButton = new Button(I18N.getString("confirmButton"));
         confirmButton.addActionListener(this::actionPerformed);
         addComponent(confirmButton, 0, 8);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.insets = new Insets(0, 10, 0, 10);
-        cancelButton = new Button("Cancel");
+        cancelButton = new Button(I18N.getString("cancelButton"));
         cancelButton.addActionListener(this::actionPerformed);
         addComponent(cancelButton, 1, 8);
     }
