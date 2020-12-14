@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
+import cz.muni.fi.pv168.hotel.gui.forms.Settings;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.forms.CancelReservation;
 import cz.muni.fi.pv168.hotel.gui.forms.CheckIn;
@@ -39,7 +40,7 @@ public class ButtonPanel {
         panel.add(initButton("Check out", e -> new CheckOut(frame, reservationDao)));
         panel.add(initButton("Reservation info", e -> new ReservationInfo(frame, reservationDao)));
         panel.add(initButton("Room info", e -> new RoomInfo(frame)));
-        panel.add(new Button("Settings"));
+        panel.add(initButton("Settings", e -> new Settings(frame)));
     }
 
     private Button initButton(String label, ActionListener listener) {
