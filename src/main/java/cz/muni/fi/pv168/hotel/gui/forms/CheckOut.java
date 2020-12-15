@@ -41,7 +41,7 @@ public class CheckOut extends JDialog {
     private JComboBox<String> reservationPicker;
 
     public CheckOut(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("title"), ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLayout(new GridBagLayout());
         setLocationRelativeTo(frame);

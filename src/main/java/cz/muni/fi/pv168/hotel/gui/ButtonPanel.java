@@ -13,7 +13,6 @@ import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.GridLayout;
-import java.awt.event.ActionListener;
 
 public class ButtonPanel {
 
@@ -35,18 +34,12 @@ public class ButtonPanel {
     }
 
     private void addButtons(JFrame frame) {
-        panel.add(initButton(I18N.getString("newReservation"), e -> new NewReservation(frame, reservationDao)));
-        panel.add(initButton(I18N.getString("cancelReservation"), e -> new CancelReservation(frame, reservationDao)));
-        panel.add(initButton(I18N.getString("checkIn"), e -> new CheckIn(frame, reservationDao)));
-        panel.add(initButton(I18N.getString("checkOut"), e -> new CheckOut(frame, reservationDao)));
-        panel.add(initButton(I18N.getString("reservationInfo"), e -> new ReservationInfo(frame, reservationDao)));
-        panel.add(initButton(I18N.getString("roomInfo"), e -> new RoomInfo(frame)));
-        panel.add(initButton(I18N.getString("settings"), e -> new Settings(frame)));
-    }
-
-    private Button initButton(String label, ActionListener listener) {
-        Button button = new Button(label);
-        button.addActionListener(listener);
-        return button;
+        panel.add(new Button(I18N.getString("newReservationButton"), e -> new NewReservation(frame, reservationDao)));
+        panel.add(new Button(I18N.getString("cancelReservationButton"), e -> new CancelReservation(frame, reservationDao)));
+        panel.add(new Button(I18N.getString("checkInButton"), e -> new CheckIn(frame, reservationDao)));
+        panel.add(new Button(I18N.getString("checkOutButton"), e -> new CheckOut(frame, reservationDao)));
+        panel.add(new Button(I18N.getString("reservationInfoButton"), e -> new ReservationInfo(frame, reservationDao)));
+        panel.add(new Button(I18N.getString("roomInfoButton"), e -> new RoomInfo(frame)));
+        panel.add(new Button(I18N.getString("settingsButton"), e -> new Settings(frame)));
     }
 }

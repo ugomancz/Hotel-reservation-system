@@ -1,11 +1,11 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel.gui.I18N;
-import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
+import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import cz.muni.fi.pv168.hotel.gui.I18N;
 
 /**
  * @author Ondrej Kostik
@@ -44,7 +43,7 @@ public class ReservationInfo extends JDialog {
     private static final I18N I18N = new I18N(ReservationInfo.class);
 
     public ReservationInfo(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("title"), ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLocationRelativeTo(frame);
         setLayout(new GridBagLayout());

@@ -41,7 +41,7 @@ public class NewReservation extends JDialog {
     GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("title"), Dialog.ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(frame);

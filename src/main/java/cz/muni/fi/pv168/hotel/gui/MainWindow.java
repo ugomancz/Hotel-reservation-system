@@ -20,7 +20,7 @@ public class MainWindow {
     private static JFrame frame;
 
     public MainWindow(ReservationDao reservationDao) {
-        frame = new JFrame(I18N.getString("title"));
+        frame = new JFrame(I18N.getString("windowTitle"));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(1280, 720));
         frame.add(initPanel(reservationDao));

@@ -16,7 +16,7 @@ public class Settings {
     private final JDialog dialog;
 
     public Settings(JFrame frame) {
-        dialog = new JDialog(frame, I18N.getString("title"), ModalityType.APPLICATION_MODAL);
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         dialog.setLocationRelativeTo(frame);
         dialog.setMinimumSize(new Dimension(350, 200));
         dialog.setVisible(true);
