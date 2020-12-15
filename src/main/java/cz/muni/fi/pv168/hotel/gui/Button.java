@@ -1,19 +1,17 @@
 package cz.muni.fi.pv168.hotel.gui;
 
+import cz.muni.fi.pv168.hotel.Constants;
+
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class Button extends JButton {
 
-    public static final Font FONT = new Font("Helvetica", Font.BOLD, 14);
-    public static final Color BACKGROUND = new Color(240, 240, 240);
-
     public Button(String name) {
         super(name);
         setFocusPainted(false);
-        setBackground(BACKGROUND);
-        setFont(FONT);
+        setBackground(Constants.BUTTON_BACKGROUND);
+        setFont(Constants.BUTTON_FONT);
     }
 
     public Button(String name, ActionListener listener) {

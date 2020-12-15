@@ -6,6 +6,7 @@ import com.github.lgooddatepicker.optionalusertools.CalendarListener;
 import com.github.lgooddatepicker.zinternaltools.CalendarSelectionEvent;
 import com.github.lgooddatepicker.zinternaltools.HighlightInformation;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
+import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
@@ -25,6 +26,10 @@ class DesignedCalendar {
         this.reservationDao = reservationDao;
         CALENDAR.setSettings(initSettings());
         CALENDAR.addCalendarListener(new CalendarEvent());
+        CALENDAR.getPreviousMonthButton().setBackground(Constants.BUTTON_BACKGROUND);
+        CALENDAR.getPreviousMonthButton().setFont(Constants.BUTTON_FONT);
+        CALENDAR.getNextMonthButton().setBackground(Constants.BUTTON_BACKGROUND);
+        CALENDAR.getNextMonthButton().setFont(Constants.BUTTON_FONT);
     }
 
     static void setDate(LocalDate date) {

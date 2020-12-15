@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.hotel.gui;
 
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.optionalusertools.DateChangeListener;
+import cz.muni.fi.pv168.hotel.Constants;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -16,8 +17,8 @@ public class DesignedDatePicker {
     public DesignedDatePicker() {
         datePicker = new DatePicker();
         datePicker.getSettings().setFirstDayOfWeek(DayOfWeek.MONDAY);
-        datePicker.getComponentToggleCalendarButton().setBackground(Button.BACKGROUND);
-        datePicker.getComponentToggleCalendarButton().setFont(Button.FONT);
+        datePicker.getComponentToggleCalendarButton().setBackground(Constants.BUTTON_BACKGROUND);
+        datePicker.getComponentToggleCalendarButton().setFont(Constants.BUTTON_FONT);
     }
 
     public DatePicker getDatePicker() {
