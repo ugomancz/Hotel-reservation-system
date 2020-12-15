@@ -16,12 +16,14 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,6 +48,8 @@ public class CheckOut extends JDialog {
         setLayout(new GridBagLayout());
         setLocationRelativeTo(frame);
         setMinimumSize(new Dimension(250, 250));
+        getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         initMap();
         initLayout();
@@ -137,7 +141,7 @@ public class CheckOut extends JDialog {
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
-        } else if (e.getSource().equals(cancelButton)) {
+        } else if (e.getSource().equals(cancelButton) | e.getSource().equals(getRootPane())) {
             dispose();
         }
     }

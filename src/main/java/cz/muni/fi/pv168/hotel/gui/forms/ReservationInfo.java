@@ -16,11 +16,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +50,8 @@ public class ReservationInfo extends JDialog {
         this.reservationDao = reservationDao;
         setLocationRelativeTo(frame);
         setLayout(new GridBagLayout());
+        getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
         initMap();
         initLayout();
         setSize(400, 400);
@@ -82,14 +87,20 @@ public class ReservationInfo extends JDialog {
         phoneField = (JTextField) addComponent(new JTextField(20), 1, 2);
         emailField = (JTextField) addComponent(new JTextField(20), 1, 3);
         guestsField = (JTextField) addComponent(new JTextField(2), 1, 4);
-        addComponent(arrival.getDatePicker(), 1, 5);
-        addComponent(departure.getDatePicker(), 1, 6);
+        addDatePickers();
         addComboBoxes();
         String selected = (String) reservationPicker.getSelectedItem();
         Reservation reservation = reservationMap.get(selected);
         if (reservation != null) {
             displayInfo(reservation);
         }
+    }
+
+    private void addDatePickers() {
+        arrival.setAllowedDates(LocalDate.now(), LocalDate.now().plusYears(100));
+        departure.setAllowedDates(LocalDate.now().plusDays(1), LocalDate.now().plusYears(100));
+        addComponent(arrival.getDatePicker(), 1, 5);
+        addComponent(departure.getDatePicker(), 1, 6);
     }
 
     private JComponent addComponent(JComponent component, int x, int y) {
@@ -100,14 +111,12 @@ public class ReservationInfo extends JDialog {
     }
 
     private void addButtons() {
-        confirmButton = new Button(I18N.getString("confirmButton"));
-        confirmButton.addActionListener(this::actionPerformed);
+        confirmButton = new Button(I18N.getString("confirmButton"), this::actionPerformed);
         addComponent(confirmButton, 0, 8);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.insets = new Insets(0, 10, 0, 10);
-        cancelButton = new Button(I18N.getString("cancelButton"));
-        cancelButton.addActionListener(this::actionPerformed);
+        cancelButton = new Button(I18N.getString("cancelButton"), this::actionPerformed);
         addComponent(cancelButton, 1, 8);
     }
 
@@ -144,7 +153,7 @@ public class ReservationInfo extends JDialog {
         try {
             guests = Integer.parseInt(guestsField.getText());
         } catch (Exception e) {
-            showError("Field \"Guests\" has to be a number");
+            showError(I18N.getString("guestsError"));
             return false;
         }
         if (RoomDao.numberOfBeds(room) < guests) {
@@ -176,11 +185,11 @@ public class ReservationInfo extends JDialog {
     }
 
     private void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(cancelButton)) {
+        if (e.getSource().equals(cancelButton) | e.getSource().equals(getRootPane())) {
             dispose();
         } else if (e.getSource().equals(confirmButton)) {
             if (reservationPicker.getSelectedItem() == null) {
-                showError("A reservation has to be selected");
+                showError(I18N.getString("reservationError"));
             } else {
                 String selected = (String) reservationPicker.getSelectedItem();
                 if (updateReservation(reservationMap.get(selected))) {
