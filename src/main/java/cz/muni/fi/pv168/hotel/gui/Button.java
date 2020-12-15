@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.hotel.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class Button extends JButton {
 
@@ -13,5 +14,10 @@ public class Button extends JButton {
         setFocusPainted(false);
         setBackground(background);
         setFont(font);
+    }
+
+    public Button(String name, ActionListener listener) {
+        this(name);
+        addActionListener(listener);
     }
 }
