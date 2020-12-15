@@ -38,7 +38,7 @@ public class CheckOut extends JDialog {
     private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
-    GridBagConstraints gbc = new GridBagConstraints();
+    private final GridBagConstraints gbc = new GridBagConstraints();
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
 
@@ -134,7 +134,7 @@ public class CheckOut extends JDialog {
         }
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(outButton)) {
             String selected = (String) reservationPicker.getSelectedItem();
             closeReservation(reservationMap.get(selected));

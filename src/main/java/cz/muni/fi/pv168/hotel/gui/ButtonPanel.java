@@ -14,22 +14,22 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.GridLayout;
 
-public class ButtonPanel {
+class ButtonPanel {
 
-    private static final int numOfButtons = 7;
+    private static final int NUM_OF_BUTTONS = 7;
     private static final I18N I18N = new I18N(ButtonPanel.class);
     private final JPanel panel;
     private final ReservationDao reservationDao;
 
-    public ButtonPanel(JFrame frame, ReservationDao reservationDao) {
+    ButtonPanel(JFrame frame, ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
         panel = new JPanel();
-        panel.setLayout(new GridLayout(numOfButtons, 1, 5, 5));
+        panel.setLayout(new GridLayout(NUM_OF_BUTTONS, 1, 5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
         addButtons(frame);
     }
 
-    public JPanel getPanel() {
+    JPanel getPanel() {
         return panel;
     }
 

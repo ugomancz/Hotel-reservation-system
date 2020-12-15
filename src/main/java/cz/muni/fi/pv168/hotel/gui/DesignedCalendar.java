@@ -16,7 +16,7 @@ import java.time.LocalDate;
 /**
  * @author Ondrej Kostik
  */
-public class DesignedCalendar {
+class DesignedCalendar {
 
     private static final CalendarPanel CALENDAR = new CalendarPanel();
     private final ReservationDao reservationDao;

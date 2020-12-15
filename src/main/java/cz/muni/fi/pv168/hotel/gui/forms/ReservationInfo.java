@@ -97,9 +97,11 @@ public class ReservationInfo extends JDialog {
     }
 
     private void addDatePickers() {
-        arrival.setAllowedDates(LocalDate.now(), LocalDate.now().plusYears(100));
-        departure.setAllowedDates(LocalDate.now().plusDays(1), LocalDate.now().plusYears(100));
+        arrival.setFirstAllowedDate(LocalDate.now());
+        arrival.addDateChangeListener(e -> departure.setFirstAllowedDate(arrival.getDate().plusDays(1)));
         addComponent(arrival.getDatePicker(), 1, 5);
+
+        departure.setFirstAllowedDate(LocalDate.now().plusDays(1));
         addComponent(departure.getDatePicker(), 1, 6);
     }
 

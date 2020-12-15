@@ -16,27 +16,39 @@ import java.time.LocalDate;
 
 public class MainWindow {
 
-    private final static I18N I18N = new I18N(MainWindow.class);
+    private static final I18N I18N = new I18N(MainWindow.class);
+    static Dimension sidePanelDimension = new Dimension(255, 30);
     private static JFrame frame;
 
     public MainWindow(ReservationDao reservationDao) {
         frame = new JFrame(I18N.getString("windowTitle"));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(1280, 720));
-        frame.add(initPanel(reservationDao));
+        frame.add(initMainPanel(reservationDao));
         frame.setVisible(true);
     }
 
-    private JPanel initPanel(ReservationDao reservationDao) {
+    private JPanel initMainPanel(ReservationDao reservationDao) {
         JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
         panel.setLayout(new BorderLayout(5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
 
-        panel.add(new SidePanel(frame, reservationDao).getPanel(), BorderLayout.EAST);
+        panel.add(initSidePanel(reservationDao), BorderLayout.EAST);
         panel.add(new Timetable(reservationDao).getPanel(), BorderLayout.CENTER);
         panel.add(new RoomNames(), BorderLayout.WEST);
         panel.add(new TimetableHeader(LocalDate.now()).getPanel(), BorderLayout.NORTH);
+        return panel;
+    }
+
+    private JPanel initSidePanel(ReservationDao reservationDao) {
+        JPanel panel = new JPanel();
+        panel.setBackground(Constants.BACKGROUND_COLOR);
+        panel.setLayout(new BorderLayout(0, 10));
+        panel.setPreferredSize(sidePanelDimension);
+
+        panel.add(new ButtonPanel(frame, reservationDao).getPanel(), BorderLayout.CENTER);
+        panel.add(new DesignedCalendar(reservationDao).getCalendar(), BorderLayout.SOUTH);
         return panel;
     }
 

@@ -6,14 +6,14 @@ import java.awt.event.ActionListener;
 
 public class Button extends JButton {
 
-    public static final Font font = new Font("Helvetica", Font.BOLD, 14);
-    public static final Color background = new Color(240, 240, 240);
+    public static final Font FONT = new Font("Helvetica", Font.BOLD, 14);
+    public static final Color BACKGROUND = new Color(240, 240, 240);
 
     public Button(String name) {
         super(name);
         setFocusPainted(false);
-        setBackground(background);
-        setFont(font);
+        setBackground(BACKGROUND);
+        setFont(FONT);
     }
 
     public Button(String name, ActionListener listener) {

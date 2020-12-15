@@ -96,7 +96,7 @@ public class Timetable {
         }
     }
 
-    public JPanel getPanel() {
+    JPanel getPanel() {
         return panel;
     }
 
