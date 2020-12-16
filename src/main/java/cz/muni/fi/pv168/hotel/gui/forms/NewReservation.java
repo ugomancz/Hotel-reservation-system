@@ -19,7 +19,6 @@ import javax.swing.WindowConstants;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -41,7 +40,7 @@ public class NewReservation extends JDialog {
     GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("title"), Dialog.ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(frame);
@@ -92,7 +91,6 @@ public class NewReservation extends JDialog {
         rooms = new JComboBox<>(array);
         rooms.setSelectedIndex(0);
         rooms.addActionListener(this::actionPerformed);
-        rooms.setFont(new Font("Tahoma", Font.BOLD, 14));
         placeComponent(5, 60, rooms);
     }
 

@@ -50,7 +50,7 @@ class TimetableHeader {
         }
     }
 
-    public JPanel getPanel() {
+    JPanel getPanel() {
         return panel;
     }
 
@@ -81,7 +81,7 @@ class TimetableHeader {
 
         JPanel buttons = new JPanel();
         buttons.setBackground(Constants.BACKGROUND_COLOR);
-        buttons.setPreferredSize(new Dimension(SidePanel.dimension.width, 20));
+        buttons.setPreferredSize(new Dimension(MainWindow.sidePanelDimension.width, 20));
         buttons.setLayout(new GridLayout(1, 2, 5, 0));
         initButtons(buttons);
         panel.add(buttons, BorderLayout.EAST);

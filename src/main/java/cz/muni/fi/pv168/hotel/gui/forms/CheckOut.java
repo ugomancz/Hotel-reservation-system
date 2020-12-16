@@ -16,12 +16,14 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,16 +38,18 @@ public class CheckOut extends JDialog {
     private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
-    GridBagConstraints gbc = new GridBagConstraints();
+    private final GridBagConstraints gbc = new GridBagConstraints();
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
 
     public CheckOut(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("title"), ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         setLayout(new GridBagLayout());
         setLocationRelativeTo(frame);
         setMinimumSize(new Dimension(250, 250));
+        getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         initMap();
         initLayout();
@@ -56,7 +60,7 @@ public class CheckOut extends JDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridx = 0;
         addComponent(addComboBox(), 0);
-        label.setPreferredSize(new Dimension(215, 120));
+        label.setPreferredSize(new Dimension(215, 130));
         addComponent(label, 1);
         addButtons();
         String selected = (String) reservationPicker.getSelectedItem();
@@ -102,17 +106,23 @@ public class CheckOut extends JDialog {
     }
 
     private int calculateTotalPrice(Reservation reservation) {
-        return reservation.getLength() * RoomDao.getPricePerNight(reservation.getRoomNumber()) +
-                reservation.getLength() * Constants.LOCAL_FEE * reservation.getHosts();
+        /* calculates length of stay if departure != day of checkout */
+        int length = reservation.getDeparture().isEqual(LocalDate.now()) ?
+                reservation.getLength() : LocalDate.now().compareTo(reservation.getArrival());
+        return length * RoomDao.getPricePerNight(reservation.getRoomNumber()) +
+                length * Constants.LOCAL_FEE * reservation.getHosts();
     }
 
     private void displayInfo(Reservation reservation) {
         String receipt = "<html>" + I18N.getString("clientLabel") + ": %s<br/><br/>" +
                 I18N.getString("nightsLabel") + ": %d<br/>" +
+                I18N.getString("guestsLabel") + ": %d<br/>" +
                 I18N.getString("roomCostLabel") + ": %d<br/>" +
                 I18N.getString("feesLabel") + ": %d<br/><br/>" +
                 "<u>" + I18N.getString("totalLabel") + ": %d</u></html>";
-        label.setText(String.format(receipt, reservation.getName(), reservation.getLength(),
+        label.setText(String.format(receipt, reservation.getName(),
+                LocalDate.now().compareTo(reservation.getArrival()),
+                reservation.getHosts(),
                 RoomDao.getPricePerNight(reservation.getRoomNumber()),
                 Constants.LOCAL_FEE, calculateTotalPrice(reservation)));
         pack();
@@ -125,19 +135,19 @@ public class CheckOut extends JDialog {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);
             reservationDao.update(reservation);
-            Timetable.drawWeek(LocalDate.now());
-            dispose();
         }
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(outButton)) {
             String selected = (String) reservationPicker.getSelectedItem();
             closeReservation(reservationMap.get(selected));
+            Timetable.drawWeek(LocalDate.now());
+            dispose();
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
-        } else if (e.getSource().equals(cancelButton)) {
+        } else if (e.getSource().equals(cancelButton) | e.getSource().equals(getRootPane())) {
             dispose();
         }
     }

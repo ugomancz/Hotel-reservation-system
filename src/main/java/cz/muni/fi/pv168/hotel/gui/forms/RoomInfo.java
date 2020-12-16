@@ -17,7 +17,7 @@ public class RoomInfo extends JDialog {
     private static final I18N I18N = new I18N(RoomInfo.class);
 
     public RoomInfo(JFrame frame) {
-        super(frame, I18N.getString("title"), Dialog.ModalityType.APPLICATION_MODAL);
+        super(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(frame);
         setMinimumSize(new Dimension(400, 360));
