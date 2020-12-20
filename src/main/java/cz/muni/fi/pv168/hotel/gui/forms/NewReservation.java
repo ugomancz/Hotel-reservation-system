@@ -32,12 +32,12 @@ public class NewReservation extends JDialog {
 
     private static final I18N I18N = new I18N(NewReservation.class);
     private final ReservationDao reservationDao;
-    Button cancelButton, okayButton;
-    JTextField name, phone, email, people;
-    JComboBox<Integer> rooms;
-    DesignedDatePicker fromDate, toDate;
-    Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-    GridBagConstraints gbc = new GridBagConstraints();
+    private Button cancelButton, okayButton;
+    private JTextField name, phone, email, people;
+    private JComboBox<Integer> rooms;
+    private DesignedDatePicker fromDate, toDate;
+    private final Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+    private final GridBagConstraints gbc = new GridBagConstraints();
 
     public NewReservation(JFrame frame, ReservationDao reservationDao) {
         super(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
@@ -81,9 +81,12 @@ public class NewReservation extends JDialog {
 
     private void addDatePickers() {
         fromDate = new DesignedDatePicker();
+        fromDate.setFirstAllowedDate(LocalDate.now());
+        fromDate.addDateChangeListener(e -> toDate.setFirstAllowedDate(fromDate.getDate().plusDays(1)));
         placeComponent(5, 40, fromDate.getDatePicker());
 
         toDate = new DesignedDatePicker();
+        toDate.setFirstAllowedDate(LocalDate.now().plusDays(1));
         placeComponent(5, 50, toDate.getDatePicker());
     }
 

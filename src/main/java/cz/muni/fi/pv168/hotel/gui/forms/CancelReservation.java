@@ -26,12 +26,11 @@ import java.util.Map;
 public class CancelReservation extends JDialog {
 
     private static final I18N I18N = new I18N(CancelReservation.class);
-    Button cancelButton, okayButton;
-    JComboBox<String> reservationPicker;
-    JCheckBox confirm;
-    Map<String, Reservation> reservationMap = new HashMap<>();
-    GridBagConstraints gbc = new GridBagConstraints();
-    ReservationDao reservationDao;
+    private Button cancelButton, okayButton;
+    private JComboBox<String> reservationPicker;
+    private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private final GridBagConstraints gbc = new GridBagConstraints();
+    private final ReservationDao reservationDao;
 
     public CancelReservation(JFrame frame, ReservationDao reservationDao) {
         super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
@@ -84,15 +83,9 @@ public class CancelReservation extends JDialog {
         gbc.anchor = GridBagConstraints.CENTER;
 
         placeComponent(0, 0, new JLabel(I18N.getString("reservation") + ": "));
-        placeComponent(0, 5, new JLabel("Are u sure?"));
 
         gbc.anchor = GridBagConstraints.LINE_START;
-
         placeComponent(5, 0, reservationPicker);
-
-        confirm = new JCheckBox();
-        confirm.addActionListener(this::actionPerformed);
-        placeComponent(5, 5, confirm);
         addButtons();
     }
 
@@ -100,14 +93,10 @@ public class CancelReservation extends JDialog {
         if (e.getSource().equals(cancelButton)) {
             dispose();
         } else if (e.getSource().equals(okayButton)) {
-            if (confirm.isSelected()) {
-                String picked = (String) reservationPicker.getSelectedItem();
-                reservationDao.delete(reservationMap.get(picked));
-                Timetable.drawWeek(LocalDate.now());
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Confirmation needed");
-            }
+            String picked = (String) reservationPicker.getSelectedItem();
+            reservationDao.delete(reservationMap.get(picked));
+            Timetable.drawWeek(LocalDate.now());
+            dispose();
         }
     }
 }
