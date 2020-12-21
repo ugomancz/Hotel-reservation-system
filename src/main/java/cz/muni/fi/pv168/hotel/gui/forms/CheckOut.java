@@ -18,6 +18,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,28 +34,30 @@ import java.util.stream.Collectors;
 /**
  * @author Ondrej Kostik
  */
-public class CheckOut extends JDialog {
+public class CheckOut {
 
     private static final I18N I18N = new I18N(CheckOut.class);
     private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
+    private final JDialog dialog;
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
 
     public CheckOut(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setLayout(new GridBagLayout());
-        setLocationRelativeTo(frame);
-        setMinimumSize(new Dimension(250, 250));
-        getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        dialog.setLayout(new GridBagLayout());
+        dialog.setLocationRelativeTo(frame);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setMinimumSize(new Dimension(250, 250));
+        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         initMap();
         initLayout();
-        setVisible(true);
+        dialog.setVisible(true);
     }
 
     private void initLayout() {
@@ -92,7 +96,7 @@ public class CheckOut extends JDialog {
 
     private void addComponent(JComponent component, int y) {
         gbc.gridy = y;
-        add(component, gbc);
+        dialog.add(component, gbc);
     }
 
     private JComboBox<String> addComboBox() {
@@ -125,12 +129,12 @@ public class CheckOut extends JDialog {
                 reservation.getHosts(),
                 RoomDao.getPricePerNight(reservation.getRoomNumber()),
                 Constants.LOCAL_FEE, calculateTotalPrice(reservation)));
-        pack();
+        dialog.pack();
     }
 
     private void closeReservation(Reservation reservation) {
         if (reservation == null) {
-            JOptionPane.showMessageDialog(this, I18N.getString("selectionError"));
+            JOptionPane.showMessageDialog(dialog, I18N.getString("selectionError"));
         } else {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);
@@ -143,12 +147,12 @@ public class CheckOut extends JDialog {
             String selected = (String) reservationPicker.getSelectedItem();
             closeReservation(reservationMap.get(selected));
             Timetable.drawWeek(LocalDate.now());
-            dispose();
+            dialog.dispose();
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
-        } else if (e.getSource().equals(cancelButton) | e.getSource().equals(getRootPane())) {
-            dispose();
+        } else if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
+            dialog.dispose();
         }
     }
 }
