@@ -89,7 +89,7 @@ public class CancelReservation extends JDialog {
         addButtons();
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
             dispose();
         } else if (e.getSource().equals(okayButton)) {

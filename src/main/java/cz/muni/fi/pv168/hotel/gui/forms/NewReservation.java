@@ -127,7 +127,7 @@ public class NewReservation extends JDialog {
         addButtons();
     }
 
-    public Integer tryParse(String text) {
+    private Integer tryParse(String text) {
         try {
             return Integer.parseInt(text);
         } catch (NumberFormatException e) {
@@ -135,7 +135,7 @@ public class NewReservation extends JDialog {
         }
     }
 
-    public void actionPerformed(ActionEvent e) {
+    private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
             dispose();
         } else if (e.getSource().equals(okayButton)) {
