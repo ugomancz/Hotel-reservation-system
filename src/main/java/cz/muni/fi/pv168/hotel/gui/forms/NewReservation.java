@@ -28,7 +28,7 @@ import java.util.Objects;
 
 import static java.lang.Integer.parseInt;
 
-public class NewReservation extends JDialog {
+public class NewReservation {
 
     private static final I18N I18N = new I18N(NewReservation.class);
     private final ReservationDao reservationDao;
@@ -38,27 +38,29 @@ public class NewReservation extends JDialog {
     private DesignedDatePicker fromDate, toDate;
     private final Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
     private final GridBagConstraints gbc = new GridBagConstraints();
+    private final JDialog dialog;
+
 
     public NewReservation(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(frame);
-        setSize(400, 400);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setSize(400, 400);
 
-        setEnabled(true);
-        setLayout(new GridBagLayout());
+        dialog.setEnabled(true);
+        dialog.setLayout(new GridBagLayout());
 
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
         fillOutFrame();
-        setVisible(true);
+        dialog.setVisible(true);
     }
 
     private void placeComponent(int x, int y, Component component) {
         gbc.gridx = x;
         gbc.gridy = y;
-        add(component, gbc);
+        dialog.add(component, gbc);
     }
 
     private void addFields() {
@@ -137,7 +139,7 @@ public class NewReservation extends JDialog {
 
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
-            dispose();
+            dialog.dispose();
         } else if (e.getSource().equals(okayButton)) {
             String usedName = name.getText();
             String usedPhone = phone.getText();
@@ -146,26 +148,22 @@ public class NewReservation extends JDialog {
             LocalDate from = fromDate.getDate();
             LocalDate to = toDate.getDate();
             if (usedName.length() == 0) {
-                JOptionPane.showMessageDialog(this, I18N.getString("nameEmptyError"));
+                JOptionPane.showMessageDialog(dialog, I18N.getString("nameEmptyError"));
             } else if (usedPhone.length() == 0) {
-                JOptionPane.showMessageDialog(this, I18N.getString("phoneEmptyError"));
+                JOptionPane.showMessageDialog(dialog, I18N.getString("phoneEmptyError"));
             } else if (tryParse(people.getText()) == null) {
-                JOptionPane.showMessageDialog(this, I18N.getString("guestsError"));
-            } else if (fromDate.getDate().isBefore(LocalDate.now())) {
-                JOptionPane.showMessageDialog(this, "Arrival date is before today");
-            } else if (!toDate.getDate().isAfter(fromDate.getDate())) {
-                JOptionPane.showMessageDialog(this, "Departure needs to be later than arrival");
+                JOptionPane.showMessageDialog(dialog, I18N.getString("guestsError"));
             } else if (parseInt(people.getText()) > RoomDao.numberOfBeds(parseInt(room))) {
-                JOptionPane.showMessageDialog(this, "Not enough beds in chosen room");
+                JOptionPane.showMessageDialog(dialog, "Not enough beds in chosen room");
             } else {
                 int usedPeople = parseInt(people.getText());
                 if (reservationDao.isFree(parseInt(room), from, to)) {
                     reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, parseInt(room), from, to,
                             ReservationStatus.PLANNED.toString()));
                     Timetable.drawWeek(LocalDate.now());
-                    dispose();
+                    dialog.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Room full");
+                    JOptionPane.showMessageDialog(dialog, "Room full");
                 }
             }
         }

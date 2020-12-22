@@ -13,17 +13,13 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CancelReservation extends JDialog {
+public class CancelReservation{
 
     private static final I18N I18N = new I18N(CancelReservation.class);
     private Button cancelButton, okayButton;
@@ -31,21 +27,22 @@ public class CancelReservation extends JDialog {
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
+    private final JDialog dialog;
 
     public CancelReservation(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setLocationRelativeTo(frame);
-        setMinimumSize(new Dimension(350, 200));
-        setLayout(new GridBagLayout());
+        dialog.setLocationRelativeTo(frame);
+        dialog.setMinimumSize(new Dimension(350, 200));
+        dialog.setLayout(new GridBagLayout());
         initLayout();
-        setVisible(true);
+        dialog.setVisible(true);
     }
 
     private void placeComponent(int x, int y, Component component) {
         gbc.gridx = x;
         gbc.gridy = y;
-        add(component, gbc);
+        dialog.add(component, gbc);
     }
 
     private void setupComboBox() {
@@ -91,12 +88,16 @@ public class CancelReservation extends JDialog {
 
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton)) {
-            dispose();
+            dialog.dispose();
         } else if (e.getSource().equals(okayButton)) {
             String picked = (String) reservationPicker.getSelectedItem();
-            reservationDao.delete(reservationMap.get(picked));
-            Timetable.drawWeek(LocalDate.now());
-            dispose();
+            if (picked == null) {
+                JOptionPane.showMessageDialog(dialog, I18N.getString("reservationError"));
+            } else{
+                reservationDao.delete(reservationMap.get(picked));
+                Timetable.drawWeek(LocalDate.now());
+                dialog.dispose();
+            }
         }
     }
 }
