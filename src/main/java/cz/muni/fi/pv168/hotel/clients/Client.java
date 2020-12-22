@@ -5,13 +5,11 @@ package cz.muni.fi.pv168.hotel.clients;
  */
 public class Client {
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String name;
     private String guestId;
 
-    public Client(String firstName, String lastName, String guestId) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Client(String name, String guestId) {
+        this.name = name;
         this.guestId = guestId;
     }
 
@@ -23,20 +21,12 @@ public class Client {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String firstName) {
+        this.name = firstName;
     }
 
     public String getGuestId() {

@@ -15,7 +15,7 @@ public class ClientDao {
 
     public ClientDao(DataSource dataSource) {
         this.dataSource = dataSource;
-        if (!tableExits("APP", "CLIENT")) {
+        if (!tableExists("APP", "CLIENT")) {
             createTable();
         }
     }
@@ -23,11 +23,10 @@ public class ClientDao {
     public void create(Client client) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "INSERT INTO CLIENT (FNAME, LNAME, GUESTID) VALUES (?, ?, ?)",
+                     "INSERT INTO CLIENT (NAME, GUESTID) VALUES (?, ?)",
                      RETURN_GENERATED_KEYS)) {
-            st.setString(1, client.getFirstName());
-            st.setString(2, client.getLastName());
-            st.setString(3, client.getGuestId());
+            st.setString(1, client.getName());
+            st.setString(2, client.getGuestId());
             st.executeUpdate();
             try (var rs = st.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -63,11 +62,10 @@ public class ClientDao {
         }
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "UPDATE CLIENT SET FNAME = ?, LNAME = ?, GUESTID = ? WHERE ID = ?")) {
-            st.setString(1, client.getFirstName());
-            st.setString(2, client.getLastName());
-            st.setString(3, client.getGuestId());
-            st.setLong(4, client.getId());
+                     "UPDATE CLIENT SET NAME = ?, GUESTID = ? WHERE ID = ?")) {
+            st.setString(1, client.getName());
+            st.setString(2, client.getGuestId());
+            st.setLong(3, client.getId());
             int rowsUpdated = st.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new DataAccessException("Failed to update non-existing client: " + client);
@@ -77,12 +75,12 @@ public class ClientDao {
         }
     }
 
-    private boolean tableExits(String schemaName, String tableName) {
+    private boolean tableExists(String schemaName, String tableName) {
         try (var connection = dataSource.getConnection();
              var rs = connection.getMetaData().getTables(null, schemaName, tableName, null)) {
             return rs.next();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to detect if the table " + schemaName + "." + tableName + " exist", ex);
+            throw new DataAccessException("Failed to detect if the table " + schemaName + "." + tableName + " exists", ex);
         }
     }
 
@@ -92,8 +90,7 @@ public class ClientDao {
 
             st.executeUpdate("CREATE TABLE APP.CLIENT (" +
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
-                    "FNAME VARCHAR(100) NOT NULL," +
-                    "LNAME VARCHAR(100) NOT NULL," +
+                    "NAME VARCHAR(100) NOT NULL," +
                     "GUESTID VARCHAR(100))");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create CLIENT table", ex);
