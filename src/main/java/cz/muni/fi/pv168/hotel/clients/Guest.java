@@ -1,11 +1,14 @@
 package cz.muni.fi.pv168.hotel.clients;
 
+import java.time.LocalDate;
+
 /**
  * @author Denis Kollar
  */
 public class Guest {
     private Long id;
     private String name;
+    private LocalDate birthDate;
     private String guestId;
 
     public Guest(String name, String guestId) {
@@ -13,11 +16,19 @@ public class Guest {
         this.guestId = guestId;
     }
 
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
     public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
