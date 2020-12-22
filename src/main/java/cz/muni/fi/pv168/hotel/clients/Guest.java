@@ -3,12 +3,12 @@ package cz.muni.fi.pv168.hotel.clients;
 /**
  * @author Denis Kollar
  */
-public class Client {
+public class Guest {
     private Long id;
     private String name;
     private String guestId;
 
-    public Client(String name, String guestId) {
+    public Guest(String name, String guestId) {
         this.name = name;
         this.guestId = guestId;
     }

@@ -10,68 +10,68 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 /**
  * @author Denis Kollar
  */
-public class ClientDao {
+public class GuestDao {
     private final DataSource dataSource;
 
-    public ClientDao(DataSource dataSource) {
+    public GuestDao(DataSource dataSource) {
         this.dataSource = dataSource;
-        if (!tableExists("APP", "CLIENT")) {
+        if (!tableExists("APP", "GUEST")) {
             createTable();
         }
     }
 
-    public void create(Client client) {
+    public void create(Guest guest) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "INSERT INTO CLIENT (NAME, GUESTID) VALUES (?, ?)",
+                     "INSERT INTO GUEST (NAME, GUESTID) VALUES (?, ?)",
                      RETURN_GENERATED_KEYS)) {
-            st.setString(1, client.getName());
-            st.setString(2, client.getGuestId());
+            st.setString(1, guest.getName());
+            st.setString(2, guest.getGuestId());
             st.executeUpdate();
             try (var rs = st.getGeneratedKeys()) {
                 if (rs.next()) {
-                    client.setId(rs.getLong(1));
+                    guest.setId(rs.getLong(1));
                 } else {
-                    throw new DataAccessException("Failed to fetch generated key: no key returned for client: " + client);
+                    throw new DataAccessException("Failed to fetch generated key: no key returned for guest: " + guest);
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to store client " + client, ex);
+            throw new DataAccessException("Failed to store guest " + guest, ex);
         }
     }
 
-    public void delete(Client client) {
-        if (client.getId() == null) {
-            throw new IllegalArgumentException("Client has null ID");
+    public void delete(Guest guest) {
+        if (guest.getId() == null) {
+            throw new IllegalArgumentException("Guest has null ID");
         }
         try (var connection = dataSource.getConnection();
-             var st = connection.prepareStatement("DELETE FROM CLIENT WHERE ID = ?")) {
-            st.setLong(1, client.getId());
+             var st = connection.prepareStatement("DELETE FROM GUEST WHERE ID = ?")) {
+            st.setLong(1, guest.getId());
             int rowsDeleted = st.executeUpdate();
             if (rowsDeleted == 0) {
-                throw new DataAccessException("Failed to delete non-existing client: " + client);
+                throw new DataAccessException("Failed to delete non-existing guest: " + guest);
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to delete client " + client, ex);
+            throw new DataAccessException("Failed to delete guest " + guest, ex);
         }
     }
 
-    public void update(Client client) {
-        if (client.getId() == null) {
-            throw new IllegalArgumentException("Client has null ID");
+    public void update(Guest guest) {
+        if (guest.getId() == null) {
+            throw new IllegalArgumentException("Guest has null ID");
         }
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "UPDATE CLIENT SET NAME = ?, GUESTID = ? WHERE ID = ?")) {
-            st.setString(1, client.getName());
-            st.setString(2, client.getGuestId());
-            st.setLong(3, client.getId());
+                     "UPDATE GUEST SET NAME = ?, GUESTID = ? WHERE ID = ?")) {
+            st.setString(1, guest.getName());
+            st.setString(2, guest.getGuestId());
+            st.setLong(3, guest.getId());
             int rowsUpdated = st.executeUpdate();
             if (rowsUpdated == 0) {
-                throw new DataAccessException("Failed to update non-existing client: " + client);
+                throw new DataAccessException("Failed to update non-existing guest: " + guest);
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to update client " + client, ex);
+            throw new DataAccessException("Failed to update guest " + guest, ex);
         }
     }
 
@@ -88,12 +88,12 @@ public class ClientDao {
         try (var connection = dataSource.getConnection();
              var st = connection.createStatement()) {
 
-            st.executeUpdate("CREATE TABLE APP.CLIENT (" +
+            st.executeUpdate("CREATE TABLE APP.GUEST (" +
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
                     "NAME VARCHAR(100) NOT NULL," +
                     "GUESTID VARCHAR(100))");
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to create CLIENT table", ex);
+            throw new DataAccessException("Failed to create GUEST table", ex);
         }
     }
 
@@ -101,9 +101,9 @@ public class ClientDao {
         try (var connection = dataSource.getConnection();
              var st = connection.createStatement()) {
 
-            st.executeUpdate("DROP TABLE APP.CLIENT");
+            st.executeUpdate("DROP TABLE APP.GUEST");
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to drop CLIENT table", ex);
+            throw new DataAccessException("Failed to drop GUEST table", ex);
         }
     }
 }

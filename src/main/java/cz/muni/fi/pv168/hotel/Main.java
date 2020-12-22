@@ -1,6 +1,6 @@
 package cz.muni.fi.pv168.hotel;
 
-import cz.muni.fi.pv168.hotel.clients.ClientDao;
+import cz.muni.fi.pv168.hotel.clients.GuestDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
@@ -15,8 +15,8 @@ public class Main {
         DataSource dataSource = createDataSource();
         ReservationDao reservationDao = new ReservationDao(dataSource);
         RoomDao roomDao = null;
-        ClientDao clientDao = new ClientDao(dataSource);
-        EventQueue.invokeLater(() -> MainWindow.run(reservationDao, clientDao, roomDao));
+        GuestDao guestDao = new GuestDao(dataSource);
+        EventQueue.invokeLater(() -> MainWindow.run(reservationDao, guestDao, roomDao));
     }
 
     private static DataSource createDataSource() {
