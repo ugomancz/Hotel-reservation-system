@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
+import cz.muni.fi.pv168.hotel.clients.ClientDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
@@ -28,7 +29,7 @@ public class MainWindow {
         frame.setVisible(true);
     }
 
-    public static void run(ReservationDao reservationDao) {
+    public static void run(ReservationDao reservationDao, ClientDao clientDao, RoomDao roomDao) {
         try {
             new MainWindow(reservationDao);
         } catch (Exception ex) {

@@ -58,7 +58,7 @@ public final class ReservationDao {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to store employee " + reservation, ex);
+            throw new DataAccessException("Failed to store reservation " + reservation, ex);
         }
     }
 
