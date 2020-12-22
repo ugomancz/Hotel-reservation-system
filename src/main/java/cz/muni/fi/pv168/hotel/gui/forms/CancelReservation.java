@@ -7,14 +7,10 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +31,8 @@ public class CancelReservation{
         dialog.setLocationRelativeTo(frame);
         dialog.setMinimumSize(new Dimension(350, 200));
         dialog.setLayout(new GridBagLayout());
+        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
         initLayout();
         dialog.setVisible(true);
     }
@@ -87,7 +85,7 @@ public class CancelReservation{
     }
 
     private void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(cancelButton)) {
+        if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
             dialog.dispose();
         } else if (e.getSource().equals(okayButton)) {
             String picked = (String) reservationPicker.getSelectedItem();

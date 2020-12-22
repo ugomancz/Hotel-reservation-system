@@ -9,13 +9,7 @@ import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -23,6 +17,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -50,6 +45,8 @@ public class NewReservation {
 
         dialog.setEnabled(true);
         dialog.setLayout(new GridBagLayout());
+        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
@@ -138,7 +135,7 @@ public class NewReservation {
     }
 
     private void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(cancelButton)) {
+        if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
             dialog.dispose();
         } else if (e.getSource().equals(okayButton)) {
             String usedName = name.getText();
