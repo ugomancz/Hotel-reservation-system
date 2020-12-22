@@ -28,6 +28,16 @@ public class MainWindow {
         frame.setVisible(true);
     }
 
+    public static void run(ReservationDao reservationDao) {
+        try {
+            new MainWindow(reservationDao);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
+
     private JPanel initMainPanel(ReservationDao reservationDao) {
         JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));

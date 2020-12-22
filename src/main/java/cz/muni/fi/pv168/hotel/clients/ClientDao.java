@@ -13,7 +13,7 @@ public class ClientDao {
 
     public ClientDao(DataSource dataSource) {
         this.dataSource = dataSource;
-        if (!tableExits("APP", "HOST")) {
+        if (!tableExits("APP", "CLIENT")) {
             createTable();
         }
     }
@@ -31,13 +31,13 @@ public class ClientDao {
         try (var connection = dataSource.getConnection();
              var st = connection.createStatement()) {
 
-            st.executeUpdate("CREATE TABLE APP.HOST (" +
+            st.executeUpdate("CREATE TABLE APP.CLIENT (" +
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
                     "FNAME VARCHAR(100) NOT NULL," +
                     "LNAME VARCHAR(100) NOT NULL," +
                     "GUESTID VARCHAR(100))");
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to create HOST table", ex);
+            throw new DataAccessException("Failed to create CLIENT table", ex);
         }
     }
 
@@ -45,9 +45,9 @@ public class ClientDao {
         try (var connection = dataSource.getConnection();
              var st = connection.createStatement()) {
 
-            st.executeUpdate("DROP TABLE APP.RESERVATION");
+            st.executeUpdate("DROP TABLE APP.CLIENT");
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to drop HOST table", ex);
+            throw new DataAccessException("Failed to drop CLIENT table", ex);
         }
     }
 }

@@ -5,12 +5,13 @@ import cz.muni.fi.pv168.hotel.gui.MainWindow;
 import org.apache.derby.jdbc.EmbeddedDataSource;
 
 import javax.sql.DataSource;
+import java.awt.*;
 
 public class Main {
 
     public static void main(String[] args) {
         ReservationDao reservationDao = new ReservationDao(createDataSource());
-        new MainWindow(reservationDao);
+        EventQueue.invokeLater(() -> MainWindow.run(reservationDao));
     }
 
     private static DataSource createDataSource() {
