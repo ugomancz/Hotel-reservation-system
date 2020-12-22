@@ -3,6 +3,7 @@ package cz.muni.fi.pv168.hotel.clients;
 import cz.muni.fi.pv168.hotel.DataAccessException;
 
 import javax.sql.DataSource;
+import java.sql.Date;
 import java.sql.SQLException;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -23,10 +24,11 @@ public class GuestDao {
     public void create(Guest guest) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "INSERT INTO GUEST (NAME, GUESTID) VALUES (?, ?)",
+                     "INSERT INTO GUEST (NAME, BIRTHDATE, GUESTID) VALUES (?, ?, ?)",
                      RETURN_GENERATED_KEYS)) {
             st.setString(1, guest.getName());
-            st.setString(2, guest.getGuestId());
+            st.setDate(2, Date.valueOf(guest.getBirthDate()));
+            st.setString(3, guest.getGuestId());
             st.executeUpdate();
             try (var rs = st.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -62,10 +64,11 @@ public class GuestDao {
         }
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "UPDATE GUEST SET NAME = ?, GUESTID = ? WHERE ID = ?")) {
+                     "UPDATE GUEST SET NAME = ?, BIRTHDATE = ?, GUESTID = ? WHERE ID = ?")) {
             st.setString(1, guest.getName());
-            st.setString(2, guest.getGuestId());
-            st.setLong(3, guest.getId());
+            st.setDate(2, Date.valueOf(guest.getBirthDate()));
+            st.setString(3, guest.getGuestId());
+            st.setLong(4, guest.getId());
             int rowsUpdated = st.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new DataAccessException("Failed to update non-existing guest: " + guest);
@@ -91,6 +94,7 @@ public class GuestDao {
             st.executeUpdate("CREATE TABLE APP.GUEST (" +
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
                     "NAME VARCHAR(100) NOT NULL," +
+                    "BIRTHDATE DATE NOT NULL," +
                     "GUESTID VARCHAR(100))");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create GUEST table", ex);
