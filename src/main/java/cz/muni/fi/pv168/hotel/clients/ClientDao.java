@@ -1,10 +1,8 @@
 package cz.muni.fi.pv168.hotel.clients;
 
 import cz.muni.fi.pv168.hotel.DataAccessException;
-import cz.muni.fi.pv168.hotel.reservations.Reservation;
 
 import javax.sql.DataSource;
-import java.sql.Date;
 import java.sql.SQLException;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -43,7 +41,7 @@ public class ClientDao {
         }
     }
 
-    public void delete(Reservation client) {
+    public void delete(Client client) {
         if (client.getId() == null) {
             throw new IllegalArgumentException("Client has null ID");
         }
