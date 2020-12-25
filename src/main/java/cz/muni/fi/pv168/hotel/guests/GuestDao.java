@@ -95,7 +95,8 @@ public class GuestDao {
                     "ID BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY," +
                     "NAME VARCHAR(100) NOT NULL," +
                     "BIRTHDATE DATE NOT NULL," +
-                    "GUESTID VARCHAR(100))");
+                    "GUESTID VARCHAR(100)," +
+                    "RESERVATIONID BIGINT FOREIGN KEY REFERENCES Reservation(ID))");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create GUEST table", ex);
         }
