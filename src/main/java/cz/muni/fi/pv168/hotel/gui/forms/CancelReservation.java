@@ -15,6 +15,10 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Timotej Cirok
+ */
+
 public class CancelReservation{
 
     private static final I18N I18N = new I18N(CancelReservation.class);
@@ -90,7 +94,7 @@ public class CancelReservation{
         } else if (e.getSource().equals(okayButton)) {
             String picked = (String) reservationPicker.getSelectedItem();
             if (picked == null) {
-                JOptionPane.showMessageDialog(dialog, I18N.getString("reservationError"));
+                new ErrorDialog(dialog, I18N.getString("reservationError"));
             } else{
                 reservationDao.delete(reservationMap.get(picked));
                 Timetable.drawWeek(LocalDate.now());

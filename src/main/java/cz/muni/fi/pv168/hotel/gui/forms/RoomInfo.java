@@ -12,6 +12,11 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
 
+/**
+ * @author Timotej Cirok
+ */
+
+
 public class RoomInfo{
 
     private static final I18N I18N = new I18N(RoomInfo.class);

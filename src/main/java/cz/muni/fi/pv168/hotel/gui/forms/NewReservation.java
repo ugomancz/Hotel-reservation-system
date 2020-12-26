@@ -23,6 +23,11 @@ import java.util.Objects;
 
 import static java.lang.Integer.parseInt;
 
+/**
+ * @author Timotej Cirok
+ */
+
+
 public class NewReservation {
 
     private static final I18N I18N = new I18N(NewReservation.class);
@@ -145,13 +150,13 @@ public class NewReservation {
             LocalDate from = fromDate.getDate();
             LocalDate to = toDate.getDate();
             if (usedName.length() == 0) {
-                JOptionPane.showMessageDialog(dialog, I18N.getString("nameEmptyError"));
+                new ErrorDialog(dialog,I18N.getString("nameEmptyError"));
             } else if (usedPhone.length() == 0) {
-                JOptionPane.showMessageDialog(dialog, I18N.getString("phoneEmptyError"));
+                new ErrorDialog(dialog, I18N.getString("phoneEmptyError"));
             } else if (tryParse(people.getText()) == null) {
-                JOptionPane.showMessageDialog(dialog, I18N.getString("guestsError"));
+                new ErrorDialog(dialog, I18N.getString("guestsError"));
             } else if (parseInt(people.getText()) > RoomDao.numberOfBeds(parseInt(room))) {
-                JOptionPane.showMessageDialog(dialog, "Not enough beds in chosen room");
+                new ErrorDialog(dialog, "Not enough beds in chosen room");
             } else {
                 int usedPeople = parseInt(people.getText());
                 if (reservationDao.isFree(parseInt(room), from, to)) {
@@ -160,7 +165,7 @@ public class NewReservation {
                     Timetable.drawWeek(LocalDate.now());
                     dialog.dispose();
                 } else {
-                    JOptionPane.showMessageDialog(dialog, "Room full");
+                    new ErrorDialog(dialog, "Room full");
                 }
             }
         }
