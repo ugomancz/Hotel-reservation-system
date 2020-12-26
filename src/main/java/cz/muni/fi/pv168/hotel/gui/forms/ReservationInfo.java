@@ -147,7 +147,7 @@ public class ReservationInfo {
         nameField.setText(reservation.getName());
         phoneField.setText(reservation.getPhone());
         emailField.setText(reservation.getEmail());
-        guestsField.setText(Integer.toString(reservation.getHosts()));
+        guestsField.setText(Integer.toString(reservation.getGuests()));
         arrival.setDate(reservation.getArrival());
         departure.setDate(reservation.getDeparture());
         roomPicker.setSelectedIndex(reservation.getRoomNumber() - 1);
@@ -174,7 +174,7 @@ public class ReservationInfo {
             showError("Please check the selected dates");
             return false;
         }
-        reservation.setHosts(guests);
+        reservation.setGuests(guests);
         reservation.setName(nameField.getText());
         reservation.setPhone(phoneField.getText());
         reservation.setEmail(emailField.getText());
@@ -187,7 +187,7 @@ public class ReservationInfo {
     }
 
     private void showError(String error) {
-        JOptionPane.showMessageDialog(dialog, error);
+        new ErrorDialog(dialog, error);
     }
 
     private void actionPerformed(ActionEvent e) {

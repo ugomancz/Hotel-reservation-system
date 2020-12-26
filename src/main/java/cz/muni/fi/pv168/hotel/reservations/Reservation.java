@@ -8,17 +8,17 @@ public class Reservation {
     private String name;
     private String phone;
     private String email;
-    private int hosts;
+    private int guests;
     private int roomNumber;
     private LocalDate arrival;
     private LocalDate departure;
     private ReservationStatus status;
     private String guestID;
 
-    public Reservation(String name, String phone, String email, int hosts,
+    public Reservation(String name, String phone, String email, int guests,
                        int roomNumber, LocalDate arrival, LocalDate departure, String status) {
         this.name = name;
-        this.hosts = hosts;
+        this.guests = guests;
         this.roomNumber = roomNumber;
         this.arrival = arrival;
         this.departure = departure;
@@ -67,12 +67,12 @@ public class Reservation {
         this.roomNumber = roomNumber;
     }
 
-    public int getHosts() {
-        return hosts;
+    public int getGuests() {
+        return guests;
     }
 
-    public void setHosts(int hosts) {
-        this.hosts = hosts;
+    public void setGuests(int guests) {
+        this.guests = guests;
     }
 
     public String getName() {

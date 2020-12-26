@@ -148,11 +148,11 @@ public class NewReservation extends JDialog {
                 JOptionPane.showMessageDialog(this, I18N.getString("phoneEmptyError"));
             } else if (tryParse(people.getText()) == null) {
                 JOptionPane.showMessageDialog(this, I18N.getString("guestsError"));
-            } else if (fromDate.getDate().isBefore(LocalDate.now())) {
+            } /*else if (fromDate.getDate().isBefore(LocalDate.now())) {
                 JOptionPane.showMessageDialog(this, "Arrival date is before today");
             } else if (!toDate.getDate().isAfter(fromDate.getDate())) {
                 JOptionPane.showMessageDialog(this, "Departure needs to be later than arrival");
-            } else if (parseInt(people.getText()) > RoomDao.numberOfBeds(parseInt(room))) {
+            } */else if (parseInt(people.getText()) > RoomDao.numberOfBeds(parseInt(room))) {
                 JOptionPane.showMessageDialog(this, "Not enough beds in chosen room");
             } else {
                 int usedPeople = parseInt(people.getText());

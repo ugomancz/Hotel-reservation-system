@@ -43,7 +43,7 @@ public final class ReservationDao {
             st.setString(1, reservation.getName());
             st.setString(2, reservation.getPhone());
             st.setString(3, reservation.getEmail());
-            st.setLong(4, reservation.getHosts());
+            st.setLong(4, reservation.getGuests());
             st.setLong(5, reservation.getRoomNumber());
             st.setDate(6, Date.valueOf(reservation.getArrival()));
             st.setDate(7, Date.valueOf(reservation.getDeparture()));
@@ -89,7 +89,7 @@ public final class ReservationDao {
             st.setString(1, reservation.getName());
             st.setString(2, reservation.getPhone());
             st.setString(3, reservation.getEmail());
-            st.setInt(4, reservation.getHosts());
+            st.setInt(4, reservation.getGuests());
             st.setInt(5, reservation.getRoomNumber());
             st.setDate(6, Date.valueOf(reservation.getArrival()));
             st.setDate(7, Date.valueOf(reservation.getDeparture()));

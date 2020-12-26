@@ -152,7 +152,7 @@ public class CheckIn extends JDialog {
         nameLabel.setText("Name and Surname: " + res.getName());
         phoneLabel.setText("Phone number: " + res.getPhone());
         emailLabel.setText("Email: " + res.getEmail());
-        guestLabel.setText("Number of guests: " + res.getHosts());
+        guestLabel.setText("Number of guests: " + res.getGuests());
         lengthLabel.setText("Length of stay: " + res.getLength() + " nights");
         roomLabel.setText("Room number: " + res.getRoomNumber());
     }

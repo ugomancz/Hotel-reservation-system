@@ -114,7 +114,7 @@ public class CheckOut {
         int length = reservation.getDeparture().isEqual(LocalDate.now()) ?
                 reservation.getLength() : LocalDate.now().compareTo(reservation.getArrival());
         return length * RoomDao.getPricePerNight(reservation.getRoomNumber()) +
-                length * Constants.LOCAL_FEE * reservation.getHosts();
+                length * Constants.LOCAL_FEE * reservation.getGuests();
     }
 
     private void displayInfo(Reservation reservation) {
@@ -126,7 +126,7 @@ public class CheckOut {
                 "<u>" + I18N.getString("totalLabel") + ": %d</u></html>";
         label.setText(String.format(receipt, reservation.getName(),
                 LocalDate.now().compareTo(reservation.getArrival()),
-                reservation.getHosts(),
+                reservation.getGuests(),
                 RoomDao.getPricePerNight(reservation.getRoomNumber()),
                 Constants.LOCAL_FEE, calculateTotalPrice(reservation)));
         dialog.pack();
