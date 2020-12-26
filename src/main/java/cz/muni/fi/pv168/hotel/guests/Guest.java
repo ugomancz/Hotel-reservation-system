@@ -11,9 +11,21 @@ public class Guest {
     private LocalDate birthDate;
     private String guestId;
 
-    public Guest(String name, String guestId) {
+    private Long reservationId;
+
+    public Guest(String name,LocalDate birthDate, String guestId, Long reservationId) {
         this.name = name;
+        this.birthDate = birthDate;
         this.guestId = guestId;
+        this.reservationId = reservationId;
+    }
+
+    public Long getReservationId() {
+        return reservationId;
+    }
+
+    public void setReservationId(Long reservationId) {
+        this.reservationId = reservationId;
     }
 
     public LocalDate getBirthDate() {

@@ -24,11 +24,12 @@ public class GuestDao {
     public void create(Guest guest) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "INSERT INTO GUEST (NAME, BIRTHDATE, GUESTID) VALUES (?, ?, ?)",
+                     "INSERT INTO GUEST (NAME, BIRTHDATE, GUESTID, RESERVATIONID) VALUES (?, ?, ?,?)",
                      RETURN_GENERATED_KEYS)) {
             st.setString(1, guest.getName());
             st.setDate(2, Date.valueOf(guest.getBirthDate()));
             st.setString(3, guest.getGuestId());
+            st.setLong(4, guest.getReservationId());
             st.executeUpdate();
             try (var rs = st.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -64,11 +65,12 @@ public class GuestDao {
         }
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "UPDATE GUEST SET NAME = ?, BIRTHDATE = ?, GUESTID = ? WHERE ID = ?")) {
+                     "UPDATE GUEST SET NAME = ?, BIRTHDATE = ?, GUESTID = ?, RESERVATIONID=? WHERE ID = ?")) {
             st.setString(1, guest.getName());
             st.setDate(2, Date.valueOf(guest.getBirthDate()));
             st.setString(3, guest.getGuestId());
-            st.setLong(4, guest.getId());
+            st.setLong(4, guest.getReservationId());
+            st.setLong(5, guest.getId());
             int rowsUpdated = st.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new DataAccessException("Failed to update non-existing guest: " + guest);
@@ -96,7 +98,7 @@ public class GuestDao {
                     "NAME VARCHAR(100) NOT NULL," +
                     "BIRTHDATE DATE NOT NULL," +
                     "GUESTID VARCHAR(100)," +
-                    "RESERVATIONID BIGINT FOREIGN KEY REFERENCES Reservation(ID))");
+                    "RESERVATIONID BIGINT REFERENCES Reservation(ID))");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create GUEST table", ex);
         }
