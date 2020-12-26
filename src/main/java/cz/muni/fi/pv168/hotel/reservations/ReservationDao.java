@@ -21,17 +21,17 @@ public final class ReservationDao {
 
     public ReservationDao(DataSource dataSource) {
         this.dataSource = dataSource;
-        if (!tableExits("APP", "RESERVATION")) {
+        if (!tableExists("APP", "RESERVATION")) {
             createTable();
         }
     }
 
-    private boolean tableExits(String schemaName, String tableName) {
+    private boolean tableExists(String schemaName, String tableName) {
         try (var connection = dataSource.getConnection();
              var rs = connection.getMetaData().getTables(null, schemaName, tableName, null)) {
             return rs.next();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to detect if the table " + schemaName + "." + tableName + " exist", ex);
+            throw new DataAccessException("Failed to detect if the table " + schemaName + "." + tableName + " exists", ex);
         }
     }
 
@@ -43,7 +43,7 @@ public final class ReservationDao {
             st.setString(1, reservation.getName());
             st.setString(2, reservation.getPhone());
             st.setString(3, reservation.getEmail());
-            st.setLong(4, reservation.getHosts());
+            st.setLong(4, reservation.getGuests());
             st.setLong(5, reservation.getRoomNumber());
             st.setDate(6, Date.valueOf(reservation.getArrival()));
             st.setDate(7, Date.valueOf(reservation.getDeparture()));
@@ -58,7 +58,7 @@ public final class ReservationDao {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to store employee " + reservation, ex);
+            throw new DataAccessException("Failed to store reservation " + reservation, ex);
         }
     }
 
@@ -89,7 +89,7 @@ public final class ReservationDao {
             st.setString(1, reservation.getName());
             st.setString(2, reservation.getPhone());
             st.setString(3, reservation.getEmail());
-            st.setInt(4, reservation.getHosts());
+            st.setInt(4, reservation.getGuests());
             st.setInt(5, reservation.getRoomNumber());
             st.setDate(6, Date.valueOf(reservation.getArrival()));
             st.setDate(7, Date.valueOf(reservation.getDeparture()));

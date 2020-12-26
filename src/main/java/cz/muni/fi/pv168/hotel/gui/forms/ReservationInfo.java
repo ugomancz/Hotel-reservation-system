@@ -17,6 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -32,31 +34,33 @@ import java.util.stream.IntStream;
 /**
  * @author Ondrej Kostik
  */
-public class ReservationInfo extends JDialog {
+public class ReservationInfo {
 
+    private static final I18N I18N = new I18N(ReservationInfo.class);
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final DesignedDatePicker arrival = new DesignedDatePicker();
     private final DesignedDatePicker departure = new DesignedDatePicker();
+    private final JDialog dialog;
     private Button cancelButton, confirmButton;
     private JTextField nameField, phoneField, emailField, guestsField;
     private JComboBox<Integer> roomPicker;
     private JComboBox<String> reservationPicker;
-    private static final I18N I18N = new I18N(ReservationInfo.class);
 
     public ReservationInfo(JFrame frame, ReservationDao reservationDao) {
-        super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setLocationRelativeTo(frame);
-        setLayout(new GridBagLayout());
-        getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setLayout(new GridBagLayout());
+        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         initMap();
         initLayout();
-        setSize(400, 400);
-        setResizable(false);
-        setVisible(true);
+        dialog.setSize(400, 400);
+        dialog.setResizable(false);
+        dialog.setVisible(true);
     }
 
     private void initMap() {
@@ -108,7 +112,7 @@ public class ReservationInfo extends JDialog {
     private JComponent addComponent(JComponent component, int x, int y) {
         gbc.gridx = x;
         gbc.gridy = y;
-        add(component, gbc);
+        dialog.add(component, gbc);
         return component;
     }
 
@@ -143,7 +147,7 @@ public class ReservationInfo extends JDialog {
         nameField.setText(reservation.getName());
         phoneField.setText(reservation.getPhone());
         emailField.setText(reservation.getEmail());
-        guestsField.setText(Integer.toString(reservation.getHosts()));
+        guestsField.setText(Integer.toString(reservation.getGuests()));
         arrival.setDate(reservation.getArrival());
         departure.setDate(reservation.getDeparture());
         roomPicker.setSelectedIndex(reservation.getRoomNumber() - 1);
@@ -170,7 +174,7 @@ public class ReservationInfo extends JDialog {
             showError("Please check the selected dates");
             return false;
         }
-        reservation.setHosts(guests);
+        reservation.setGuests(guests);
         reservation.setName(nameField.getText());
         reservation.setPhone(phoneField.getText());
         reservation.setEmail(emailField.getText());
@@ -183,19 +187,19 @@ public class ReservationInfo extends JDialog {
     }
 
     private void showError(String error) {
-        JOptionPane.showMessageDialog(this, error);
+        new ErrorDialog(dialog, error);
     }
 
     private void actionPerformed(ActionEvent e) {
-        if (e.getSource().equals(cancelButton) | e.getSource().equals(getRootPane())) {
-            dispose();
+        if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
+            dialog.dispose();
         } else if (e.getSource().equals(confirmButton)) {
             if (reservationPicker.getSelectedItem() == null) {
                 showError(I18N.getString("reservationError"));
             } else {
                 String selected = (String) reservationPicker.getSelectedItem();
                 if (updateReservation(reservationMap.get(selected))) {
-                    dispose();
+                    dialog.dispose();
                 }
             }
         } else if (e.getSource().equals(reservationPicker)) {
