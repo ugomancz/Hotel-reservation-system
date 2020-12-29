@@ -52,6 +52,7 @@ public class CheckIn extends JDialog {
 
     }
 
+
     /**
      * fills map with reservations starting today
      */
@@ -190,6 +191,13 @@ public class CheckIn extends JDialog {
             String selected = (String) reservationPicker.getSelectedItem();
             Reservation res = reservationMap.get(selected);
             fillReservation(res);
+        }
+
+        if (e.getSource().equals(add)) {
+            JDialog addWindow = new JDialog(this, "Add", ModalityType.APPLICATION_MODAL);
+            addWindow.setSize(300, 300);
+            addWindow.setLocationRelativeTo(this);
+            addWindow.setVisible(true);
         }
     }
 }
