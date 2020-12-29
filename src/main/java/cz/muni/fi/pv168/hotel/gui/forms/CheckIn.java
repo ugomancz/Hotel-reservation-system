@@ -39,7 +39,7 @@ public class CheckIn extends JDialog {
     public CheckIn(JFrame frame, ReservationDao reservationDao) {
         super(frame, "Check-in", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setSize(500, 600);
+        setSize(500, 400);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(frame);
         setEnabled(true);
@@ -125,16 +125,19 @@ public class CheckIn extends JDialog {
         table.getColumnModel().getColumn(1).setPreferredWidth(10);
         table.getColumnModel().getColumn(2).setPreferredWidth(15);
         JScrollPane scrollpane = new JScrollPane(table);
+        scrollpane.setPreferredSize(new Dimension(450, 200));
         placeComponent(0, 40, scrollpane);
 
         gbc.anchor = GridBagConstraints.LINE_START;
         add = new Button("Add");
+        add.setPreferredSize(new Dimension(65, 20));
         placeComponent(0, 30, add);
         add.addActionListener(this::actionPerformed);
 
         gbc.insets = new Insets(0, 70, 0, 0);
         gbc.anchor = GridBagConstraints.LINE_START;
         delete = new Button("Delete");
+        delete.setPreferredSize(new Dimension(80, 20));
         placeComponent(0, 30, delete);
         delete.addActionListener(this::actionPerformed);
 
