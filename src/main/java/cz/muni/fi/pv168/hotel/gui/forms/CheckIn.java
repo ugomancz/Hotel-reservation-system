@@ -39,7 +39,7 @@ public class CheckIn extends JDialog {
     public CheckIn(JFrame frame, ReservationDao reservationDao) {
         super(frame, "Check-in", ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        setSize(700, 600);
+        setSize(500, 600);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(frame);
         setEnabled(true);
@@ -98,7 +98,7 @@ public class CheckIn extends JDialog {
 
         String selected = (String) reservationPicker.getSelectedItem();
         Reservation res = reservationMap.get(selected);
-        gbc.anchor = GridBagConstraints.WEST;
+        gbc.anchor = GridBagConstraints.LINE_START;
         JLabel resName = new JLabel();
         resName.setText("Name and surname: " + res.getName());
         placeComponent(0, 10, resName);
@@ -124,22 +124,25 @@ public class CheckIn extends JDialog {
         table.getColumnModel().getColumn(1).setPreferredWidth(10);
         table.getColumnModel().getColumn(2).setPreferredWidth(15);
         JScrollPane scrollpane = new JScrollPane(table);
-        placeComponent(1, 40, scrollpane);
+        placeComponent(0, 40, scrollpane);
 
         gbc.anchor = GridBagConstraints.LINE_START;
         add = new Button("Add");
         placeComponent(0, 30, add);
+        add.addActionListener(this::actionPerformed);
 
-        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.insets = new Insets(0, 70, 0, 0);
+        gbc.anchor = GridBagConstraints.LINE_START;
         delete = new Button("Delete");
-        placeComponent(1, 30, delete);
+        placeComponent(0, 30, delete);
+        delete.addActionListener(this::actionPerformed);
 
 
 
 
 
 
-
+        gbc.insets = new Insets(0, 0, 0, 0);
         gbc.anchor = GridBagConstraints.LINE_START;
         confirm = new Button("Confirm");
         placeComponent(0, 80, confirm);
@@ -147,7 +150,7 @@ public class CheckIn extends JDialog {
 
         gbc.anchor = GridBagConstraints.LINE_END;
         cancel = new Button("Cancel");
-        placeComponent(2, 80, cancel);
+        placeComponent(0, 80, cancel);
         cancel.addActionListener(this::actionPerformed);
 
     }
