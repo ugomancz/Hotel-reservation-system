@@ -31,9 +31,9 @@ public class CheckIn extends JDialog {
     private List guestList = new ArrayList<Guest>();
     private JTable table = new JTable();
     private JLabel nameLabel, phoneLabel, emailLabel, guestLabel, roomLabel, lengthLabel;
-    private Button confirm, cancel, add, delete;
+    private Button confirm, cancel, add, delete, addConfirm, addCancel;
     private JComboBox<String> reservationPicker;
-    private JTextField idTextField;
+    private JTextField idTextField, addNameField, addBirthdateField, addIDfield;
 
 
     public CheckIn(JFrame frame, ReservationDao reservationDao) {
@@ -71,10 +71,10 @@ public class CheckIn extends JDialog {
      * @param y         coordination for gbc
      * @param component to be placed onto frame
      */
-    private void placeComponent(int x, int y, Component component) {
+    private void placeComponent(JDialog dialog, int x, int y, Component component) {
         gbc.gridx = x;
         gbc.gridy = y;
-        add(component, gbc);
+        dialog.add(component, gbc);
     }
 
     private void initComboBox() {
@@ -94,7 +94,7 @@ public class CheckIn extends JDialog {
 
         reservationPicker = new JComboBox<>();
         initComboBox();
-        placeComponent(0, 0, reservationPicker);
+        placeComponent(this, 0, 0, reservationPicker);
 
 
         String selected = (String) reservationPicker.getSelectedItem();
@@ -102,10 +102,10 @@ public class CheckIn extends JDialog {
         gbc.anchor = GridBagConstraints.LINE_START;
         JLabel resName = new JLabel();
         resName.setText("Name and surname: " + res.getName());
-        placeComponent(0, 10, resName);
+        placeComponent(this, 0, 10, resName);
         JLabel resGuests = new JLabel();
         resGuests.setText("Number of guests: " + res.getGuests());
-        placeComponent(0, 20, resGuests);
+        placeComponent(this, 0, 20, resGuests);
 
 
         TableModel dataModel = new AbstractTableModel() {
@@ -117,7 +117,9 @@ public class CheckIn extends JDialog {
                 return columns[column];
             }
 
-            public int getRowCount() { return res.getGuests();}
+            public int getRowCount() {
+                return res.getGuests();
+            }
             public Object getValueAt(int row, int col) { return null; }
         };
         gbc.anchor = GridBagConstraints.CENTER;
@@ -126,35 +128,31 @@ public class CheckIn extends JDialog {
         table.getColumnModel().getColumn(2).setPreferredWidth(15);
         JScrollPane scrollpane = new JScrollPane(table);
         scrollpane.setPreferredSize(new Dimension(450, 200));
-        placeComponent(0, 40, scrollpane);
+        placeComponent(this, 0, 40, scrollpane);
 
         gbc.anchor = GridBagConstraints.LINE_START;
         add = new Button("Add");
-        add.setPreferredSize(new Dimension(65, 20));
-        placeComponent(0, 30, add);
+        add.setPreferredSize(new Dimension(65, 25));
+        placeComponent(this, 0, 30, add);
         add.addActionListener(this::actionPerformed);
 
         gbc.insets = new Insets(0, 70, 0, 0);
         gbc.anchor = GridBagConstraints.LINE_START;
         delete = new Button("Delete");
-        delete.setPreferredSize(new Dimension(80, 20));
-        placeComponent(0, 30, delete);
+        delete.setPreferredSize(new Dimension(80, 25));
+        placeComponent(this, 0, 30, delete);
         delete.addActionListener(this::actionPerformed);
-
-
-
-
 
 
         gbc.insets = new Insets(0, 0, 0, 0);
         gbc.anchor = GridBagConstraints.LINE_START;
         confirm = new Button("Confirm");
-        placeComponent(0, 80, confirm);
+        placeComponent(this, 0, 80, confirm);
         confirm.addActionListener(this::actionPerformed);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         cancel = new Button("Cancel");
-        placeComponent(0, 80, cancel);
+        placeComponent(this, 0, 80, cancel);
         cancel.addActionListener(this::actionPerformed);
 
     }
@@ -169,6 +167,36 @@ public class CheckIn extends JDialog {
         guestLabel.setText("Number of guests: " + res.getGuests());
         lengthLabel.setText("Length of stay: " + res.getLength() + " nights");
         roomLabel.setText("Room number: " + res.getRoomNumber());
+    }
+
+
+    private void setAddLayout(JDialog addPanel) {
+        gbc.weighty = 1;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.anchor = GridBagConstraints.LINE_START;
+        JLabel addNameLabel = new JLabel("Name: ");
+        placeComponent(addPanel, 0, 0, addNameLabel);
+        JLabel addBirthdateLabel = new JLabel("Birthdate: ");
+        placeComponent(addPanel, 0, 1, addBirthdateLabel);
+        JLabel addIDLabel = new JLabel("ID: ");
+        placeComponent(addPanel, 0, 2, addIDLabel);
+
+        addNameField = new JTextField(16);
+        placeComponent(addPanel, 1, 0, addNameField);
+        addBirthdateField = new JTextField(16);
+        placeComponent(addPanel, 1, 1, addBirthdateField);
+        addIDfield = new JTextField(16);
+        placeComponent(addPanel, 1, 2, addIDfield);
+
+        addConfirm = new Button("Confirm");
+        addConfirm.setPreferredSize(new Dimension(90, 25));
+        placeComponent(addPanel, 0, 3, addConfirm);
+        gbc.insets = new Insets(0, 75, 0, 0);
+        addCancel = new Button("Cancel");
+        addCancel.setPreferredSize(new Dimension(85, 25));
+        placeComponent(addPanel, 1, 3, addCancel);
+
+
     }
 
 
@@ -198,8 +226,11 @@ public class CheckIn extends JDialog {
 
         if (e.getSource().equals(add)) {
             JDialog addWindow = new JDialog(this, "Add", ModalityType.APPLICATION_MODAL);
-            addWindow.setSize(300, 300);
+            GridBagLayout layout = new GridBagLayout();
+            addWindow.setLayout(layout);
+            addWindow.setSize(300, 180);
             addWindow.setLocationRelativeTo(this);
+            setAddLayout(addWindow);
             addWindow.setVisible(true);
         }
     }
