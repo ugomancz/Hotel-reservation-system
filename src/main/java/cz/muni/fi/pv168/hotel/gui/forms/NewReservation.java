@@ -7,19 +7,20 @@ import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel.rooms.Room;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
+import cz.muni.fi.pv168.hotel.rooms.RoomPicker;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import static java.lang.Integer.parseInt;
 
@@ -35,6 +36,8 @@ public class NewReservation {
     private Button cancelButton, okayButton;
     private JTextField name, phone, email, people;
     private JComboBox<Integer> rooms;
+    private JTable table;
+    private DefaultTableModel dataModel;
     private DesignedDatePicker fromDate, toDate;
     private final Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
     private final GridBagConstraints gbc = new GridBagConstraints();
@@ -120,15 +123,27 @@ public class NewReservation {
         placeComponent(0, 30, new JLabel(I18N.getString("guestsLabel") + ": "));
         placeComponent(0, 40, new JLabel(I18N.getString("fromLabel") + ": "));
         placeComponent(0, 50, new JLabel(I18N.getString("toLabel") + ": "));
-        placeComponent(0, 60, new JLabel(I18N.getString("roomNumber") + ": "));
+        //placeComponent(0, 60, new JLabel(I18N.getString("roomNumber") + ": "));
 
         gbc.anchor = GridBagConstraints.LINE_START;
         addFields();
         addDatePickers();
-        addComboBox();
+        //addComboBox();
+        addTable();
 
         gbc.anchor = GridBagConstraints.SOUTH;
         addButtons();
+    }
+
+    public int getRowCount() {
+        return RoomDao.numberOfRooms();
+    }
+
+    private void addTable() {
+        JTable picker = RoomPicker.createTable();
+        JScrollPane scrollPane = new JScrollPane(picker);
+        scrollPane.setPreferredSize(new Dimension(450, 200));
+        placeComponent(3,60,scrollPane);
     }
 
     private Integer tryParse(String text) {
@@ -150,7 +165,7 @@ public class NewReservation {
             LocalDate from = fromDate.getDate();
             LocalDate to = toDate.getDate();
             if (usedName.length() == 0) {
-                new ErrorDialog(dialog,I18N.getString("nameEmptyError"));
+                new ErrorDialog(dialog, I18N.getString("nameEmptyError"));
             } else if (usedPhone.length() == 0) {
                 new ErrorDialog(dialog, I18N.getString("phoneEmptyError"));
             } else if (tryParse(people.getText()) == null) {
