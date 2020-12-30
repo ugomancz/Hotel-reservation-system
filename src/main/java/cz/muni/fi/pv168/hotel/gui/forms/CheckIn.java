@@ -28,6 +28,7 @@ public class CheckIn extends JDialog {
     private final ReservationDao reservationDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private JDialog addWindow;
+    private JTable table;
     private ArrayList<Guest> guestList = new ArrayList();
     private DefaultTableModel dataModel;
     private JLabel resName, resGuests;
@@ -119,7 +120,7 @@ public class CheckIn extends JDialog {
             }
         };
         gbc.anchor = GridBagConstraints.CENTER;
-        JTable table = new JTable(dataModel);
+        table = new JTable(dataModel);
         table.getColumnModel().getColumn(1).setPreferredWidth(10);
         table.getColumnModel().getColumn(2).setPreferredWidth(15);
         JScrollPane scrollpane = new JScrollPane(table);
@@ -200,6 +201,14 @@ public class CheckIn extends JDialog {
         placeComponent(addPanel, 1, 3, addCancel);
     }
 
+    public void removeSelectedRows(JTable table){
+        DefaultTableModel model = (DefaultTableModel) this.table.getModel();
+        int[] rows = table.getSelectedRows();
+        for(int i=0;i<rows.length;i++){
+            model.removeRow(rows[i]-i);
+        }
+    }
+
 
     private void actionPerformed(ActionEvent e) {
 
@@ -211,12 +220,15 @@ public class CheckIn extends JDialog {
             Reservation res = reservationMap.get(selected);
             if (res == null) {
                 new ErrorDialog(this, "No reservation selected");
-
             } else {
-                res.setStatus(ReservationStatus.ONGOING);
-                reservationDao.update(res);
-                Timetable.drawWeek(LocalDate.now());
-                dispose();
+                if (guestList.size() != res.getGuests()) {
+                    new ErrorDialog(this, "Invalid number of guests added to table");
+                } else {
+                    res.setStatus(ReservationStatus.ONGOING);
+                    reservationDao.update(res);
+                    Timetable.drawWeek(LocalDate.now());
+                    dispose();
+                }
             }
         }
         if (e.getSource().equals(reservationPicker)) {
@@ -227,6 +239,9 @@ public class CheckIn extends JDialog {
         if (e.getSource().equals(add)) {
             initAddLayout();
         }
+        if (e.getSource().equals(delete)) {
+            removeSelectedRows(table);
+        }
         if (e.getSource().equals(addConfirm)) {
             if (addNameField.getText().equals("") || addBirthdateField.getText().equals("") || addIDfield.getText().equals("")) {
                 new ErrorDialog(this, "All fields must be filled");
@@ -235,8 +250,8 @@ public class CheckIn extends JDialog {
                 DateTimeFormatter df = DateTimeFormatter.ofPattern("dd. MM. yyyy");
                 LocalDate birthDate = LocalDate.parse(addBirthdateField.getText(), df);
                 String id = addIDfield.getText();
-                Guest guest = new Guest(addNameField.getText(), birthDate, id, res.getId());
-                dataModel.addRow(new Object[] {addNameField.getText(), addBirthdateField.getText(), addIDfield.getText()});
+                Guest guest = new Guest(name, birthDate, id, res.getId());
+                dataModel.addRow(new Object[] {name, addBirthdateField.getText(), addIDfield.getText()});
                 guestList.add(guest);
                 addWindow.dispose();
 
