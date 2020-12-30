@@ -69,6 +69,7 @@ public class CheckIn extends JDialog {
 
 
     /**
+     * @param dialog JDialog to be adjusted
      * @param x         coordination for gbc
      * @param y         coordination for gbc
      * @param component to be placed onto frame
@@ -104,7 +105,7 @@ public class CheckIn extends JDialog {
         if (res != null) {
             gbc.anchor = GridBagConstraints.LINE_START;
             resName = new JLabel();
-            resName.setText("Name and surname: " + res.getName());
+            resName.setText("Name: " + res.getName());
             placeComponent(this, 0, 10, resName);
             resGuests = new JLabel();
             resGuests.setText("Number of guests: " + res.getGuests());
@@ -162,6 +163,9 @@ public class CheckIn extends JDialog {
         resGuests.setText("Number of guests: " + res.getGuests());
     }
 
+    /**
+     * initializes add window
+     */
     private void initAddLayout() {
         addWindow = new JDialog(this, "Add", ModalityType.APPLICATION_MODAL);
         GridBagLayout layout = new GridBagLayout();
@@ -172,6 +176,10 @@ public class CheckIn extends JDialog {
         addWindow.setVisible(true);
     }
 
+    /**
+     *
+     * @param addPanel JDialog to be set
+     */
     private void setAddLayout(JDialog addPanel) {
         gbc.weighty = 1;
         gbc.insets = new Insets(0, 0, 0, 0);
@@ -201,6 +209,10 @@ public class CheckIn extends JDialog {
         placeComponent(addPanel, 1, 3, addCancel);
     }
 
+    /**
+     * removes selected rows from a table
+     * @param table from which rows shall be deleted
+     */
     public void removeSelectedRows(JTable table){
         DefaultTableModel model = (DefaultTableModel) this.table.getModel();
         int[] rows = table.getSelectedRows();
