@@ -119,11 +119,18 @@ public class CheckIn extends JDialog {
             public String getColumnName(int column) {
                 return columns[column];
             }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                //all cells false
+                return false;
+            }
         };
         gbc.anchor = GridBagConstraints.CENTER;
         table = new JTable(dataModel);
         table.getColumnModel().getColumn(1).setPreferredWidth(10);
         table.getColumnModel().getColumn(2).setPreferredWidth(15);
+        table.getTableHeader().setReorderingAllowed(false);
         JScrollPane scrollpane = new JScrollPane(table);
         scrollpane.setPreferredSize(new Dimension(450, 200));
         placeComponent(this, 0, 40, scrollpane);
