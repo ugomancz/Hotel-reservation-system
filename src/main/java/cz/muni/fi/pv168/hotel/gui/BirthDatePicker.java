@@ -51,17 +51,15 @@ public class BirthDatePicker {
         years.addActionListener((e) -> updateDaysRange());
         years.setSelectedIndex(0);
 
-        panel.add(days);
-        panel.add(months);
         panel.add(years);
+        panel.add(months);
+        panel.add(days);
     }
 
     private void updateDaysRange() {
         int month = months.getSelectedIndex() + 1;
-        int year;
-        if (years.getSelectedItem() == null) {
-            year = LocalDate.now().getYear();
-        } else {
+        int year = LocalDate.now().getYear();
+        if (years.getSelectedItem() != null) {
             year = (Integer) years.getSelectedItem();
         }
 
