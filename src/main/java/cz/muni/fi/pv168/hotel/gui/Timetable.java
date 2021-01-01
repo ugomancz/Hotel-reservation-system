@@ -34,6 +34,7 @@ public class Timetable {
     );
     private static ReservationDao reservationDao;
     private final JPanel panel;
+    private static LocalDate currentMonday;
 
     Timetable(ReservationDao reservationDao) {
         panel = new JPanel();
@@ -89,12 +90,17 @@ public class Timetable {
 
     public static void drawWeek(LocalDate date) {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        currentMonday = monday;
         for (int room = 0; room < RoomDao.numberOfRooms(); room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
                 LocalDate currentDay = monday.plusDays(day);
                 new GetReservation(room, day, currentDay).execute();
             }
         }
+    }
+
+    public static void refresh() {
+        drawWeek(currentMonday);
     }
 
     JPanel getPanel() {
