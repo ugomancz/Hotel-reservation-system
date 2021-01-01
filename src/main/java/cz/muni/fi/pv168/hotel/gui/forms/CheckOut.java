@@ -15,9 +15,9 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -39,9 +39,9 @@ public class CheckOut {
     private static final I18N I18N = new I18N(CheckOut.class);
     private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private final ReservationDao reservationDao;
-    private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
+    private Map<String, Reservation> reservationMap;
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
 
@@ -55,7 +55,7 @@ public class CheckOut {
         dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        initMap();
+        new LoadOngoingReservations().execute();
         initLayout();
         dialog.setVisible(true);
     }
@@ -67,16 +67,12 @@ public class CheckOut {
         label.setPreferredSize(new Dimension(215, 130));
         addComponent(label, 1);
         addButtons();
-        String selected = (String) reservationPicker.getSelectedItem();
-        Reservation reservation = reservationMap.get(selected);
-        if (reservation != null) {
-            displayInfo(reservation);
-        }
     }
 
     private void addButtons() {
         outButton = new Button(I18N.getString("confirmButton"));
         outButton.addActionListener(this::actionPerformed);
+        outButton.setEnabled(false);
         cancelButton = new Button(I18N.getString("cancelButton"));
         cancelButton.addActionListener(this::actionPerformed);
 
@@ -86,14 +82,6 @@ public class CheckOut {
         addComponent(cancelButton, 2);
     }
 
-    private void initMap() {
-        for (Reservation reservation : reservationDao.findAll().stream()
-                .filter((x) -> x.getStatus() == ReservationStatus.ONGOING)
-                .collect(Collectors.toList())) {
-            reservationMap.put(reservation.toString(), reservation);
-        }
-    }
-
     private void addComponent(JComponent component, int y) {
         gbc.gridy = y;
         dialog.add(component, gbc);
@@ -101,9 +89,6 @@ public class CheckOut {
 
     private JComboBox<String> addComboBox() {
         reservationPicker = new JComboBox<>();
-        for (String reservation : reservationMap.keySet()) {
-            reservationPicker.addItem(reservation);
-        }
         reservationPicker.setPreferredSize(new Dimension(220, 22));
         reservationPicker.addActionListener(this::actionPerformed);
         return reservationPicker;
@@ -132,27 +117,62 @@ public class CheckOut {
         dialog.pack();
     }
 
-    private void closeReservation(Reservation reservation) {
+    private boolean closeReservation(Reservation reservation) {
         if (reservation == null) {
-            JOptionPane.showMessageDialog(dialog, I18N.getString("selectionError"));
+            new ErrorDialog(dialog, I18N.getString("selectionError"));
+            return false;
         } else {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);
             reservationDao.update(reservation);
+            return true;
         }
     }
 
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(outButton)) {
             String selected = (String) reservationPicker.getSelectedItem();
-            closeReservation(reservationMap.get(selected));
-            Timetable.drawWeek(LocalDate.now());
-            dialog.dispose();
+            if (closeReservation(reservationMap.get(selected))) {
+                Timetable.drawWeek(LocalDate.now());
+                dialog.dispose();
+            }
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
         } else if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
             dialog.dispose();
+        }
+    }
+
+    private class LoadOngoingReservations extends SwingWorker<Map<String, Reservation>, Void> {
+
+        @Override
+        protected Map<String, Reservation> doInBackground() {
+            Map<String, Reservation> map = new HashMap<>();
+            for (Reservation reservation : reservationDao.findAll().stream()
+                    .filter((x) -> x.getStatus() == ReservationStatus.ONGOING)
+                    .collect(Collectors.toList())) {
+                map.put(reservation.toString(), reservation);
+            }
+            return map;
+        }
+
+        @Override
+        public void done() {
+            try {
+                reservationMap = get();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            for (String reservation : reservationMap.keySet()) {
+                reservationPicker.addItem(reservation);
+            }
+            String selected = (String) reservationPicker.getSelectedItem();
+            Reservation reservation = reservationMap.get(selected);
+            if (reservation != null) {
+                displayInfo(reservation);
+            }
+            outButton.setEnabled(true);
         }
     }
 }
