@@ -117,25 +117,20 @@ public class CheckOut {
         dialog.pack();
     }
 
-    private boolean closeReservation(Reservation reservation) {
+    private void closeReservation(Reservation reservation) {
         if (reservation == null) {
             new ErrorDialog(dialog, I18N.getString("selectionError"));
-            return false;
         } else {
             reservation.setDeparture(LocalDate.now());
             reservation.setStatus(ReservationStatus.PAST);
-            reservationDao.update(reservation);
-            return true;
+            new UpdateReservation(reservation).execute();
         }
     }
 
     private void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(outButton)) {
             String selected = (String) reservationPicker.getSelectedItem();
-            if (closeReservation(reservationMap.get(selected))) {
-                Timetable.drawWeek(LocalDate.now());
-                dialog.dispose();
-            }
+            closeReservation(reservationMap.get(selected));
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
@@ -173,6 +168,27 @@ public class CheckOut {
                 displayInfo(reservation);
             }
             outButton.setEnabled(true);
+        }
+    }
+
+    private class UpdateReservation extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+
+        public UpdateReservation(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.update(reservation);
+            return null;
+        }
+
+        @Override
+        public void done() {
+            Timetable.drawWeek(LocalDate.now());
+            dialog.dispose();
         }
     }
 }
