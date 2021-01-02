@@ -26,9 +26,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +45,7 @@ public class CheckOut {
     private final ReservationDao reservationDao;
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
+    private int localFee;
     private Map<String, Reservation> reservationMap;
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
@@ -56,6 +61,7 @@ public class CheckOut {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         new LoadOngoingReservations().execute();
+        new LoadProperties().execute();
         initLayout();
         dialog.setVisible(true);
     }
@@ -99,7 +105,7 @@ public class CheckOut {
         int length = reservation.getDeparture().isEqual(LocalDate.now()) ?
                 reservation.getLength() : LocalDate.now().compareTo(reservation.getArrival());
         return length * RoomDao.getPricePerNight(reservation.getRoomNumber()) +
-                length * Constants.LOCAL_FEE * reservation.getGuests();
+                length * localFee * reservation.getGuests();
     }
 
     private void displayInfo(Reservation reservation) {
@@ -113,7 +119,7 @@ public class CheckOut {
                 LocalDate.now().compareTo(reservation.getArrival()),
                 reservation.getGuests(),
                 RoomDao.getPricePerNight(reservation.getRoomNumber()),
-                Constants.LOCAL_FEE, calculateTotalPrice(reservation)));
+                localFee, calculateTotalPrice(reservation)));
         dialog.pack();
     }
 
@@ -189,6 +195,31 @@ public class CheckOut {
         public void done() {
             Timetable.drawWeek(LocalDate.now());
             dialog.dispose();
+        }
+    }
+
+    private class LoadProperties extends SwingWorker<String, Void> {
+
+        @Override
+        protected String doInBackground() throws Exception {
+            Properties defaultProperties = new Properties();
+            defaultProperties.setProperty("localFee", "50");
+            Properties properties = new Properties(defaultProperties);
+
+            File configFile = new File(Constants.CONFIG_FILE_PATH);
+            try (InputStream inputStream = new FileInputStream(configFile)) {
+                properties.load(inputStream);
+            }
+            return properties.getProperty("localFee");
+        }
+
+        @Override
+        public void done() {
+            try {
+                localFee = Integer.parseInt(get());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
