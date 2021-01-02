@@ -177,7 +177,9 @@ public class NewReservation {
                     }
                 }
                 if (flag) {
-                    reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, 3, from, to,
+                    Integer[] roomNumbers = new Integer[rooms.size()];
+                    roomNumbers = rooms.toArray(roomNumbers);
+                    reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, roomNumbers, from, to,
                             ReservationStatus.PLANNED.toString()));
                     Timetable.drawWeek(LocalDate.now());
                     dialog.dispose();
