@@ -14,9 +14,9 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
@@ -38,11 +38,11 @@ public class ReservationInfo {
 
     private static final I18N I18N = new I18N(ReservationInfo.class);
     private final ReservationDao reservationDao;
-    private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final DesignedDatePicker arrival = new DesignedDatePicker();
     private final DesignedDatePicker departure = new DesignedDatePicker();
     private final JDialog dialog;
+    private Map<String, Reservation> reservationMap;
     private Button cancelButton, confirmButton;
     private JTextField nameField, phoneField, emailField, guestsField;
     private JComboBox<Integer> roomPicker;
@@ -56,19 +56,11 @@ public class ReservationInfo {
         dialog.setLayout(new GridBagLayout());
         dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
-        initMap();
+        new LoadReservations().execute();
         initLayout();
         dialog.setSize(400, 400);
         dialog.setResizable(false);
         dialog.setVisible(true);
-    }
-
-    private void initMap() {
-        for (Reservation reservation : reservationDao.findAll().stream()
-                .filter((x) -> x.getStatus() == ReservationStatus.PLANNED)
-                .collect(Collectors.toList())) {
-            reservationMap.put(reservation.toString(), reservation);
-        }
     }
 
     private void initLayout() {
@@ -93,11 +85,6 @@ public class ReservationInfo {
         guestsField = (JTextField) addComponent(new JTextField(2), 1, 4);
         addDatePickers();
         addComboBoxes();
-        String selected = (String) reservationPicker.getSelectedItem();
-        Reservation reservation = reservationMap.get(selected);
-        if (reservation != null) {
-            displayInfo(reservation);
-        }
     }
 
     private void addDatePickers() {
@@ -118,6 +105,7 @@ public class ReservationInfo {
 
     private void addButtons() {
         confirmButton = new Button(I18N.getString("confirmButton"), this::actionPerformed);
+        confirmButton.setEnabled(false);
         addComponent(confirmButton, 0, 8);
 
         gbc.anchor = GridBagConstraints.LINE_END;
@@ -128,9 +116,6 @@ public class ReservationInfo {
 
     private void addComboBoxes() {
         reservationPicker = new JComboBox<>();
-        for (String name : reservationMap.keySet()) {
-            reservationPicker.addItem(name);
-        }
         reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
         addComponent(reservationPicker, 1, 0);
@@ -181,8 +166,7 @@ public class ReservationInfo {
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
         reservation.setRoomNumber(room);
-        reservationDao.update(reservation);
-        Timetable.drawWeek(reservation.getArrival());
+        new UpdateReservation(reservation).execute();
         return true;
     }
 
@@ -205,6 +189,59 @@ public class ReservationInfo {
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
+        }
+    }
+
+    private class LoadReservations extends SwingWorker<Map<String, Reservation>, Void> {
+
+        @Override
+        protected Map<String, Reservation> doInBackground() {
+            Map<String, Reservation> map = new HashMap<>();
+            for (Reservation reservation : reservationDao.findAll().stream()
+                    .filter((x) -> x.getStatus() == ReservationStatus.PLANNED)
+                    .collect(Collectors.toList())) {
+                map.put(reservation.toString(), reservation);
+            }
+            return map;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                reservationMap = get();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            for (String name : reservationMap.keySet()) {
+                reservationPicker.addItem(name);
+            }
+            String selected = (String) reservationPicker.getSelectedItem();
+            Reservation reservation = reservationMap.get(selected);
+            if (reservation != null) {
+                displayInfo(reservation);
+            }
+            confirmButton.setEnabled(true);
+        }
+    }
+
+    private class UpdateReservation extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+
+        public UpdateReservation(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.update(reservation);
+            return null;
+        }
+
+        @Override
+        public void done() {
+            Timetable.refresh();
+            dialog.dispose();
         }
     }
 }

@@ -1,13 +1,14 @@
 package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
-import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.text.SimpleAttributeSet;
@@ -33,6 +34,7 @@ public class Timetable {
     );
     private static ReservationDao reservationDao;
     private final JPanel panel;
+    private static LocalDate currentMonday;
 
     Timetable(ReservationDao reservationDao) {
         panel = new JPanel();
@@ -88,12 +90,17 @@ public class Timetable {
 
     public static void drawWeek(LocalDate date) {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        currentMonday = monday;
         for (int room = 0; room < RoomDao.numberOfRooms(); room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
                 LocalDate currentDay = monday.plusDays(day);
-                updatePane(reservationDao.getReservation(room + 1, currentDay), currentDay, room, day);
+                new GetReservation(room, day, currentDay).execute();
             }
         }
+    }
+
+    public static void refresh() {
+        drawWeek(currentMonday);
     }
 
     JPanel getPanel() {
@@ -115,6 +122,30 @@ public class Timetable {
                 TEXT_PANES[i][j] = textPane;
                 panel.add(textPane);
             }
+        }
+    }
+
+    private static class GetReservation extends SwingWorker<Void, Void> {
+
+        int room, day;
+        LocalDate date;
+        private List<Reservation> reservations;
+
+        public GetReservation(int room, int day, LocalDate date) {
+            this.room = room;
+            this.day = day;
+            this.date = date;
+        }
+
+        @Override
+        protected void done() {
+            updatePane(reservations, date, room, day);
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservations = reservationDao.getReservation(room + 1, date);
+            return null;
         }
     }
 }
