@@ -7,7 +7,6 @@ import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
-import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -104,7 +103,7 @@ public class CheckOut {
         /* calculates length of stay if departure != day of checkout */
         int length = reservation.getDeparture().isEqual(LocalDate.now()) ?
                 reservation.getLength() : LocalDate.now().compareTo(reservation.getArrival());
-        return length * RoomDao.getPricePerNight(reservation.getRoomNumber()) +
+        return length * /*RoomDao.getPricePerNight(reservation.getRoomNumbers())*/ + // TODO: after roomDao is done
                 length * localFee * reservation.getGuests();
     }
 
@@ -112,13 +111,11 @@ public class CheckOut {
         String receipt = "<html>" + I18N.getString("clientLabel") + ": %s<br/><br/>" +
                 I18N.getString("nightsLabel") + ": %d<br/>" +
                 I18N.getString("guestsLabel") + ": %d<br/>" +
-                I18N.getString("roomCostLabel") + ": %d<br/>" +
                 I18N.getString("feesLabel") + ": %d<br/><br/>" +
                 "<u>" + I18N.getString("totalLabel") + ": %d</u></html>";
         label.setText(String.format(receipt, reservation.getName(),
                 LocalDate.now().compareTo(reservation.getArrival()),
                 reservation.getGuests(),
-                RoomDao.getPricePerNight(reservation.getRoomNumber()),
                 localFee, calculateTotalPrice(reservation)));
         dialog.pack();
     }
