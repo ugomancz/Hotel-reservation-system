@@ -36,7 +36,7 @@ public class CheckIn {
     private final JDialog dialog;
     private JDialog addWindow;
     private JTable table;
-    private final ArrayList<Guest> guestList = new ArrayList<Guest>();
+    private final ArrayList<Guest> guestList = new ArrayList<>();
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel;
     private JComboBox<String> reservationPicker;
@@ -53,7 +53,7 @@ public class CheckIn {
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(frame);
         dialog.setEnabled(true);
-        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         GridBagLayout layout = new GridBagLayout();
         dialog.setLayout(layout);
@@ -187,7 +187,7 @@ public class CheckIn {
         addWindow.setLayout(layout);
         addWindow.setSize(300, 180);
         addWindow.setLocationRelativeTo(dialog);
-        addWindow.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        addWindow.getRootPane().registerKeyboardAction((e) -> addWindow.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         setAddLayout(addWindow);
         addWindow.setVisible(true);
@@ -306,7 +306,7 @@ public class CheckIn {
 
             }
         }
-        if (e.getSource().equals(addCancel) | (e.getSource().equals(addWindow.getRootPane()))) {
+        if (e.getSource().equals(addCancel)) {
             addWindow.dispose();
         }
     }
