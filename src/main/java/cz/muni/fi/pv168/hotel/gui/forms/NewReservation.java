@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.I18N;
@@ -41,14 +42,18 @@ public class NewReservation {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
     private final RoomDao roomDao;
-    private Button cancelButton, okayButton;
+    private final GuestDao guestDao;
+    private final JFrame frame;
+    private Button cancelButton, checkinButton;
     private JTextField name, phone, email, people;
     private JTable picker;
     private DesignedDatePicker fromDate, toDate;
 
 
-    public NewReservation(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
+    public NewReservation(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
+        this.frame = frame;
         this.roomDao = roomDao;
+        this.guestDao = guestDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -56,7 +61,7 @@ public class NewReservation {
 
         dialog.setEnabled(true);
         dialog.setLayout(new GridBagLayout());
-        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         gbc.weightx = 0.5;
@@ -102,9 +107,13 @@ public class NewReservation {
 
     private void addButtons() {
         gbc.anchor = GridBagConstraints.LINE_START;
-        okayButton = new Button(I18N.getString("confirmButton"));
+        Button okayButton = new Button(I18N.getString("confirmButton"));
         okayButton.addActionListener(this::actionPerformed);
         placeComponent(0, 10, okayButton);
+
+        checkinButton = new Button(I18N.getString("checkinButton"));
+        checkinButton.addActionListener(this::actionPerformed);
+        placeComponent(1, 10, checkinButton);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         cancelButton = new Button(I18N.getString("cancelButton"));
@@ -153,9 +162,9 @@ public class NewReservation {
 
     private void actionPerformed(ActionEvent e) {
         boolean flag = true;
-        if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
+        if (e.getSource().equals(cancelButton)) {
             dialog.dispose();
-        } else if (e.getSource().equals(okayButton)) {
+        } else {
             String usedName = name.getText();
             String usedPhone = phone.getText();
             String usedMail = email.getText();
@@ -190,9 +199,13 @@ public class NewReservation {
                 if (flag) {
                     Integer[] roomNumbers = new Integer[rooms.size()];
                     roomNumbers = rooms.toArray(roomNumbers);
-                    reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, roomNumbers, from, to,
-                            ReservationStatus.PLANNED.toString()));
-                    Timetable.drawWeek(LocalDate.now());
+                    Reservation reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, roomNumbers, from, to,
+                            ReservationStatus.PLANNED.toString());
+                    reservationDao.create(reservation);
+                    if (e.getSource().equals(checkinButton)) { // go straight to check-in
+                        //new CheckIn(frame, reservationDao, guestDao, reservation);
+                    }
+                    Timetable.refresh();
                     dialog.dispose();
                 } else {
                     new ErrorDialog(dialog, I18N.getString("roomFull"));
