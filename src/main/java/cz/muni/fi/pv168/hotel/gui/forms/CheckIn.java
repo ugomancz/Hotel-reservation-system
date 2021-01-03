@@ -187,6 +187,8 @@ public class CheckIn {
         addWindow.setLayout(layout);
         addWindow.setSize(300, 180);
         addWindow.setLocationRelativeTo(dialog);
+        addWindow.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
         setAddLayout(addWindow);
         addWindow.setVisible(true);
     }
@@ -255,7 +257,7 @@ public class CheckIn {
 
     private void actionPerformed(ActionEvent e) {
 
-        if (e.getSource().equals(cancel)) {
+        if (e.getSource().equals(cancel) | e.getSource().equals(dialog.getRootPane())) {
             dialog.dispose();
         }
         if (e.getSource().equals(confirm)) {
@@ -304,7 +306,7 @@ public class CheckIn {
 
             }
         }
-        if (e.getSource().equals(addCancel)) {
+        if (e.getSource().equals(addCancel) | (e.getSource().equals(addWindow.getRootPane()))) {
             addWindow.dispose();
         }
     }
