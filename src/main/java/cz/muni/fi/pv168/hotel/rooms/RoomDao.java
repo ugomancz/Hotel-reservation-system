@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.hotel.DataAccessException;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -108,6 +109,13 @@ public final class RoomDao {
             }
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all reservations", ex);
+        }
+    }
+
+    public void printAll(List<Room> rooms) {
+        for (Room room :
+                rooms) {
+            System.out.printf("Room number %s is free%n", room.getRoomNumber());
         }
     }
 
