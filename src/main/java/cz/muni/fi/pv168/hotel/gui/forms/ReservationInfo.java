@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import com.github.lgooddatepicker.zinternaltools.DateChangeEvent;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.I18N;
@@ -7,6 +8,7 @@ import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel.rooms.Room;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JComboBox;
@@ -28,7 +30,9 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -94,7 +98,6 @@ public class ReservationInfo {
 
     private void addDatePickers() {
         arrival.setFirstAllowedDate(LocalDate.now());
-        arrival.addDateChangeListener(e -> departure.setFirstAllowedDate(arrival.getDate().plusDays(1)));
         addComponent(arrival.getDatePicker(), 1, 5);
 
         departure.setFirstAllowedDate(LocalDate.now().plusDays(1));
@@ -139,6 +142,37 @@ public class ReservationInfo {
         addComponent(scrollPane, 0, 7);
     }
 
+    private void addDateChangeListeners() {
+        arrival.addDateChangeListener(this::datePicked);
+        departure.addDateChangeListener(this::datePicked);
+    }
+
+    private void datePicked(DateChangeEvent event) {
+        updateTable();
+    }
+
+    private void updateTable() {
+        Reservation reservation = getSelectedReservation();
+        RoomPicker.DesignedTableModel model = (RoomPicker.DesignedTableModel) roomPicker.getModel();
+        List<Room> freeRooms = reservationDao.getFreeRooms(arrival.getDate(), departure.getDate(), roomDao, reservation.getId());
+        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+            model.setCellEditable(i, 0, false);
+        }
+        for (Room room : freeRooms) {
+            model.setCellEditable(room.getRoomNumber() - 1, 0, true);
+        }
+        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+            if (!model.isCellEditable(i, 0) && (boolean) roomPicker.getValueAt(i, 0)) {
+                roomPicker.setValueAt(false, i, 0);
+            }
+        }
+    }
+
+    private Reservation getSelectedReservation() {
+        String selected = (String) reservationPicker.getSelectedItem();
+        return reservationMap.get(selected);
+    }
+
     private void displayInfo(Reservation reservation) {
         nameField.setText(reservation.getName());
         phoneField.setText(reservation.getPhone());
@@ -146,10 +180,15 @@ public class ReservationInfo {
         guestsField.setText(Integer.toString(reservation.getGuests()));
         arrival.setDate(reservation.getArrival());
         departure.setDate(reservation.getDeparture());
-        //roomPicker.setSelectedIndex(reservation.getRoomNumber() - 1);
+        clearSelectedRooms();
+        setSelectedRooms(reservation.getRoomNumbers());
     }
 
     private boolean updateReservation(Reservation reservation) {
+        if (checkEmptyFields()) {
+            showError(I18N.getString("fieldsError"));
+            return false;
+        }
         int guests;
         Integer[] rooms = getSelectedRooms();
         try {
@@ -158,16 +197,12 @@ public class ReservationInfo {
             showError(I18N.getString("guestsError"));
             return false;
         }
-        if (roomDao.numberOfBeds(room) < guests) {
-            showError("Not enough beds in the chosen room");
-            return false;
-        }
-        if (!reservationDao.isFree(room, arrival.getDate(), departure.getDate(), reservation.getId())) {
-            showError("Selected room isn't free at that time");
+        if (roomDao.numberOfBeds(rooms) < guests) {
+            showError(I18N.getString("bedError"));
             return false;
         }
         if (!departure.getDate().isAfter(arrival.getDate())) {
-            showError("Please check the selected dates");
+            showError(I18N.getString("dateError"));
             return false;
         }
         reservation.setGuests(guests);
@@ -176,9 +211,41 @@ public class ReservationInfo {
         reservation.setEmail(emailField.getText());
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
-        //reservation.setRoomNumber(room);
+        reservation.setRoomNumbers(getSelectedRooms());
         new UpdateReservation(reservation).execute();
         return true;
+    }
+
+    private boolean checkEmptyFields() {
+        try {
+            arrival.getDate();
+            departure.getDate();
+        } catch (NullPointerException ex) {
+            return false;
+        }
+        return !(!nameField.getText().equals("") && !phoneField.getText().equals("") && getSelectedRooms().length != 0);
+    }
+
+    private Integer[] getSelectedRooms() {
+        List<Integer> selected = new ArrayList<>();
+        for (int i = 0; i < roomPicker.getRowCount(); i++) {
+            if ((boolean) roomPicker.getValueAt(i, 0)) {
+                selected.add(i + 1);
+            }
+        }
+        return selected.toArray(Integer[]::new);
+    }
+
+    private void setSelectedRooms(Integer[] roomNumbers) {
+        for (Integer roomNumber : roomNumbers) {
+            roomPicker.setValueAt(true, roomNumber - 1, 0);
+        }
+    }
+
+    private void clearSelectedRooms() {
+        for (int i = 0; i < roomPicker.getRowCount(); i++) {
+            roomPicker.setValueAt(false, i, 0);
+        }
     }
 
     private void showError(String error) {
@@ -189,17 +256,15 @@ public class ReservationInfo {
         if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
             dialog.dispose();
         } else if (e.getSource().equals(confirmButton)) {
-            if (reservationPicker.getSelectedItem() == null) {
+            if (getSelectedReservation() == null) {
                 showError(I18N.getString("reservationError"));
             } else {
-                String selected = (String) reservationPicker.getSelectedItem();
-                if (updateReservation(reservationMap.get(selected))) {
+                if (updateReservation(getSelectedReservation())) {
                     dialog.dispose();
                 }
             }
         } else if (e.getSource().equals(reservationPicker)) {
-            String selected = (String) reservationPicker.getSelectedItem();
-            displayInfo(reservationMap.get(selected));
+            displayInfo(getSelectedReservation());
         }
     }
 
@@ -223,14 +288,15 @@ public class ReservationInfo {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            for (String name : reservationMap.keySet()) {
-                reservationPicker.addItem(name);
+            for (String reservation : reservationMap.keySet()) {
+                reservationPicker.addItem(reservation);
             }
-            String selected = (String) reservationPicker.getSelectedItem();
-            Reservation reservation = reservationMap.get(selected);
+            Reservation reservation = getSelectedReservation();
             if (reservation != null) {
                 displayInfo(reservation);
             }
+            addDateChangeListeners();
+            updateTable();
             confirmButton.setEnabled(true);
         }
     }
