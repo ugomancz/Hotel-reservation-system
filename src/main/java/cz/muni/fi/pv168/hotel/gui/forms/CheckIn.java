@@ -10,9 +10,23 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
@@ -28,22 +42,21 @@ import java.util.stream.Collectors;
 
 public class CheckIn {
 
-    private final GridBagConstraints gbc = new GridBagConstraints();
     private static final I18N I18N = new I18N(CheckIn.class);
+    private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
     private final GuestDao guestDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final JDialog dialog;
+    private final ArrayList<Guest> guestList = new ArrayList<>();
     private JDialog addWindow;
     private JTable table;
-    private final ArrayList<Guest> guestList = new ArrayList<>();
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel;
     private JComboBox<String> reservationPicker;
     private JTextField addNameField, addIDfield;
     private Reservation res;
     private BirthDatePicker birthDatePicker;
-
 
     public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao) {
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
@@ -63,7 +76,6 @@ public class CheckIn {
 
     }
 
-
     /**
      * fills map with reservations starting today
      */
@@ -76,9 +88,8 @@ public class CheckIn {
         }
     }
 
-
     /**
-     * @param dialog JDialog to be adjusted
+     * @param dialog    JDialog to be adjusted
      * @param x         coordination for gbc
      * @param y         coordination for gbc
      * @param component to be placed onto frame
@@ -98,14 +109,13 @@ public class CheckIn {
         gbc.anchor = GridBagConstraints.CENTER;
     }
 
-
     /**
      * Sets layout in frame using GridBagLayout
      */
     private void initLayout() {
         gbc.weighty = 1;
 
-        JLabel reservation = new JLabel(I18N.getString("reservation") + ": ");
+        JLabel reservation = new JLabel(I18N.getString("reservation") + ":");
         gbc.anchor = GridBagConstraints.LINE_START;
         placeComponent(dialog, 0, 0, reservation);
         reservationPicker = new JComboBox<>();
@@ -113,18 +123,17 @@ public class CheckIn {
         gbc.anchor = GridBagConstraints.CENTER;
         placeComponent(dialog, 0, 0, reservationPicker);
 
-
         String selected = (String) reservationPicker.getSelectedItem();
         res = reservationMap.get(selected);
         gbc.anchor = GridBagConstraints.LINE_START;
         resName = new JLabel();
-        resName.setText(I18N.getString("name") + ": ");
+        resName.setText(I18N.getString("name") + ":");
         placeComponent(dialog, 0, 10, resName);
         resGuests = new JLabel();
-        resGuests.setText(I18N.getString("numberOfGuests") + ": ");
+        resGuests.setText(I18N.getString("numberOfGuests") + ":");
         placeComponent(dialog, 0, 20, resGuests);
         resRooms = new JLabel();
-        resRooms.setText(I18N.getString("rooms") + ": ");
+        resRooms.setText(I18N.getString("rooms") + ":");
         placeComponent(dialog, 0, 30, resRooms);
 
         gbc.anchor = GridBagConstraints.CENTER;
@@ -147,7 +156,6 @@ public class CheckIn {
         delete.setEnabled(false);
         placeComponent(dialog, 0, 40, delete);
         delete.addActionListener(this::actionPerformed);
-
 
         gbc.insets = new Insets(0, 0, 0, 0);
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -185,27 +193,27 @@ public class CheckIn {
         addWindow = new JDialog(dialog, I18N.getString("add"), Dialog.ModalityType.APPLICATION_MODAL);
         GridBagLayout layout = new GridBagLayout();
         addWindow.setLayout(layout);
-        addWindow.setSize(300, 180);
         addWindow.setLocationRelativeTo(dialog);
         addWindow.getRootPane().registerKeyboardAction((e) -> addWindow.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         setAddLayout(addWindow);
+        addWindow.pack();
+        addWindow.setResizable(false);
         addWindow.setVisible(true);
     }
 
     /**
-     *
      * @param addPanel JDialog to be set
      */
     private void setAddLayout(JDialog addPanel) {
-        gbc.weighty = 1;
-        gbc.insets = new Insets(0, 0, 0, 0);
+        gbc.weighty = 0.5;
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.LINE_START;
-        JLabel addNameLabel = new JLabel(I18N.getString("name") + ": ");
+        JLabel addNameLabel = new JLabel(I18N.getString("name") + ":");
         placeComponent(addPanel, 0, 0, addNameLabel);
-        JLabel addBirthdateLabel = new JLabel(I18N.getString("birthDate") + ": ");
+        JLabel addBirthdateLabel = new JLabel(I18N.getString("birthDate") + ":");
         placeComponent(addPanel, 0, 1, addBirthdateLabel);
-        JLabel addIDLabel = new JLabel(I18N.getString("IDnumber") + ": ");
+        JLabel addIDLabel = new JLabel(I18N.getString("IDnumber") + ":");
         placeComponent(addPanel, 0, 2, addIDLabel);
 
         addNameField = new JTextField(16);
@@ -213,6 +221,7 @@ public class CheckIn {
         birthDatePicker = new BirthDatePicker();
         placeComponent(addPanel, 1, 1, birthDatePicker.getPanel());
         addIDfield = new JTextField(16);
+        addIDfield.setText("-");
         placeComponent(addPanel, 1, 2, addIDfield);
 
         addConfirm = new Button(I18N.getString("add"));
@@ -230,21 +239,21 @@ public class CheckIn {
         guestList.removeIf(g -> g.equals(guest));
     }
 
-
     /**
      * removes selected rows from a table
+     *
      * @param table from which rows shall be deleted
      */
-    private void removeSelectedRows(JTable table){
+    private void removeSelectedRows(JTable table) {
         DefaultTableModel model = (DefaultTableModel) this.table.getModel();
         int[] rows = table.getSelectedRows();
-        for(int i=0;i<rows.length;i++){
+        for (int i = 0; i < rows.length; i++) {
             var name = table.getValueAt(rows[i] - i, 0);
             var birthdate = table.getValueAt(rows[i] - i, 1);
             var id = table.getValueAt(rows[i] - i, 2);
             Guest guest = new Guest((String) name, (LocalDate) birthdate, (String) id, res.getId());
             removeGuest(guest);
-            model.removeRow(rows[i]-i);
+            model.removeRow(rows[i] - i);
         }
     }
 
@@ -253,7 +262,6 @@ public class CheckIn {
             guestDao.create(guest);
         }
     }
-
 
     private void actionPerformed(ActionEvent e) {
 
@@ -299,7 +307,7 @@ public class CheckIn {
                 String id = addIDfield.getText();
                 Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId());
                 DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
-                dataModel.addRow(new Object[] {name, birthDatePicker.getDate(), addIDfield.getText()});
+                dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText()});
                 guestList.add(guest);
                 addWindow.dispose();
                 confirm.setEnabled(guestList.size() == res.getGuests());

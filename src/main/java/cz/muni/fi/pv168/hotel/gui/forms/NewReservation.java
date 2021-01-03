@@ -134,6 +134,10 @@ public class NewReservation {
     private void addTable() {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         picker = RoomPicker.createTable(roomDao);
+        RoomPicker.DesignedTableModel model = (RoomPicker.DesignedTableModel) picker.getModel();
+        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+            model.setCellEditable(i, 0, true);
+        }
         JScrollPane scrollPane = new JScrollPane(picker);
         scrollPane.setPreferredSize(new Dimension(450, 200));
         placeComponent(0, 6, scrollPane);
