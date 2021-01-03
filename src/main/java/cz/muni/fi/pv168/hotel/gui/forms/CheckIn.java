@@ -34,7 +34,7 @@ public class CheckIn extends JDialog {
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private JDialog addWindow;
     private JTable table;
-    private ArrayList<Guest> guestList = new ArrayList();
+    private final ArrayList<Guest> guestList = new ArrayList<Guest>();
     private DefaultTableModel dataModel;
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel;
@@ -238,15 +238,31 @@ public class CheckIn extends JDialog {
         placeComponent(addPanel, 1, 3, addCancel);
     }
 
+    private void removeGuest(Guest guest) {
+        guestList.removeIf(g -> g.equals(guest));
+    }
+
+
     /**
      * removes selected rows from a table
      * @param table from which rows shall be deleted
      */
-    public void removeSelectedRows(JTable table){
+    private void removeSelectedRows(JTable table){
         DefaultTableModel model = (DefaultTableModel) this.table.getModel();
         int[] rows = table.getSelectedRows();
         for(int i=0;i<rows.length;i++){
+            var name = table.getValueAt(rows[i] - i, 0);
+            var birthdate = table.getValueAt(rows[i] - i, 1);
+            var id = table.getValueAt(rows[i] - i, 2);
+            Guest guest = new Guest((String) name, (LocalDate) birthdate, (String) id, res.getId());
+            removeGuest(guest);
             model.removeRow(rows[i]-i);
+        }
+    }
+
+    private void createGuests() {
+        for (Guest guest : guestList) {
+            guestDao.create(guest);
         }
     }
 
@@ -265,6 +281,7 @@ public class CheckIn extends JDialog {
                 if (guestList.size() != res.getGuests()) {
                     new ErrorDialog(this, I18N.getString("invalidNumOfGuestsError"));
                 } else {
+                    createGuests();
                     res.setStatus(ReservationStatus.ONGOING);
                     reservationDao.update(res);
                     Timetable.drawWeek(LocalDate.now());
@@ -273,6 +290,7 @@ public class CheckIn extends JDialog {
             }
         }
         if (e.getSource().equals(reservationPicker)) {
+            dataModel.setRowCount(0);
             String selected = (String) reservationPicker.getSelectedItem();
             res = reservationMap.get(selected);
             fillReservation(res);
@@ -282,6 +300,7 @@ public class CheckIn extends JDialog {
         }
         if (e.getSource().equals(delete)) {
             removeSelectedRows(table);
+            confirm.setEnabled(guestList.size() == res.getGuests());
         }
         if (e.getSource().equals(addConfirm)) {
             if (addNameField.getText().equals("") || addIDfield.getText().equals("")) {
@@ -292,9 +311,8 @@ public class CheckIn extends JDialog {
                 Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId());
                 dataModel.addRow(new Object[] {name, birthDatePicker.getDate(), addIDfield.getText()});
                 guestList.add(guest);
-                guestDao.create(guest);
                 addWindow.dispose();
-                if(guestList.size() == res.getGuests()) confirm.setEnabled(true);
+                confirm.setEnabled(guestList.size() == res.getGuests());
 
             }
         }
