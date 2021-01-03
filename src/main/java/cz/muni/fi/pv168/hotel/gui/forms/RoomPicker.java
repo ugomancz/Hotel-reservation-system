@@ -19,6 +19,11 @@ public class RoomPicker {
             }
 
             @Override
+            public boolean isCellEditable(int row, int column) {
+                return column != 1;
+            }
+
+            @Override
             public String getColumnName(int column) {
                 return columns[column];
             }
@@ -31,9 +36,10 @@ public class RoomPicker {
             }
         };
 
-        table = new JTable(dataModel);
-        table.getColumnModel().getColumn(0).setPreferredWidth(5);
-        table.getColumnModel().getColumn(1).setPreferredWidth(20);
+        JTable table = new JTable(dataModel);
+        table.getColumnModel().getColumn(0).setMinWidth(40);
+        table.getColumnModel().getColumn(0).setMaxWidth(40);
+        table.getColumnModel().getColumn(0).setResizable(false);
         for (int i = 0; i < roomDao.numberOfRooms(); i++) {
             dataModel.addRow(new Object[0]);
             dataModel.setValueAt(false, i, 0);
