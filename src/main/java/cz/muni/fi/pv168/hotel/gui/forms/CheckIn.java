@@ -302,6 +302,8 @@ public class CheckIn {
         if (e.getSource().equals(addConfirm)) {
             if (addNameField.getText().equals("") || addIDfield.getText().equals("")) {
                 new ErrorDialog(dialog, I18N.getString("notAllFieldsFilledError"));
+            } else if (birthDatePicker.getDate().isAfter(LocalDate.now())) {
+                new ErrorDialog(dialog, I18N.getString("invalidDateError"));
             } else {
                 String name = addNameField.getText();
                 String id = addIDfield.getText();
@@ -311,7 +313,6 @@ public class CheckIn {
                 guestList.add(guest);
                 addWindow.dispose();
                 confirm.setEnabled(guestList.size() == res.getGuests());
-
             }
         }
         if (e.getSource().equals(addCancel)) {
