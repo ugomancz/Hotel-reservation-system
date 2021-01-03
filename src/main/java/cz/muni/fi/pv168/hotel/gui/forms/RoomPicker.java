@@ -10,31 +10,8 @@ public class RoomPicker {
 
     private static final I18N I18N = new I18N(RoomPicker.class);
 
-    public static JTable createTable(RoomDao roomDao) {
-        DefaultTableModel dataModel = new DefaultTableModel() {
-            private final String[] columns = {I18N.getString("checkColumn"), I18N.getString("descriptionColumn")};
-
-            public int getColumnCount() {
-                return 2;
-            }
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column != 1;
-            }
-
-            @Override
-            public String getColumnName(int column) {
-                return columns[column];
-            }
-
-            public Class<?> getColumnClass(int column) {
-                if (column == 0) {
-                    return Boolean.class;
-                }
-                return String.class;
-            }
-        };
+    static JTable createTable(RoomDao roomDao) {
+        DefaultTableModel dataModel = new DesignedTableModel(roomDao);
 
         JTable table = new JTable(dataModel);
         table.getColumnModel().getColumn(0).setMinWidth(40);
@@ -46,5 +23,41 @@ public class RoomPicker {
             dataModel.setValueAt(roomDao.getRoom(i + 1).toString(), i, 1);
         }
         return table;
+    }
+
+    static class DesignedTableModel extends DefaultTableModel {
+
+        private final String[] columns = {I18N.getString("checkColumn"), I18N.getString("descriptionColumn")};
+        private final boolean[][] editable_cells;
+
+        DesignedTableModel(RoomDao roomDao) {
+            this.editable_cells = new boolean[roomDao.numberOfRooms()][columns.length];
+        }
+
+        public int getColumnCount() {
+            return columns.length;
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return editable_cells[row][column];
+        }
+
+        void setCellEditable(int row, int column, boolean value) {
+            editable_cells[row][column] = value;
+            fireTableCellUpdated(row, column);
+        }
+
+        @Override
+        public String getColumnName(int column) {
+            return columns[column];
+        }
+
+        public Class<?> getColumnClass(int column) {
+            if (column == 0) {
+                return Boolean.class;
+            }
+            return String.class;
+        }
     }
 }
