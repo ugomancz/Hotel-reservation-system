@@ -87,19 +87,30 @@ public final class RoomDao {
         }
     }
 
+    public void printAll() {
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement("SELECT ROOMNUMBER, PRICE, STANDARD, KINGSIZE FROM ROOM")) {
+            try (var rs = st.executeQuery()) {
+                while (rs.next()) {
+                    System.out.println(rs.getInt("ROOMNUMBER") + " " +
+                            rs.getInt("PRICE") + " " +
+                            rs.getInt("STANDARD") + " " +
+                            rs.getInt("KINGSIZE"));
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all reservations", ex);
+        }
+    }
+
     private void create(Room room) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
                      "INSERT INTO ROOM (ROOMNUMBER, PRICE, STANDARD, KINGSIZE) VALUES (?, ?, ?, ?)",
                      RETURN_GENERATED_KEYS)) {
             setRows(room, st);
-            st.executeUpdate();
-            try (var rs = st.getGeneratedKeys()) {
-                if (rs.next()) {
-                    room.setRoomNumber(rs.getInt(1));
-                } else {
-                    throw new DataAccessException("Failed to fetch generated key: no key returned for ROOM: " + room);
-                }
+            if (st.executeUpdate() == 0){
+                System.out.println("nothing added");
             }
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to store ROOM " + room, ex);
@@ -109,11 +120,12 @@ public final class RoomDao {
     private void setRows(Room room, PreparedStatement st) throws SQLException {
         st.setInt(1, room.getRoomNumber());
         st.setInt(2, room.getPricePerNight());
-        st.setInt(1, room.getRoomNumber());
-        st.setInt(1, room.getRoomNumber());
+        st.setInt(3, room.getStandardBeds());
+        st.setInt(4, room.getKingsizeBeds());
     }
 
     private Room createRoom(PreparedStatement st) throws SQLException {
+
         try (var rs = st.executeQuery()) {
             if (rs.next()) {
                 return new Room(rs.getInt("ROOMNUMBER"), rs.getInt("PRICE"), rs.getInt("STANDARD"), rs.getInt("KINGSIZE"));
@@ -140,7 +152,7 @@ public final class RoomDao {
                     "ROOMNUMBER INT PRIMARY KEY," +
                     "PRICE INT," +
                     "STANDARD INT," +
-                    "KINGSIZE INT");
+                    "KINGSIZE INT)");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create ROOM table", ex);
         }
