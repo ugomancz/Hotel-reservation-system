@@ -53,7 +53,6 @@ public class NewReservation {
         this.reservationDao = reservationDao;
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(frame);
-        //dialog.setSize(500, 500);
 
         dialog.setEnabled(true);
         dialog.setLayout(new GridBagLayout());
@@ -73,19 +72,19 @@ public class NewReservation {
     }
 
     private void addFields() {
-        name = new JTextField(16);
+        name = new JTextField(20);
         name.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 0, name);
 
-        phone = new JTextField(16);
+        phone = new JTextField(20);
         phone.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 1, phone);
 
-        email = new JTextField(16);
+        email = new JTextField(20);
         email.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 2, email);
 
-        people = new JTextField(16);
+        people = new JTextField(2);
         people.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 3, people);
     }
@@ -139,7 +138,8 @@ public class NewReservation {
             model.setCellEditable(i, 0, true);
         }
         JScrollPane scrollPane = new JScrollPane(picker);
-        scrollPane.setPreferredSize(new Dimension(450, 200));
+        scrollPane.setPreferredSize(new Dimension(450, 181));
+        gbc.gridwidth = 2;
         placeComponent(0, 6, scrollPane);
     }
 
