@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.gui.Timetable;
+import cz.muni.fi.pv168.hotel.gui.Validation;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
@@ -76,13 +77,13 @@ public class ReservationInfo {
         gbc.insets = new Insets(5, 5, 5, 5);
 
         gbc.anchor = GridBagConstraints.CENTER;
-        addComponent(new JLabel(I18N.getString("reservationLabel") + ": "), 0, 0);
-        addComponent(new JLabel(I18N.getString("nameLabel") + ": "), 0, 1);
-        addComponent(new JLabel(I18N.getString("phoneLabel") + ": "), 0, 2);
-        addComponent(new JLabel(I18N.getString("emailLabel") + ": "), 0, 3);
-        addComponent(new JLabel(I18N.getString("guestsLabel") + ": "), 0, 4);
-        addComponent(new JLabel(I18N.getString("fromLabel") + ": "), 0, 5);
-        addComponent(new JLabel(I18N.getString("toLabel") + ": "), 0, 6);
+        addComponent(new JLabel(I18N.getString("reservationLabel") + ":"), 0, 0);
+        addComponent(new JLabel(I18N.getString("nameLabel") + ":"), 0, 1);
+        addComponent(new JLabel(I18N.getString("phoneLabel") + ":"), 0, 2);
+        addComponent(new JLabel(I18N.getString("emailLabel") + ":"), 0, 3);
+        addComponent(new JLabel(I18N.getString("guestsLabel") + ":"), 0, 4);
+        addComponent(new JLabel(I18N.getString("fromLabel") + ":"), 0, 5);
+        addComponent(new JLabel(I18N.getString("toLabel") + ":"), 0, 6);
         addButtons();
 
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -185,19 +186,24 @@ public class ReservationInfo {
     }
 
     private boolean updateReservation(Reservation reservation) {
+        Integer[] rooms = getSelectedRooms();
         if (checkEmptyFields()) {
             showError(I18N.getString("fieldsError"));
             return false;
         }
-        int guests;
-        Integer[] rooms = getSelectedRooms();
-        try {
-            guests = Integer.parseInt(guestsField.getText());
-        } catch (Exception e) {
+        if (!Validation.isAlpha(nameField.getText())) {
+            showError(I18N.getString("nameError"));
+            return false;
+        }
+        if (!emailField.getText().equals("") && !Validation.isEmail(emailField.getText())) {
+            showError(I18N.getString("emailError"));
+            return false;
+        }
+        if (!Validation.isNumeric(guestsField.getText())) {
             showError(I18N.getString("guestsError"));
             return false;
         }
-        if (roomDao.numberOfBeds(rooms) < guests) {
+        if (roomDao.numberOfBeds(rooms) < Integer.parseInt(guestsField.getText())) {
             showError(I18N.getString("bedError"));
             return false;
         }
@@ -205,7 +211,7 @@ public class ReservationInfo {
             showError(I18N.getString("dateError"));
             return false;
         }
-        reservation.setGuests(guests);
+        reservation.setGuests(Integer.parseInt(guestsField.getText()));
         reservation.setName(nameField.getText());
         reservation.setPhone(phoneField.getText());
         reservation.setEmail(emailField.getText());
