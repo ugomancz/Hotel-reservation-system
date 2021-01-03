@@ -14,6 +14,8 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingWorker;
@@ -29,7 +31,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * @author Ondrej Kostik
@@ -46,7 +47,7 @@ public class ReservationInfo {
     private Map<String, Reservation> reservationMap;
     private Button cancelButton, confirmButton;
     private JTextField nameField, phoneField, emailField, guestsField;
-    private JComboBox<Integer> roomPicker;
+    private JTable roomPicker;
     private JComboBox<String> reservationPicker;
 
     public ReservationInfo(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
@@ -60,14 +61,15 @@ public class ReservationInfo {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         new LoadReservations().execute();
         initLayout();
-        dialog.setSize(400, 400);
-        dialog.setResizable(false);
+        dialog.setMinimumSize(new Dimension(480, 500));
+        dialog.pack();
         dialog.setVisible(true);
     }
 
     private void initLayout() {
         gbc.weightx = 0.5;
-        gbc.weighty = 0.5;
+        gbc.weighty = 1;
+        gbc.insets = new Insets(5, 5, 5, 5);
 
         gbc.anchor = GridBagConstraints.CENTER;
         addComponent(new JLabel(I18N.getString("reservationLabel") + ": "), 0, 0);
@@ -77,16 +79,17 @@ public class ReservationInfo {
         addComponent(new JLabel(I18N.getString("guestsLabel") + ": "), 0, 4);
         addComponent(new JLabel(I18N.getString("fromLabel") + ": "), 0, 5);
         addComponent(new JLabel(I18N.getString("toLabel") + ": "), 0, 6);
-        addComponent(new JLabel(I18N.getString("roomNumber") + ": "), 0, 7);
         addButtons();
 
         gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(5, 5, 5, 5);
         nameField = (JTextField) addComponent(new JTextField(20), 1, 1);
         phoneField = (JTextField) addComponent(new JTextField(20), 1, 2);
         emailField = (JTextField) addComponent(new JTextField(20), 1, 3);
         guestsField = (JTextField) addComponent(new JTextField(2), 1, 4);
         addDatePickers();
         addComboBoxes();
+        addTable();
     }
 
     private void addDatePickers() {
@@ -106,6 +109,7 @@ public class ReservationInfo {
     }
 
     private void addButtons() {
+        gbc.anchor = GridBagConstraints.LINE_START;
         confirmButton = new Button(I18N.getString("confirmButton"), this::actionPerformed);
         confirmButton.setEnabled(false);
         addComponent(confirmButton, 0, 8);
@@ -121,13 +125,18 @@ public class ReservationInfo {
         reservationPicker.setPreferredSize(new Dimension(223, 20));
         reservationPicker.addActionListener(this::actionPerformed);
         addComponent(reservationPicker, 1, 0);
+    }
 
-        roomPicker = new JComboBox<>();
-        for (int i : IntStream.range(1, roomDao.numberOfRooms() + 1).toArray()) {
-            roomPicker.addItem(i);
-        }
-        roomPicker.addActionListener(this::actionPerformed);
-        addComponent(roomPicker, 1, 7);
+    private void addTable() {
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 2;
+        roomPicker = RoomPicker.createTable(roomDao);
+        roomPicker.getTableHeader().setReorderingAllowed(false);
+
+        JScrollPane scrollPane = new JScrollPane(roomPicker);
+        scrollPane.setPreferredSize(new Dimension(450, 181));
+        addComponent(scrollPane, 0, 7);
     }
 
     private void displayInfo(Reservation reservation) {
@@ -142,7 +151,7 @@ public class ReservationInfo {
 
     private boolean updateReservation(Reservation reservation) {
         int guests;
-        int room = roomPicker.getSelectedIndex() + 1;
+        Integer[] rooms = getSelectedRooms();
         try {
             guests = Integer.parseInt(guestsField.getText());
         } catch (Exception e) {
