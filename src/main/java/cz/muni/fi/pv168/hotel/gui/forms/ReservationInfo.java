@@ -294,9 +294,9 @@ public class ReservationInfo {
             Reservation reservation = getSelectedReservation();
             if (reservation != null) {
                 displayInfo(reservation);
+                updateTable();
             }
             addDateChangeListeners();
-            updateTable();
             confirmButton.setEnabled(true);
         }
     }
