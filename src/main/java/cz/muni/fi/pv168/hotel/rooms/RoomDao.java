@@ -75,6 +75,14 @@ public final class RoomDao {
         return room.getKingsizeBeds() * 2 + room.getStandardBeds();
     }
 
+    public int numberOfBeds(Integer[] rooms) {
+        int total = 0;
+        for (Integer roomNumber : rooms) {
+            total += numberOfBeds(roomNumber);
+        }
+        return total;
+    }
+
     public int numberOfRooms() {
         return rooms.size();
     }
