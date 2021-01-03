@@ -12,6 +12,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
  * @author Denis Kollar
  */
 public class GuestDao {
+
     private final DataSource dataSource;
 
     public GuestDao(DataSource dataSource) {

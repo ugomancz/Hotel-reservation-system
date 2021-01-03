@@ -8,7 +8,7 @@ public final class Constants {
     public static final Color BACKGROUND_COLOR = Color.lightGray;
     public static final int DAYS_IN_WEEK = 7;
     public static final String CONFIG_FILE_PATH = System.getProperty("user.home") + "/hotel_config";
-    public static final String DELIMETER = ";";
+    public static final String DELIMITER = ";";
     public static final Font BUTTON_FONT = new Font("Helvetica", Font.BOLD, 14);
     public static final Color BUTTON_BACKGROUND = new Color(240, 240, 240);
 

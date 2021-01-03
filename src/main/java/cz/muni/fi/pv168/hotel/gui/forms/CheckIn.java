@@ -7,9 +7,20 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -112,11 +123,11 @@ public class CheckIn extends JDialog {
             placeComponent(this, 0, 20, resGuests);
         }
         dataModel = new DefaultTableModel() {
+            private final String[] columns = {"Name and Surname", "Birth-date", "ID number"};
+
             public int getColumnCount() {
                 return 3;
             }
-
-            private final String[] columns = {"Name and Surname", "Birth-date", "ID number"};
 
             @Override
             public String getColumnName(int column) {

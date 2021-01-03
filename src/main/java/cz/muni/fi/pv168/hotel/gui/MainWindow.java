@@ -46,8 +46,8 @@ public class MainWindow {
         panel.setBackground(Constants.BACKGROUND_COLOR);
 
         panel.add(initSidePanel(reservationDao, guestDao, roomDao), BorderLayout.EAST);
-        panel.add(new Timetable(reservationDao).getPanel(), BorderLayout.CENTER);
-        panel.add(new RoomNames(), BorderLayout.WEST);
+        panel.add(new Timetable(reservationDao, roomDao).getPanel(), BorderLayout.CENTER);
+        panel.add(new RoomNames(roomDao), BorderLayout.WEST);
         panel.add(new TimetableHeader(LocalDate.now()).getPanel(), BorderLayout.NORTH);
         return panel;
     }
@@ -59,19 +59,19 @@ public class MainWindow {
         panel.setPreferredSize(sidePanelDimension);
 
         panel.add(new ButtonPanel(frame, reservationDao, guestDao, roomDao).getPanel(), BorderLayout.CENTER);
-        panel.add(new DesignedCalendar(reservationDao).getCalendar(), BorderLayout.SOUTH);
+        panel.add(new DesignedCalendar(reservationDao, roomDao).getCalendar(), BorderLayout.SOUTH);
         return panel;
     }
 
     private static class RoomNames extends JPanel {
 
-        private RoomNames() {
+        private RoomNames(RoomDao roomDao) {
             super();
-            setLayout(new GridLayout(RoomDao.numberOfRooms(), 1, 0, 1));
+            setLayout(new GridLayout(roomDao.numberOfRooms(), 1, 0, 1));
             setBorder(new EmptyBorder(0, 0, 0, 0));
             setBackground(Constants.BACKGROUND_COLOR);
             setPreferredSize(new Dimension(75, 500));
-            for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
+            for (int i = 0; i < roomDao.numberOfRooms(); i++) {
                 JLabel label = new JLabel(I18N.getString("roomLabel") + (i + 1), SwingConstants.CENTER);
                 label.setBackground(Constants.BACKGROUND_COLOR);
                 add(label);

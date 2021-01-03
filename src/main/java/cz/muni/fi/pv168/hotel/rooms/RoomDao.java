@@ -10,7 +10,34 @@ import java.util.Map;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public final class RoomDao {
+
     private final DataSource dataSource;
+    private final Map<Integer, Room> rooms = Map.ofEntries(
+            // one-bed rooms
+            Map.entry(1, new Room(1, 1500, 1, 0)),
+            Map.entry(2, new Room(2, 1500, 1, 0)),
+            Map.entry(3, new Room(3, 1500, 1, 0)),
+            Map.entry(4, new Room(4, 1500, 1, 0)),
+            Map.entry(5, new Room(5, 1500, 1, 0)),
+            // two-bed rooms
+            Map.entry(6, new Room(6, 2800, 2, 0)),
+            Map.entry(7, new Room(7, 2900, 0, 1)),
+            Map.entry(8, new Room(8, 2800, 0, 1)),
+            Map.entry(9, new Room(9, 2800, 0, 1)),
+            Map.entry(10, new Room(10, 2900, 2, 0)),
+            Map.entry(11, new Room(11, 2800, 2, 0)),
+            Map.entry(12, new Room(12, 2850, 0, 1)),
+            Map.entry(13, new Room(13, 2800, 2, 0)),
+            // three-bed rooms
+            Map.entry(14, new Room(14, 4200, 3, 0)),
+            Map.entry(15, new Room(15, 4200, 1, 1)),
+            Map.entry(16, new Room(16, 4200, 3, 0)),
+            Map.entry(17, new Room(17, 4200, 1, 1)),
+            Map.entry(18, new Room(18, 4200, 3, 0)),
+            Map.entry(19, new Room(19, 4200, 1, 1)),
+            Map.entry(20, new Room(20, 4200, 3, 0))
+    );
+
     public RoomDao(DataSource dataSource) {
         this.dataSource = dataSource;
         if (!tableExists()) {
@@ -26,7 +53,7 @@ public final class RoomDao {
             st.setInt(1, roomNumber);
             return createRoom(st);
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to find room with number "+ roomNumber, ex);
+            throw new DataAccessException("Failed to find room with number " + roomNumber, ex);
         }
     }
 
@@ -34,9 +61,17 @@ public final class RoomDao {
         return getRoom(roomNumber).getPricePerNight();
     }
 
+    public int getPricePerNight(Integer[] rooms) {
+        int total = 0;
+        for (Integer roomNumber : rooms) {
+            total += getPricePerNight(roomNumber);
+        }
+        return total;
+    }
+
     public int numberOfBeds(int roomNumber) {
         Room room = getRoom(roomNumber);
-        return room.getKingsizeBeds()*2+room.getStandardBeds();
+        return room.getKingsizeBeds() * 2 + room.getStandardBeds();
     }
 
     public int numberOfRooms() {
@@ -116,30 +151,4 @@ public final class RoomDao {
             create(room);
         }
     }
-
-    private final Map<Integer, Room> rooms = Map.ofEntries(
-            // one-bed rooms
-            Map.entry(1, new Room(1, 1500, 1, 0)),
-            Map.entry(2, new Room(2, 1500, 1, 0)),
-            Map.entry(3, new Room(3, 1500, 1, 0)),
-            Map.entry(4, new Room(4, 1500, 1, 0)),
-            Map.entry(5, new Room(5, 1500, 1, 0)),
-            // two-bed rooms
-            Map.entry(6, new Room(6, 2800, 2, 0)),
-            Map.entry(7, new Room(7, 2900, 0, 1)),
-            Map.entry(8, new Room(8, 2800, 0, 1)),
-            Map.entry(9, new Room(9, 2800, 0, 1)),
-            Map.entry(10, new Room(10, 2900, 2, 0)),
-            Map.entry(11, new Room(11, 2800, 2, 0)),
-            Map.entry(12, new Room(12, 2850, 0, 1)),
-            Map.entry(13, new Room(13, 2800, 2, 0)),
-            // three-bed rooms
-            Map.entry(14, new Room(14, 4200, 3, 0)),
-            Map.entry(15, new Room(15, 4200, 1, 1)),
-            Map.entry(16, new Room(16, 4200, 3, 0)),
-            Map.entry(17, new Room(17, 4200, 1, 1)),
-            Map.entry(18, new Room(18, 4200, 3, 0)),
-            Map.entry(19, new Room(19, 4200, 1, 1)),
-            Map.entry(20, new Room(20, 4200, 3, 0))
-    );
 }

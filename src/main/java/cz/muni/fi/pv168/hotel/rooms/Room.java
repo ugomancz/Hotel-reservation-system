@@ -3,11 +3,12 @@ package cz.muni.fi.pv168.hotel.rooms;
 import cz.muni.fi.pv168.hotel.gui.I18N;
 
 public class Room {
+
+    private static final I18N I18N = new I18N(Room.class);
     private int roomNumber;
     private int pricePerNight;
     private int standardBeds;
     private int kingsizeBeds;
-    private static final I18N I18N = new I18N(Room.class);
 
     public Room(int roomNumber, int pricePerNight, int standardBeds, int kingsizeBeds) {
         this.roomNumber = roomNumber;
@@ -52,6 +53,6 @@ public class Room {
     public String toString() {
         return I18N.getString("roomLabel") + getRoomNumber() + ", " + I18N.getString("standardBeds") + ": " + getStandardBeds()
                 + ", " + I18N.getString("kingsizeBeds") + ": " + getKingsizeBeds()
-                + ", "  + I18N.getString("pricePerNight") + ": " + getPricePerNight();
+                + ", " + I18N.getString("pricePerNight") + ": " + getPricePerNight();
     }
 }

@@ -15,13 +15,11 @@ import java.awt.Dimension;
 /**
  * @author Timotej Cirok
  */
-
-
-public class RoomInfo{
+public class RoomInfo {
 
     private static final I18N I18N = new I18N(RoomInfo.class);
 
-    public RoomInfo(JFrame frame) {
+    public RoomInfo(JFrame frame, RoomDao roomDao) {
         JDialog dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(frame);
@@ -32,7 +30,7 @@ public class RoomInfo{
         dialog.setBackground(new Color(240, 240, 240));
 
         for (int i = 0; i < 15; i++) {
-            area.append(RoomDao.getRoom(i + 1).toString() + "\n");
+            area.append(roomDao.getRoom(i + 1).toString() + "\n");
         }
         dialog.add(area);
         dialog.pack();

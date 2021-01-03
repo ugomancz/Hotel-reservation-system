@@ -42,14 +42,16 @@ public class ReservationInfo {
     private final DesignedDatePicker arrival = new DesignedDatePicker();
     private final DesignedDatePicker departure = new DesignedDatePicker();
     private final JDialog dialog;
+    private final RoomDao roomDao;
     private Map<String, Reservation> reservationMap;
     private Button cancelButton, confirmButton;
     private JTextField nameField, phoneField, emailField, guestsField;
     private JComboBox<Integer> roomPicker;
     private JComboBox<String> reservationPicker;
 
-    public ReservationInfo(JFrame frame, ReservationDao reservationDao) {
+    public ReservationInfo(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
         this.reservationDao = reservationDao;
+        this.roomDao = roomDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         dialog.setLocationRelativeTo(frame);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -121,7 +123,7 @@ public class ReservationInfo {
         addComponent(reservationPicker, 1, 0);
 
         roomPicker = new JComboBox<>();
-        for (int i : IntStream.range(1, RoomDao.numberOfRooms() + 1).toArray()) {
+        for (int i : IntStream.range(1, roomDao.numberOfRooms() + 1).toArray()) {
             roomPicker.addItem(i);
         }
         roomPicker.addActionListener(this::actionPerformed);
@@ -135,7 +137,7 @@ public class ReservationInfo {
         guestsField.setText(Integer.toString(reservation.getGuests()));
         arrival.setDate(reservation.getArrival());
         departure.setDate(reservation.getDeparture());
-        roomPicker.setSelectedIndex(reservation.getRoomNumber() - 1);
+        //roomPicker.setSelectedIndex(reservation.getRoomNumber() - 1);
     }
 
     private boolean updateReservation(Reservation reservation) {
@@ -147,7 +149,7 @@ public class ReservationInfo {
             showError(I18N.getString("guestsError"));
             return false;
         }
-        if (RoomDao.numberOfBeds(room) < guests) {
+        if (roomDao.numberOfBeds(room) < guests) {
             showError("Not enough beds in the chosen room");
             return false;
         }
@@ -165,7 +167,7 @@ public class ReservationInfo {
         reservation.setEmail(emailField.getText());
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
-        reservation.setRoomNumber(room);
+        //reservation.setRoomNumber(room);
         new UpdateReservation(reservation).execute();
         return true;
     }

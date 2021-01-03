@@ -9,35 +9,46 @@ import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import javax.swing.JTable;
 
 import static java.lang.Integer.parseInt;
 
 /**
  * @author Timotej Cirok
  */
-
-
 public class NewReservation {
 
     private static final I18N I18N = new I18N(NewReservation.class);
     private final ReservationDao reservationDao;
+    private final GridBagConstraints gbc = new GridBagConstraints();
+    private final JDialog dialog;
+    private final RoomDao roomDao;
     private Button cancelButton, okayButton;
     private JTextField name, phone, email, people;
     private JTable picker;
     private DesignedDatePicker fromDate, toDate;
-    private final Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-    private final GridBagConstraints gbc = new GridBagConstraints();
-    private final JDialog dialog;
 
 
-    public NewReservation(JFrame frame, ReservationDao reservationDao) {
+    public NewReservation(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
+        this.roomDao = roomDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -120,13 +131,9 @@ public class NewReservation {
         dialog.pack();
     }
 
-    public int getRowCount() {
-        return RoomDao.numberOfRooms();
-    }
-
     private void addTable() {
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        picker = RoomPicker.createTable();
+        picker = RoomPicker.createTable(roomDao);
         JScrollPane scrollPane = new JScrollPane(picker);
         scrollPane.setPreferredSize(new Dimension(450, 200));
         placeComponent(0, 6, scrollPane);
@@ -152,7 +159,7 @@ public class NewReservation {
             ArrayList<Integer> rooms = new ArrayList<>();
             for (int i = 0; i < picker.getRowCount(); i++) {
                 if (picker.getValueAt(i, 0).equals(true)) {
-                    checkedPeople += RoomDao.getRoom(i + 1).getRoomType().getNumOfBeds();
+                    checkedPeople += roomDao.numberOfBeds(i + 1);
                     rooms.add(i + 1);
                 }
             }
@@ -184,7 +191,7 @@ public class NewReservation {
                     Timetable.drawWeek(LocalDate.now());
                     dialog.dispose();
                 } else {
-                    new ErrorDialog(dialog, I18N.getString( "roomFull"));
+                    new ErrorDialog(dialog, I18N.getString("roomFull"));
                 }
             }
         }

@@ -22,6 +22,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
  */
 @SuppressWarnings("SqlNoDataSourceInspection")
 public final class ReservationDao {
+
     private final DataSource dataSource;
 
     public ReservationDao(DataSource dataSource) {
@@ -108,8 +109,8 @@ public final class ReservationDao {
 
     public void printAll(List<Reservation> list) {
         for (Reservation entry : list) {
-            System.out.print(entry.getId()+" ");
-            System.out.print(Arrays.toString(entry.getRoomNumbers())+" ");
+            System.out.print(entry.getId() + " ");
+            System.out.print(Arrays.toString(entry.getRoomNumbers()) + " ");
             System.out.println(entry);
         }
     }
@@ -128,7 +129,7 @@ public final class ReservationDao {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement("SELECT ID, NAME, PHONE, EMAIL, HOSTS,"
                      + " ROOMNUMBERS, ARRIVAL, DEPARTURE, STATUS, GUESTID FROM RESERVATION WHERE (ROOMNUMBERS LIKE ?) AND ((ARRIVAL<=? AND ?<=DEPARTURE))")) {
-            st.setString(1, "%;"+ room +";%");
+            st.setString(1, "%;" + room + ";%");
             st.setDate(2, Date.valueOf(date));
             st.setDate(3, Date.valueOf(date));
             return createReservation(st);
@@ -181,7 +182,7 @@ public final class ReservationDao {
                              + "(DEPARTURE>? AND ARRIVAL<?)"
                              + ")")) {
             st.setString(1, ReservationStatus.PAST.name());
-            st.setString(2, "%;"+ room +";%");
+            st.setString(2, "%;" + room + ";%");
             st.setDate(3, Date.valueOf(arrival));
             st.setDate(4, Date.valueOf(departure));
             int result;
@@ -205,7 +206,7 @@ public final class ReservationDao {
                              + "(DEPARTURE>? AND ARRIVAL<?) AND ID<>?"
                              + ")")) {
             st.setString(1, ReservationStatus.PAST.name());
-            st.setString(2, "%;"+ room +";%");
+            st.setString(2, "%;" + room + ";%");
             st.setDate(3, Date.valueOf(arrival));
             st.setDate(4, Date.valueOf(departure));
             st.setLong(5, id);
@@ -255,9 +256,9 @@ public final class ReservationDao {
 
     private String parse(Integer[] roomNumbers) {
         StringBuilder sb = new StringBuilder();
-        sb.append(Constants.DELIMETER);
+        sb.append(Constants.DELIMITER);
         for (Integer roomNumber : roomNumbers) {
-            sb.append(roomNumber).append(Constants.DELIMETER);
+            sb.append(roomNumber).append(Constants.DELIMITER);
         }
         return sb.toString();
     }

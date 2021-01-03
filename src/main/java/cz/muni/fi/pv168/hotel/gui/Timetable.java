@@ -25,20 +25,23 @@ import java.util.Map;
 
 public class Timetable {
 
-    private static final JTextPane[][] TEXT_PANES = new JTextPane[RoomDao.numberOfRooms()][Constants.DAYS_IN_WEEK];
     private static final Color FIRST_DAY_OF_RESERVATION = new Color(60, 160, 50);
     private static final Map<ReservationStatus, Color> STATUS_COLOR = Map.of(
             ReservationStatus.PLANNED, new Color(13, 218, 13),
             ReservationStatus.ONGOING, Color.orange,
             ReservationStatus.PAST, Color.lightGray
     );
+    private static RoomDao roomDao;
+    private static JTextPane[][] TEXT_PANES;
     private static ReservationDao reservationDao;
-    private final JPanel panel;
     private static LocalDate currentMonday;
+    private final JPanel panel;
 
-    Timetable(ReservationDao reservationDao) {
+    Timetable(ReservationDao reservationDao, RoomDao roomDao) {
+        Timetable.roomDao = roomDao;
+        TEXT_PANES = new JTextPane[roomDao.numberOfRooms()][Constants.DAYS_IN_WEEK];
         panel = new JPanel();
-        panel.setLayout(new GridLayout(RoomDao.numberOfRooms(), Constants.DAYS_IN_WEEK, 0, 0));
+        panel.setLayout(new GridLayout(roomDao.numberOfRooms(), Constants.DAYS_IN_WEEK, 0, 0));
         panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         panel.setBackground(Constants.BACKGROUND_COLOR);
         Timetable.reservationDao = reservationDao;
@@ -91,7 +94,7 @@ public class Timetable {
     public static void drawWeek(LocalDate date) {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         currentMonday = monday;
-        for (int room = 0; room < RoomDao.numberOfRooms(); room++) { // for every room
+        for (int room = 0; room < roomDao.numberOfRooms(); room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
                 LocalDate currentDay = monday.plusDays(day);
                 new GetReservation(room, day, currentDay).execute();
@@ -108,7 +111,7 @@ public class Timetable {
     }
 
     private void initPanes() {
-        for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
+        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
             for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
                 JTextPane textPane = new JTextPane();
                 StyledDocument styledDocument = textPane.getStyledDocument();
@@ -138,14 +141,14 @@ public class Timetable {
         }
 
         @Override
-        protected void done() {
-            updatePane(reservations, date, room, day);
-        }
-
-        @Override
         protected Void doInBackground() {
             reservations = reservationDao.getReservation(room + 1, date);
             return null;
+        }
+
+        @Override
+        protected void done() {
+            updatePane(reservations, date, room, day);
         }
     }
 }

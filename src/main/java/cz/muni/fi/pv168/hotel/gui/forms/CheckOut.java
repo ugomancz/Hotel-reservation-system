@@ -7,6 +7,7 @@ import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -44,12 +45,14 @@ public class CheckOut {
     private final ReservationDao reservationDao;
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
+    private final RoomDao roomDao;
     private int localFee;
     private Map<String, Reservation> reservationMap;
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
 
-    public CheckOut(JFrame frame, ReservationDao reservationDao) {
+    public CheckOut(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
+        this.roomDao = roomDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         dialog.setLayout(new GridBagLayout());
@@ -103,7 +106,7 @@ public class CheckOut {
         /* calculates length of stay if departure != day of checkout */
         int length = reservation.getDeparture().isEqual(LocalDate.now()) ?
                 reservation.getLength() : LocalDate.now().compareTo(reservation.getArrival());
-        return length * /*RoomDao.getPricePerNight(reservation.getRoomNumbers())*/ + // TODO: after roomDao is done
+        return length * roomDao.getPricePerNight(reservation.getRoomNumbers()) +
                 length * localFee * reservation.getGuests();
     }
 

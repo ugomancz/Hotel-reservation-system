@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         DataSource dataSource = createDataSource();
         ReservationDao reservationDao = new ReservationDao(dataSource);
-        RoomDao roomDao = null;
+        RoomDao roomDao = new RoomDao(dataSource);
         GuestDao guestDao = new GuestDao(dataSource);
         EventQueue.invokeLater(() -> MainWindow.run(reservationDao, guestDao, roomDao));
     }
