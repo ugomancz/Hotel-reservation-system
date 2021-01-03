@@ -2,6 +2,8 @@ package cz.muni.fi.pv168.hotel.reservations;
 
 import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.DataAccessException;
+import cz.muni.fi.pv168.hotel.rooms.Room;
+import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.sql.DataSource;
 import java.sql.Date;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -160,16 +163,7 @@ public final class ReservationDao {
                      + "AND (" + "(ARRIVAL<=? AND ?<=DEPARTURE)"
                      + ")")) {
             st.setString(1, "PAST");
-            st.setDate(2, Date.valueOf(date));
-            st.setDate(3, Date.valueOf(date));
-            HashSet<Integer> hashSet = new HashSet<>();
-            try (var rs = st.executeQuery()) {
-
-                while (rs.next()) {
-                    hashSet.addAll(Arrays.asList(unparse(rs.getString("ROOMNUMBERS"))));
-                }
-            }
-            return hashSet.size();
+            return collectRoomNumbers(date, date, st).size();
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all reservations", ex);
         }
@@ -210,7 +204,6 @@ public final class ReservationDao {
             st.setDate(3, Date.valueOf(arrival));
             st.setDate(4, Date.valueOf(departure));
             st.setLong(5, id);
-
             int result;
             try (var rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -223,6 +216,57 @@ public final class ReservationDao {
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all reservations", ex);
         }
+    }
+
+    public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao){
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement(
+                     "SELECT ROOMNUMBERS FROM RESERVATION WHERE STATUS<>? AND ("
+                             + "(DEPARTURE>? AND ARRIVAL<?)"
+                             + ")")) {
+            st.setString(1, ReservationStatus.PAST.name());
+            return collectFreeRooms(arrival, departure, roomDao, st);
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all reservations", ex);
+        }
+    }
+
+    public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, long reservationId){
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement(
+                     "SELECT ROOMNUMBERS FROM RESERVATION WHERE STATUS<>? AND ("
+                             + "(DEPARTURE>? AND ARRIVAL<?) AND ID<>?"
+                             + ")")) {
+            st.setString(1, ReservationStatus.PAST.name());
+            st.setLong(4, reservationId);
+            return collectFreeRooms(arrival, departure, roomDao, st);
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all reservations", ex);
+        }
+    }
+
+    private List<Room> collectFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, PreparedStatement st) throws SQLException {
+        HashSet<Integer> hashSet = collectRoomNumbers(arrival, departure, st);
+        ArrayList<Room> emptyRooms = new ArrayList<>();
+        for (int i = 1; i <= roomDao.numberOfRooms(); i++) {
+            if (!hashSet.contains(i)){
+                emptyRooms.add(roomDao.getRoom(i));
+            }
+        }
+        return emptyRooms;
+    }
+
+    private HashSet<Integer> collectRoomNumbers(LocalDate arrival, LocalDate departure, PreparedStatement st) throws SQLException {
+        st.setDate(2, Date.valueOf(arrival));
+        st.setDate(3, Date.valueOf(departure));
+        HashSet<Integer> hashSet = new HashSet<>();
+        try (var rs = st.executeQuery()) {
+
+            while (rs.next()) {
+                hashSet.addAll(Arrays.asList(unparse(rs.getString("ROOMNUMBERS"))));
+            }
+        }
+        return hashSet;
     }
 
     private void createTable() {
@@ -265,8 +309,7 @@ public final class ReservationDao {
 
     private Integer[] unparse(String roomnumbers) {
         String[] numbers = roomnumbers.split(";");
-        Integer[] tmp = Stream.of(numbers).skip(1).limit(numbers.length - 1)
+        return Stream.of(numbers).skip(1).limit(numbers.length - 1)
                 .mapToInt(Integer::parseInt).boxed().toArray(Integer[]::new);
-        return tmp;
     }
 }

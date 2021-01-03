@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.hotel.DataAccessException;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -74,6 +75,14 @@ public final class RoomDao {
         return room.getKingsizeBeds() * 2 + room.getStandardBeds();
     }
 
+    public int numberOfBeds(Integer[] rooms) {
+        int total = 0;
+        for (Integer roomNumber : rooms) {
+            total += numberOfBeds(roomNumber);
+        }
+        return total;
+    }
+
     public int numberOfRooms() {
         return rooms.size();
     }
@@ -103,13 +112,20 @@ public final class RoomDao {
         }
     }
 
+    public void printAll(List<Room> rooms) {
+        for (Room room :
+                rooms) {
+            System.out.printf("Room number %s is free%n", room.getRoomNumber());
+        }
+    }
+
     private void create(Room room) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
                      "INSERT INTO ROOM (ROOMNUMBER, PRICE, STANDARD, KINGSIZE) VALUES (?, ?, ?, ?)",
                      RETURN_GENERATED_KEYS)) {
             setRows(room, st);
-            if (st.executeUpdate() == 0){
+            if (st.executeUpdate() == 0) {
                 System.out.println("nothing added");
             }
         } catch (SQLException ex) {

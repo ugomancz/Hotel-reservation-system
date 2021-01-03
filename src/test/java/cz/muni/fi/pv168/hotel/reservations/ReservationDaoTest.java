@@ -5,8 +5,8 @@ package cz.muni.fi.pv168.hotel.reservations;
 /**
  * @author Lukas Hasik
  */
-/**
-public class ReservationDaoTest {
+final class ReservationDaoTest {
+
     private static EmbeddedDataSource dataSource;
     private ReservationDao reservationDao;
 
@@ -18,7 +18,7 @@ public class ReservationDaoTest {
     }
 
     @BeforeEach
-    void createEmployeeDao() throws SQLException {
+    void createReservationDao() throws SQLException {
         reservationDao = new ReservationDao(dataSource);
         try (var connection = dataSource.getConnection(); var st = connection.createStatement()) {
             st.executeUpdate("DELETE FROM APP.RESERVATION");
@@ -32,7 +32,7 @@ public class ReservationDaoTest {
 
     @Test
     void createReservation() {
-        var testRes = new Reservation("Tester Smith", "777777777", "tester@test.com", 4, 2,
+        var testRes = new Reservation("Tester Smith", "777777777", "tester@test.com", 4, new Integer[]{2},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
         reservationDao.create(testRes);
 
@@ -51,19 +51,18 @@ public class ReservationDaoTest {
 
     @Test
     void findAll() {
-        var testRes1 = new Reservation("Tester Smith", "777777777", "tester@test.com", 4, 2,
+        var testRes1 = new Reservation("Tester Smith", "777777777", "tester@test.com", 4, new Integer[]{2},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
-        var testRes2 = new Reservation("Testerina Hero", "77769777", "testerina@hero.com", 2, 1,
+        var testRes2 = new Reservation("Testerina Hero", "77769777", "testerina@hero.com", 2, new Integer[]{1},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
-        var testRes3 = new Reservation("Tester Jester", "778654777", "tester@test.com", 1, 3,
+        var testRes3 = new Reservation("Tester Jester", "778654777", "tester@test.com", 1, new Integer[]{3},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
-        var testRes4 = new Reservation("Tester J. Morgan", "771237777", "tmorg@test.com", 4, 5,
+        var testRes4 = new Reservation("Tester J. Morgan", "771237777", "tmorg@test.com", 4, new Integer[]{5},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
-        var testRes5 = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+        var testRes5 = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, new Integer[]{8},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
-        var testRes6 = new Reservation("T. S. Ter", "420777769", "tester@test.com", 4, 10,
+        var testRes6 = new Reservation("T. S. Ter", "420777769", "tester@test.com", 4, new Integer[]{10},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
-
 
         reservationDao.create(testRes1);
         reservationDao.create(testRes2);
@@ -80,7 +79,7 @@ public class ReservationDaoTest {
 
     @Test
     void delete() {
-        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, new Integer[]{2},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
 
         reservationDao.create(res);
@@ -92,7 +91,7 @@ public class ReservationDaoTest {
 
     @Test
     void deleteNonExisting() {
-        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, new Integer[]{2},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
         res.setId(420L);
 
@@ -103,14 +102,14 @@ public class ReservationDaoTest {
 
     @Test
     void update() {
-        var updatedRes = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+        var updatedRes = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, new Integer[]{2},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
 
         reservationDao.create(updatedRes);
 
         updatedRes.setArrival(LocalDate.now().plusDays(4));
         updatedRes.setName("Ben Dover");
-        updatedRes.setRoomNumber(6);
+        updatedRes.setRoomNumbers(new Integer[]{2});
 
         reservationDao.update(updatedRes);
         assertThat(reservationDao.findAll())
@@ -120,7 +119,7 @@ public class ReservationDaoTest {
 
     @Test
     void updateNonExisting() {
-        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, 8,
+        var res = new Reservation("Test R. Boy", "777333477", "tester@test.com", 5, new Integer[]{2},
                 LocalDate.now(), LocalDate.now().plusDays(4), "PLANNED");
         res.setId(420L);
 
@@ -128,6 +127,5 @@ public class ReservationDaoTest {
                 .isThrownBy(() -> reservationDao.update(res))
                 .withMessage("Failed to update non-existing reservation: %s", res);
     }
-
 }
  **/
