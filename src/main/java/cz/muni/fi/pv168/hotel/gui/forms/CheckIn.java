@@ -14,6 +14,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,13 +26,14 @@ import java.util.stream.Collectors;
  * @author Lukas Hasik
  */
 
-public class CheckIn extends JDialog {
+public class CheckIn {
 
     private final GridBagConstraints gbc = new GridBagConstraints();
     private static final I18N I18N = new I18N(CheckIn.class);
     private final ReservationDao reservationDao;
     private final GuestDao guestDao;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private final JDialog dialog;
     private JDialog addWindow;
     private JTable table;
     private final ArrayList<Guest> guestList = new ArrayList<Guest>();
@@ -44,19 +46,20 @@ public class CheckIn extends JDialog {
 
 
     public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao) {
-        super(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.guestDao = guestDao;
         this.reservationDao = reservationDao;
-        setSize(500, 400);
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(frame);
-        setEnabled(true);
-
+        dialog.setSize(500, 400);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setEnabled(true);
+        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
         GridBagLayout layout = new GridBagLayout();
-        setLayout(layout);
+        dialog.setLayout(layout);
         initMap();
         initLayout();
-        setVisible(true);
+        dialog.setVisible(true);
 
     }
 
@@ -104,11 +107,11 @@ public class CheckIn extends JDialog {
 
         JLabel reservation = new JLabel(I18N.getString("reservation") + ": ");
         gbc.anchor = GridBagConstraints.LINE_START;
-        placeComponent(this, 0, 0, reservation);
+        placeComponent(dialog, 0, 0, reservation);
         reservationPicker = new JComboBox<>();
         initComboBox();
         gbc.anchor = GridBagConstraints.CENTER;
-        placeComponent(this, 0, 0, reservationPicker);
+        placeComponent(dialog, 0, 0, reservationPicker);
 
 
         String selected = (String) reservationPicker.getSelectedItem();
@@ -116,25 +119,25 @@ public class CheckIn extends JDialog {
         gbc.anchor = GridBagConstraints.LINE_START;
         resName = new JLabel();
         resName.setText(I18N.getString("name") + ": ");
-        placeComponent(this, 0, 10, resName);
+        placeComponent(dialog, 0, 10, resName);
         resGuests = new JLabel();
         resGuests.setText(I18N.getString("numberOfGuests") + ": ");
-        placeComponent(this, 0, 20, resGuests);
+        placeComponent(dialog, 0, 20, resGuests);
         resRooms = new JLabel();
         resRooms.setText(I18N.getString("rooms") + ": ");
-        placeComponent(this, 0, 30, resRooms);
+        placeComponent(dialog, 0, 30, resRooms);
 
         gbc.anchor = GridBagConstraints.CENTER;
         table = GuestTable.createTable(I18N.getString("name"), I18N.getString("birthDate"), I18N.getString("IDnumber"));
         JScrollPane scrollpane = new JScrollPane(table);
         scrollpane.setPreferredSize(new Dimension(450, 200));
-        placeComponent(this, 0, 50, scrollpane);
+        placeComponent(dialog, 0, 50, scrollpane);
 
         gbc.anchor = GridBagConstraints.LINE_START;
         add = new Button(I18N.getString("add"));
         add.setPreferredSize(new Dimension(85, 25));
         add.setEnabled(false);
-        placeComponent(this, 0, 40, add);
+        placeComponent(dialog, 0, 40, add);
         add.addActionListener(this::actionPerformed);
 
         gbc.insets = new Insets(0, 90, 0, 0);
@@ -142,7 +145,7 @@ public class CheckIn extends JDialog {
         delete = new Button(I18N.getString("delete"));
         delete.setPreferredSize(new Dimension(100, 25));
         delete.setEnabled(false);
-        placeComponent(this, 0, 40, delete);
+        placeComponent(dialog, 0, 40, delete);
         delete.addActionListener(this::actionPerformed);
 
 
@@ -150,12 +153,12 @@ public class CheckIn extends JDialog {
         gbc.anchor = GridBagConstraints.LINE_START;
         confirm = new Button(I18N.getString("confirm"));
         confirm.setEnabled(false);
-        placeComponent(this, 0, 90, confirm);
+        placeComponent(dialog, 0, 90, confirm);
         confirm.addActionListener(this::actionPerformed);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         cancel = new Button(I18N.getString("cancel"));
-        placeComponent(this, 0, 90, cancel);
+        placeComponent(dialog, 0, 90, cancel);
         cancel.addActionListener(this::actionPerformed);
 
         if (res != null) {
@@ -179,11 +182,11 @@ public class CheckIn extends JDialog {
      * initializes add window
      */
     private void initAddLayout() {
-        addWindow = new JDialog(this, I18N.getString("add"), ModalityType.APPLICATION_MODAL);
+        addWindow = new JDialog(dialog, I18N.getString("add"), Dialog.ModalityType.APPLICATION_MODAL);
         GridBagLayout layout = new GridBagLayout();
         addWindow.setLayout(layout);
         addWindow.setSize(300, 180);
-        addWindow.setLocationRelativeTo(this);
+        addWindow.setLocationRelativeTo(dialog);
         setAddLayout(addWindow);
         addWindow.setVisible(true);
     }
@@ -253,22 +256,22 @@ public class CheckIn extends JDialog {
     private void actionPerformed(ActionEvent e) {
 
         if (e.getSource().equals(cancel)) {
-            dispose();
+            dialog.dispose();
         }
         if (e.getSource().equals(confirm)) {
             String selected = (String) reservationPicker.getSelectedItem();
             Reservation res = reservationMap.get(selected);
             if (res == null) {
-                new ErrorDialog(this, I18N.getString("noResSelectedError"));
+                new ErrorDialog(dialog, I18N.getString("noResSelectedError"));
             } else {
                 if (guestList.size() != res.getGuests()) {
-                    new ErrorDialog(this, I18N.getString("invalidNumOfGuestsError"));
+                    new ErrorDialog(dialog, I18N.getString("invalidNumOfGuestsError"));
                 } else {
                     createGuests();
                     res.setStatus(ReservationStatus.ONGOING);
                     reservationDao.update(res);
                     Timetable.drawWeek(LocalDate.now());
-                    dispose();
+                    dialog.dispose();
                 }
             }
         }
@@ -288,7 +291,7 @@ public class CheckIn extends JDialog {
         }
         if (e.getSource().equals(addConfirm)) {
             if (addNameField.getText().equals("") || addIDfield.getText().equals("")) {
-                new ErrorDialog(this, I18N.getString("notAllFieldsFilledError"));
+                new ErrorDialog(dialog, I18N.getString("notAllFieldsFilledError"));
             } else {
                 String name = addNameField.getText();
                 String id = addIDfield.getText();
