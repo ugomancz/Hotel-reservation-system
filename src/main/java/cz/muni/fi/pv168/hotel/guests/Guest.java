@@ -6,14 +6,14 @@ import java.time.LocalDate;
  * @author Denis Kollar
  */
 public class Guest {
+
     private Long id;
     private String name;
     private LocalDate birthDate;
     private String guestId;
-
     private Long reservationId;
 
-    public Guest(String name,LocalDate birthDate, String guestId, Long reservationId) {
+    public Guest(String name, LocalDate birthDate, String guestId, Long reservationId) {
         this.name = name;
         this.birthDate = birthDate;
         this.guestId = guestId;

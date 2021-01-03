@@ -2,24 +2,26 @@ package cz.muni.fi.pv168.hotel.reservations;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 public class Reservation {
+
     private Long id;
     private String name;
     private String phone;
     private String email;
     private int guests;
-    private int roomNumber;
+    private Integer[] roomNumbers;
     private LocalDate arrival;
     private LocalDate departure;
     private ReservationStatus status;
     private String guestID;
 
     public Reservation(String name, String phone, String email, int guests,
-                       int roomNumber, LocalDate arrival, LocalDate departure, String status) {
+                       Integer[] roomNumbers, LocalDate arrival, LocalDate departure, String status) {
         this.name = name;
         this.guests = guests;
-        this.roomNumber = roomNumber;
+        this.roomNumbers = Arrays.copyOf(roomNumbers, roomNumbers.length);
         this.arrival = arrival;
         this.departure = departure;
         this.status = ReservationStatus.valueOf(status.toUpperCase());
@@ -59,12 +61,12 @@ public class Reservation {
         this.departure = departure;
     }
 
-    public int getRoomNumber() {
-        return roomNumber;
+    public Integer[] getRoomNumbers() {
+        return roomNumbers;
     }
 
-    public void setRoomNumber(int roomNumber) {
-        this.roomNumber = roomNumber;
+    public void setRoomNumbers(Integer[] roomNumbers) {
+        this.roomNumbers = Arrays.copyOf(roomNumbers, roomNumbers.length);
     }
 
     public int getGuests() {

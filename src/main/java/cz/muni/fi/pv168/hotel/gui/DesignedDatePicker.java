@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.hotel.Constants;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 /**
  * @author Ondrej Kostik
@@ -38,6 +39,6 @@ public class DesignedDatePicker {
     }
 
     public void setFirstAllowedDate(LocalDate date) {
-        datePicker.getSettings().setDateRangeLimits(date, date.plusYears(200));
+        datePicker.getSettings().setDateRangeLimits(date, date.plus(1, ChronoUnit.MILLENNIA));
     }
 }

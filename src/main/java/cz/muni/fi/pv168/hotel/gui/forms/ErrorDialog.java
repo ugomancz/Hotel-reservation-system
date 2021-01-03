@@ -29,8 +29,9 @@ class ErrorDialog {
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
-
         initLayout(message);
+        dialog.setSize(240, 130);
+        dialog.setResizable(false);
         dialog.setVisible(true);
     }
 
@@ -46,7 +47,5 @@ class ErrorDialog {
         dialog.getRootPane().setBorder(new EmptyBorder(5, 5, 5, 5));
         dialog.add(messageLabel);
         dialog.add(button);
-        dialog.setSize(240, 130);
-        dialog.setResizable(false);
     }
 }
