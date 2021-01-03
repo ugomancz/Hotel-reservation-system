@@ -1,6 +1,7 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
+import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 
@@ -25,6 +26,7 @@ import java.util.Map;
  */
 public class GuestsInfo {
 
+    private static final I18N I18N = new I18N(GuestsInfo.class);
     private final JDialog dialog;
     private final GuestDao guestDao;
     private final JComboBox<String> reservationPicker = new JComboBox<>();
@@ -36,7 +38,7 @@ public class GuestsInfo {
     public GuestsInfo(Window owner, ReservationDao reservationDao, GuestDao guestDao) {
         this.reservationDao = reservationDao;
         this.guestDao = guestDao;
-        dialog = new JDialog(owner, "Guests", Dialog.ModalityType.APPLICATION_MODAL);
+        dialog = new JDialog(owner, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         new LoadReservations().execute();
         initLayout();
         dialog.setVisible(true);
@@ -48,17 +50,19 @@ public class GuestsInfo {
         gbc.weighty = 0.5;
         gbc.weightx = 0.5;
         gbc.anchor = GridBagConstraints.CENTER;
-        addComponent(new JLabel("Reservation:"), 0, 0);
-        reservationPicker.addActionListener(this::selectionChanged);
+        addComponent(new JLabel(I18N.getString("reservationLabel") + ":"), 0, 0);
+        reservationPicker.addActionListener(this::reservationPicked);
         addComponent(reservationPicker, 1, 0);
         addTable();
         dialog.pack();
     }
 
-    private void selectionChanged(ActionEvent event) {
+    private void reservationPicked(ActionEvent event) {
         String selected = (String) reservationPicker.getSelectedItem();
         Reservation reservation = reservationMap.get(selected);
-        displayGuests(reservation);
+        if (reservation != null) {
+            displayGuests(reservation);
+        }
     }
 
     private void addComponent(JComponent component, int x, int y) {
@@ -68,7 +72,7 @@ public class GuestsInfo {
     }
 
     private void addTable() {
-        table = new JTable();
+        table = new JTable(5,3);
         addComponent(table, 0, 1);
     }
 
