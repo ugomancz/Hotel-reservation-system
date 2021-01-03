@@ -225,17 +225,35 @@ public final class ReservationDao {
                              + "(DEPARTURE>? AND ARRIVAL<?)"
                              + ")")) {
             st.setString(1, ReservationStatus.PAST.name());
-            HashSet<Integer> hashSet = collectRoomNumbers(arrival, departure, st);
-            ArrayList<Room> emptyRooms = new ArrayList<>();
-            for (int i = 1; i <= roomDao.numberOfRooms(); i++) {
-                if (!hashSet.contains(i)){
-                    emptyRooms.add(roomDao.getRoom(i));
-                }
-            }
-            return emptyRooms;
+            return collectFreeRooms(arrival, departure, roomDao, st);
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all reservations", ex);
         }
+    }
+
+    public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, long reservationId){
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement(
+                     "SELECT ROOMNUMBERS FROM RESERVATION WHERE STATUS<>? AND ("
+                             + "(DEPARTURE>? AND ARRIVAL<?) AND ID<>?"
+                             + ")")) {
+            st.setString(1, ReservationStatus.PAST.name());
+            st.setLong(4, reservationId);
+            return collectFreeRooms(arrival, departure, roomDao, st);
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all reservations", ex);
+        }
+    }
+
+    private List<Room> collectFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, PreparedStatement st) throws SQLException {
+        HashSet<Integer> hashSet = collectRoomNumbers(arrival, departure, st);
+        ArrayList<Room> emptyRooms = new ArrayList<>();
+        for (int i = 1; i <= roomDao.numberOfRooms(); i++) {
+            if (!hashSet.contains(i)){
+                emptyRooms.add(roomDao.getRoom(i));
+            }
+        }
+        return emptyRooms;
     }
 
     private HashSet<Integer> collectRoomNumbers(LocalDate arrival, LocalDate departure, PreparedStatement st) throws SQLException {
