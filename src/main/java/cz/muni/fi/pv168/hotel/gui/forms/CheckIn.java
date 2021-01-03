@@ -35,7 +35,6 @@ public class CheckIn extends JDialog {
     private JDialog addWindow;
     private JTable table;
     private final ArrayList<Guest> guestList = new ArrayList<Guest>();
-    private DefaultTableModel dataModel;
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel;
     private JComboBox<String> reservationPicker;
@@ -96,6 +95,7 @@ public class CheckIn extends JDialog {
         gbc.anchor = GridBagConstraints.CENTER;
     }
 
+
     /**
      * Sets layout in frame using GridBagLayout
      */
@@ -123,26 +123,9 @@ public class CheckIn extends JDialog {
         resRooms = new JLabel();
         resRooms.setText(I18N.getString("rooms") + ": ");
         placeComponent(this, 0, 30, resRooms);
-        dataModel = new DefaultTableModel() {
-            public int getColumnCount() { return 3; }
 
-            private final String[] columns = {I18N.getString("name"), I18N.getString("birthDate"), I18N.getString("IDnumber")};
-            @Override
-            public String getColumnName(int column) {
-                return columns[column];
-            }
-
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                //all cells false
-                return false;
-            }
-        };
         gbc.anchor = GridBagConstraints.CENTER;
-        table = new JTable(dataModel);
-        table.getColumnModel().getColumn(1).setPreferredWidth(10);
-        table.getColumnModel().getColumn(2).setPreferredWidth(15);
-        table.getTableHeader().setReorderingAllowed(false);
+        table = GuestTable.createTable(I18N.getString("name"), I18N.getString("birthDate"), I18N.getString("IDnumber"));
         JScrollPane scrollpane = new JScrollPane(table);
         scrollpane.setPreferredSize(new Dimension(450, 200));
         placeComponent(this, 0, 50, scrollpane);
@@ -290,6 +273,7 @@ public class CheckIn extends JDialog {
             }
         }
         if (e.getSource().equals(reservationPicker)) {
+            DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
             dataModel.setRowCount(0);
             String selected = (String) reservationPicker.getSelectedItem();
             res = reservationMap.get(selected);
@@ -309,6 +293,7 @@ public class CheckIn extends JDialog {
                 String name = addNameField.getText();
                 String id = addIDfield.getText();
                 Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId());
+                DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
                 dataModel.addRow(new Object[] {name, birthDatePicker.getDate(), addIDfield.getText()});
                 guestList.add(guest);
                 addWindow.dispose();
