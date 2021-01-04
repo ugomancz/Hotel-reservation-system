@@ -47,6 +47,8 @@ public class Settings {
         dialog.setLocationRelativeTo(frame);
         dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
+        dialog.getRootPane().registerKeyboardAction((e) -> new StoreProperties().execute(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
         gbc = new GridBagConstraints();
         new LoadProperties().execute();
         initLayout();
