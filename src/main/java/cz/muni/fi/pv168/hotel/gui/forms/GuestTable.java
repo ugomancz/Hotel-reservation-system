@@ -1,18 +1,22 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import javax.swing.*;
+import cz.muni.fi.pv168.hotel.gui.I18N;
+
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class GuestTable {
 
-    public static JTable createTable(String name, String birthDate, String id) {
-        //all cells false
+    private static final I18N I18N = new I18N(GuestTable.class);
+
+    public static JTable createTable() {
+
         DefaultTableModel dataModel = new DefaultTableModel() {
+            private final String[] columns = {I18N.getString("name"), I18N.getString("birthDate"), I18N.getString("IDnumber")};
+
             public int getColumnCount() {
                 return 3;
             }
-
-            private final String[] columns = {name, birthDate, id};
 
             @Override
             public String getColumnName(int column) {

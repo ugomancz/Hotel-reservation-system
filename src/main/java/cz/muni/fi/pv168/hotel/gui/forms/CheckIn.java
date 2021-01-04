@@ -137,7 +137,7 @@ public class CheckIn {
         placeComponent(dialog, 0, 30, resRooms);
 
         gbc.anchor = GridBagConstraints.CENTER;
-        table = GuestTable.createTable(I18N.getString("name"), I18N.getString("birthDate"), I18N.getString("IDnumber"));
+        table = GuestTable.createTable();
         JScrollPane scrollpane = new JScrollPane(table);
         scrollpane.setPreferredSize(new Dimension(450, 200));
         placeComponent(dialog, 0, 50, scrollpane);
