@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
-import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
@@ -8,9 +7,11 @@ import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Dialog;
@@ -18,8 +19,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,18 +31,18 @@ public class GuestsInfo {
 
     private static final I18N I18N = new I18N(GuestsInfo.class);
     private final JDialog dialog;
-    private final GuestDao guestDao;
     private final JComboBox<String> reservationPicker = new JComboBox<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
     private JTable table;
     private Map<String, Reservation> reservationMap;
 
-    public GuestsInfo(Window owner, ReservationDao reservationDao, GuestDao guestDao) {
+    public GuestsInfo(JFrame frame, ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
-        this.guestDao = guestDao;
-        dialog = new JDialog(owner, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
-        dialog.setLocationRelativeTo(owner);
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        dialog.setLocationRelativeTo(frame);
         new LoadReservations().execute();
         initLayout();
         dialog.setResizable(false);
