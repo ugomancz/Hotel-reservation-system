@@ -21,9 +21,11 @@ class DesignedCalendar {
 
     private static final CalendarPanel CALENDAR = new CalendarPanel();
     private final ReservationDao reservationDao;
+    private final RoomDao roomDao;
 
-    DesignedCalendar(ReservationDao reservationDao) {
+    DesignedCalendar(ReservationDao reservationDao, RoomDao roomDao) {
         this.reservationDao = reservationDao;
+        this.roomDao = roomDao;
         CALENDAR.setSettings(initSettings());
         CALENDAR.addCalendarListener(new CalendarEvent());
         CALENDAR.getPreviousMonthButton().setBackground(Constants.BUTTON_BACKGROUND);
@@ -55,9 +57,9 @@ class DesignedCalendar {
         HighlightInformation highlight = new HighlightInformation(Color.WHITE);
         if (localDate.equals(LocalDate.now())) {
             highlight.colorBackground = new Color(110, 220, 250);
-        } else if (reservations == RoomDao.numberOfRooms()) {
+        } else if (reservations == roomDao.numberOfRooms()) {
             highlight.colorBackground = new Color(250, 40, 40);
-        } else if (reservations >= RoomDao.numberOfRooms() * 2 / 3) {
+        } else if (reservations >= roomDao.numberOfRooms() * 2 / 3) {
             highlight.colorBackground = Color.ORANGE;
         }
         return highlight;

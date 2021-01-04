@@ -7,8 +7,18 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.KeyStroke;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
@@ -19,15 +29,15 @@ import java.util.Map;
  * @author Timotej Cirok
  */
 
-public class CancelReservation{
+public class CancelReservation {
 
     private static final I18N I18N = new I18N(CancelReservation.class);
-    private Button cancelButton, okayButton;
-    private JComboBox<String> reservationPicker;
     private final Map<String, Reservation> reservationMap = new HashMap<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
     private final JDialog dialog;
+    private Button cancelButton, okayButton;
+    private JComboBox<String> reservationPicker;
 
     public CancelReservation(JFrame frame, ReservationDao reservationDao) {
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
@@ -95,7 +105,7 @@ public class CancelReservation{
             String picked = (String) reservationPicker.getSelectedItem();
             if (picked == null) {
                 new ErrorDialog(dialog, I18N.getString("reservationError"));
-            } else{
+            } else {
                 reservationDao.delete(reservationMap.get(picked));
                 Timetable.drawWeek(LocalDate.now());
                 dialog.dispose();

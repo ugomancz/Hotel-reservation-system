@@ -2,7 +2,7 @@ package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
 
-import javax.swing.*;
+import javax.swing.JButton;
 import java.awt.event.ActionListener;
 
 public class Button extends JButton {

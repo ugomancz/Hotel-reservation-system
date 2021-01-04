@@ -1,13 +1,14 @@
 package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
-import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
+import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.text.SimpleAttributeSet;
@@ -24,19 +25,23 @@ import java.util.Map;
 
 public class Timetable {
 
-    private static final JTextPane[][] TEXT_PANES = new JTextPane[RoomDao.numberOfRooms()][Constants.DAYS_IN_WEEK];
     private static final Color FIRST_DAY_OF_RESERVATION = new Color(60, 160, 50);
     private static final Map<ReservationStatus, Color> STATUS_COLOR = Map.of(
             ReservationStatus.PLANNED, new Color(13, 218, 13),
             ReservationStatus.ONGOING, Color.orange,
             ReservationStatus.PAST, Color.lightGray
     );
+    private static RoomDao roomDao;
+    private static JTextPane[][] TEXT_PANES;
     private static ReservationDao reservationDao;
+    private static LocalDate currentMonday;
     private final JPanel panel;
 
-    Timetable(ReservationDao reservationDao) {
+    Timetable(ReservationDao reservationDao, RoomDao roomDao) {
+        Timetable.roomDao = roomDao;
+        TEXT_PANES = new JTextPane[roomDao.numberOfRooms()][Constants.DAYS_IN_WEEK];
         panel = new JPanel();
-        panel.setLayout(new GridLayout(RoomDao.numberOfRooms(), Constants.DAYS_IN_WEEK, 0, 0));
+        panel.setLayout(new GridLayout(roomDao.numberOfRooms(), Constants.DAYS_IN_WEEK, 0, 0));
         panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         panel.setBackground(Constants.BACKGROUND_COLOR);
         Timetable.reservationDao = reservationDao;
@@ -88,12 +93,17 @@ public class Timetable {
 
     public static void drawWeek(LocalDate date) {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        for (int room = 0; room < RoomDao.numberOfRooms(); room++) { // for every room
+        currentMonday = monday;
+        for (int room = 0; room < roomDao.numberOfRooms(); room++) { // for every room
             for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
                 LocalDate currentDay = monday.plusDays(day);
-                updatePane(reservationDao.getReservation(room + 1, currentDay), currentDay, room, day);
+                new GetReservation(room, day, currentDay).execute();
             }
         }
+    }
+
+    public static void refresh() {
+        drawWeek(currentMonday);
     }
 
     JPanel getPanel() {
@@ -101,7 +111,7 @@ public class Timetable {
     }
 
     private void initPanes() {
-        for (int i = 0; i < RoomDao.numberOfRooms(); i++) {
+        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
             for (int j = 0; j < Constants.DAYS_IN_WEEK; j++) {
                 JTextPane textPane = new JTextPane();
                 StyledDocument styledDocument = textPane.getStyledDocument();
@@ -115,6 +125,30 @@ public class Timetable {
                 TEXT_PANES[i][j] = textPane;
                 panel.add(textPane);
             }
+        }
+    }
+
+    private static class GetReservation extends SwingWorker<Void, Void> {
+
+        int room, day;
+        LocalDate date;
+        private List<Reservation> reservations;
+
+        public GetReservation(int room, int day, LocalDate date) {
+            this.room = room;
+            this.day = day;
+            this.date = date;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservations = reservationDao.getReservation(room + 1, date);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            updatePane(reservations, date, room, day);
         }
     }
 }

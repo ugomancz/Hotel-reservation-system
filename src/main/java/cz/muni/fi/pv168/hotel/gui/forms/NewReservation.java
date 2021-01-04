@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
 import cz.muni.fi.pv168.hotel.gui.I18N;
@@ -9,44 +10,58 @@ import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import javax.swing.JTable;
 
 import static java.lang.Integer.parseInt;
 
 /**
  * @author Timotej Cirok
  */
-
-
 public class NewReservation {
 
     private static final I18N I18N = new I18N(NewReservation.class);
     private final ReservationDao reservationDao;
-    private Button cancelButton, okayButton;
+    private final GridBagConstraints gbc = new GridBagConstraints();
+    private final JDialog dialog;
+    private final RoomDao roomDao;
+    private final GuestDao guestDao;
+    private final JFrame frame;
+    private Button cancelButton, checkinButton;
     private JTextField name, phone, email, people;
     private JTable picker;
     private DesignedDatePicker fromDate, toDate;
-    private final Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
-    private final GridBagConstraints gbc = new GridBagConstraints();
-    private final JDialog dialog;
 
 
-    public NewReservation(JFrame frame, ReservationDao reservationDao) {
+    public NewReservation(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
+        this.frame = frame;
+        this.roomDao = roomDao;
+        this.guestDao = guestDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(frame);
-        //dialog.setSize(500, 500);
 
         dialog.setEnabled(true);
         dialog.setLayout(new GridBagLayout());
-        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         gbc.weightx = 0.5;
@@ -62,19 +77,19 @@ public class NewReservation {
     }
 
     private void addFields() {
-        name = new JTextField(16);
+        name = new JTextField(20);
         name.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 0, name);
 
-        phone = new JTextField(16);
+        phone = new JTextField(20);
         phone.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 1, phone);
 
-        email = new JTextField(16);
+        email = new JTextField(20);
         email.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 2, email);
 
-        people = new JTextField(16);
+        people = new JTextField(2);
         people.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
         placeComponent(1, 3, people);
     }
@@ -92,9 +107,13 @@ public class NewReservation {
 
     private void addButtons() {
         gbc.anchor = GridBagConstraints.LINE_START;
-        okayButton = new Button(I18N.getString("confirmButton"));
+        Button okayButton = new Button(I18N.getString("confirmButton"));
         okayButton.addActionListener(this::actionPerformed);
         placeComponent(0, 10, okayButton);
+
+        checkinButton = new Button(I18N.getString("checkinButton"));
+        checkinButton.addActionListener(this::actionPerformed);
+        placeComponent(1, 10, checkinButton);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         cancelButton = new Button(I18N.getString("cancelButton"));
@@ -120,15 +139,16 @@ public class NewReservation {
         dialog.pack();
     }
 
-    public int getRowCount() {
-        return RoomDao.numberOfRooms();
-    }
-
     private void addTable() {
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        picker = RoomPicker.createTable();
+        picker = RoomPicker.createTable(roomDao);
+        RoomPicker.DesignedTableModel model = (RoomPicker.DesignedTableModel) picker.getModel();
+        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+            model.setCellEditable(i, 0, true);
+        }
         JScrollPane scrollPane = new JScrollPane(picker);
-        scrollPane.setPreferredSize(new Dimension(450, 200));
+        scrollPane.setPreferredSize(new Dimension(450, 181));
+        gbc.gridwidth = 2;
         placeComponent(0, 6, scrollPane);
     }
 
@@ -142,9 +162,9 @@ public class NewReservation {
 
     private void actionPerformed(ActionEvent e) {
         boolean flag = true;
-        if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
+        if (e.getSource().equals(cancelButton)) {
             dialog.dispose();
-        } else if (e.getSource().equals(okayButton)) {
+        } else {
             String usedName = name.getText();
             String usedPhone = phone.getText();
             String usedMail = email.getText();
@@ -152,7 +172,7 @@ public class NewReservation {
             ArrayList<Integer> rooms = new ArrayList<>();
             for (int i = 0; i < picker.getRowCount(); i++) {
                 if (picker.getValueAt(i, 0).equals(true)) {
-                    checkedPeople += RoomDao.getRoom(i + 1).getRoomType().getNumOfBeds();
+                    checkedPeople += roomDao.numberOfBeds(i + 1);
                     rooms.add(i + 1);
                 }
             }
@@ -179,12 +199,16 @@ public class NewReservation {
                 if (flag) {
                     Integer[] roomNumbers = new Integer[rooms.size()];
                     roomNumbers = rooms.toArray(roomNumbers);
-                    reservationDao.create(new Reservation(usedName, usedPhone, usedMail, usedPeople, roomNumbers, from, to,
-                            ReservationStatus.PLANNED.toString()));
-                    Timetable.drawWeek(LocalDate.now());
+                    Reservation reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, roomNumbers, from, to,
+                            ReservationStatus.PLANNED.toString());
+                    reservationDao.create(reservation);
+                    if (e.getSource().equals(checkinButton)) { // go straight to check-in
+                        //new CheckIn(frame, reservationDao, guestDao, reservation);
+                    }
+                    Timetable.refresh();
                     dialog.dispose();
                 } else {
-                    new ErrorDialog(dialog, I18N.getString( "roomFull"));
+                    new ErrorDialog(dialog, I18N.getString("roomFull"));
                 }
             }
         }
