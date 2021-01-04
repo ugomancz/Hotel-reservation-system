@@ -97,9 +97,9 @@ public class GuestDaoTest {
     void deleteNonExisting() {
         var guest = new Guest("Tester Smith", LocalDate.parse("1997-10-22") , "1111", reservation.getId());
 
-        assertThatExceptionOfType(DataAccessException.class)
+        assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> guestDao.delete(guest))
-                .withMessage("Failed to delete non-existing guest: %s", guest);
+                .withMessage("Guest has null ID");
     }
 
     @Test
@@ -122,9 +122,9 @@ public class GuestDaoTest {
     void updateNonExisting() {
         var guest = new Guest("Tester Smith", LocalDate.parse("1997-10-22") , "1111", reservation.getId());
 
-        assertThatExceptionOfType(DataAccessException.class)
+        assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> guestDao.update(guest))
-                .withMessage("Failed to update non-existing guest: %s", guest);
+                .withMessage("Guest has null ID");
     }
 
 }
