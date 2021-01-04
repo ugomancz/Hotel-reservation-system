@@ -86,7 +86,7 @@ public final class GuestDao {
     }
     public List<Guest> findAll() {
         try (var connection = dataSource.getConnection();
-             var st = connection.prepareStatement("SELECT NAME, BIRTHDATE, GUESTID, RESERVATIONID FROM GUEST")) {
+             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID FROM GUEST")) {
             return createGuest(st);
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all guests", ex);
@@ -97,6 +97,7 @@ public final class GuestDao {
         try (var rs = st.executeQuery()) {
             while (rs.next()) {
                 Guest guest = new Guest(rs.getString("NAME"), rs.getDate("BIRTHDATE").toLocalDate(),rs.getString("GUESTID"),rs.getLong("RESERVATIONID"));
+                guest.setId(rs.getLong("ID"));
                 guests.add(guest);
             }
         }
