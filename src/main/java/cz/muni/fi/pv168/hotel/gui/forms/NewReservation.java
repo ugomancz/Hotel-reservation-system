@@ -1,24 +1,13 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
-import cz.muni.fi.pv168.hotel.gui.Button;
-import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
-import cz.muni.fi.pv168.hotel.gui.I18N;
-import cz.muni.fi.pv168.hotel.gui.Timetable;
+import cz.muni.fi.pv168.hotel.gui.*;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -97,11 +86,13 @@ public class NewReservation {
     private void addDatePickers() {
         fromDate = new DesignedDatePicker();
         fromDate.setFirstAllowedDate(LocalDate.now());
+        fromDate.setDate(LocalDate.now());
         fromDate.addDateChangeListener(e -> toDate.setFirstAllowedDate(fromDate.getDate().plusDays(1)));
         placeComponent(1, 4, fromDate.getDatePicker());
 
         toDate = new DesignedDatePicker();
         toDate.setFirstAllowedDate(LocalDate.now().plusDays(1));
+        toDate.setDate(LocalDate.now().plusDays(1)) ;
         placeComponent(1, 5, toDate.getDatePicker());
     }
 
@@ -152,14 +143,6 @@ public class NewReservation {
         placeComponent(0, 6, scrollPane);
     }
 
-    private Integer tryParse(String text) {
-        try {
-            return Integer.parseInt(text);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
     private void actionPerformed(ActionEvent e) {
         boolean flag = true;
         if (e.getSource().equals(cancelButton)) {
@@ -182,7 +165,11 @@ public class NewReservation {
                 new ErrorDialog(dialog, I18N.getString("nameEmptyError"));
             } else if (usedPhone.length() == 0) {
                 new ErrorDialog(dialog, I18N.getString("phoneEmptyError"));
-            } else if (tryParse(people.getText()) == null) {
+            } else if (Validation.isAlpha(usedPhone)){
+                new ErrorDialog(dialog,I18N.getString("phoneFormatError"));
+            } else if (usedMail.length() != 0 && !Validation.isEmail(usedMail)){
+                new ErrorDialog(dialog,I18N.getString("emailFormatError"));
+            } else if (!Validation.isNumeric(people.getText())) {
                 new ErrorDialog(dialog, I18N.getString("guestsError"));
             } else if (checkedPeople == 0) {
                 new ErrorDialog(dialog, I18N.getString("noRoom"));
@@ -201,16 +188,35 @@ public class NewReservation {
                     roomNumbers = rooms.toArray(roomNumbers);
                     Reservation reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, roomNumbers, from, to,
                             ReservationStatus.PLANNED.toString());
-                    reservationDao.create(reservation);
                     if (e.getSource().equals(checkinButton)) { // go straight to check-in
                         //new CheckIn(frame, reservationDao, guestDao, reservation);
                     }
-                    Timetable.refresh();
-                    dialog.dispose();
+                    new CreateReservation(reservation).execute();
                 } else {
                     new ErrorDialog(dialog, I18N.getString("roomFull"));
                 }
             }
+        }
+    }
+
+    private class CreateReservation extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+
+        public CreateReservation(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.create(reservation);
+            return null;
+        }
+
+        @Override
+        public void done() {
+            Timetable.refresh();
+            dialog.dispose();
         }
     }
 }

@@ -35,12 +35,16 @@ public class RoomDaoTest {
         roomDao.dropTable();
     }
 
+//    @Test
+//    void getRoom(){
+//        var testRoom = roomDao.getRoom(5);
+//        assertThat(testRoom)
+//                .isNotNull();
+//        assertThat(testRoom.toString()).contains(roomDao.toString());
+//    }
     @Test
-    void getRoom(){
-        var testRoom = roomDao.getRoom(1);
-        assertThat(testRoom)
-                .isNotNull();
-        assertThat(testRoom.toString()).contains(roomDao.toString());
+    void createRooms(){
+        assertThat(roomDao.numberOfRooms()).isEqualTo(20);
     }
 
 

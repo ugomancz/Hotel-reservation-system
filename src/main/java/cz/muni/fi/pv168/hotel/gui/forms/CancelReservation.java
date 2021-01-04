@@ -7,12 +7,7 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -106,10 +101,28 @@ public class CancelReservation {
             if (picked == null) {
                 new ErrorDialog(dialog, I18N.getString("reservationError"));
             } else {
-                reservationDao.delete(reservationMap.get(picked));
-                Timetable.drawWeek(LocalDate.now());
-                dialog.dispose();
+                new DeleteReservation(reservationMap.get(picked)).execute();
             }
+        }
+    }
+    private class DeleteReservation extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+
+        public DeleteReservation(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.delete(reservation);
+            return null;
+        }
+
+        @Override
+        public void done() {
+            Timetable.refresh();
+            dialog.dispose();
         }
     }
 }
