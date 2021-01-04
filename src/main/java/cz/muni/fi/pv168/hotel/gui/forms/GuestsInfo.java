@@ -9,10 +9,12 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -39,8 +41,10 @@ public class GuestsInfo {
         this.reservationDao = reservationDao;
         this.guestDao = guestDao;
         dialog = new JDialog(owner, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setLocationRelativeTo(owner);
         new LoadReservations().execute();
         initLayout();
+        dialog.setResizable(false);
         dialog.setVisible(true);
     }
 
@@ -52,6 +56,7 @@ public class GuestsInfo {
         gbc.anchor = GridBagConstraints.CENTER;
         addComponent(new JLabel(I18N.getString("reservationLabel") + ":"), 0, 0);
         reservationPicker.addActionListener(this::reservationPicked);
+        reservationPicker.setPreferredSize(new Dimension(223, 20));
         addComponent(reservationPicker, 1, 0);
         addTable();
         dialog.pack();
@@ -72,8 +77,13 @@ public class GuestsInfo {
     }
 
     private void addTable() {
-        table = new JTable(5,3);
-        addComponent(table, 0, 1);
+        table = GuestTable.createTable();
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(450, 200));
+
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        addComponent(scrollPane, 0, 1);
     }
 
     private void displayGuests(Reservation reservation) {
