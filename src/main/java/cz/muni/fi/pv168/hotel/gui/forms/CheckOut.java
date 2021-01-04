@@ -113,7 +113,7 @@ public class CheckOut {
         /* calculates length of stay if departure != day of checkout */
         int length = reservation.getDeparture().isEqual(LocalDate.now()) ?
                 reservation.getLength() : LocalDate.now().compareTo(reservation.getArrival());
-        return length * RoomDao.getPricePerNight(reservation.getRoomNumber()) +
+        return length * RoomDao.getPricePerNight(2) +
                 length * Constants.LOCAL_FEE * reservation.getGuests();
     }
 
@@ -127,7 +127,7 @@ public class CheckOut {
         label.setText(String.format(receipt, reservation.getName(),
                 LocalDate.now().compareTo(reservation.getArrival()),
                 reservation.getGuests(),
-                RoomDao.getPricePerNight(reservation.getRoomNumber()),
+                RoomDao.getPricePerNight(2),
                 Constants.LOCAL_FEE, calculateTotalPrice(reservation)));
         dialog.pack();
     }

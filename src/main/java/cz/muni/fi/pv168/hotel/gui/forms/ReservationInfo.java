@@ -150,7 +150,7 @@ public class ReservationInfo {
         guestsField.setText(Integer.toString(reservation.getGuests()));
         arrival.setDate(reservation.getArrival());
         departure.setDate(reservation.getDeparture());
-        roomPicker.setSelectedIndex(reservation.getRoomNumber() - 1);
+        roomPicker.setSelectedIndex(2);
     }
 
     private boolean updateReservation(Reservation reservation) {
@@ -180,7 +180,8 @@ public class ReservationInfo {
         reservation.setEmail(emailField.getText());
         reservation.setArrival(arrival.getDate());
         reservation.setDeparture(departure.getDate());
-        reservation.setRoomNumber(room);
+        Integer[] nene = {1,2,3};
+        reservation.setRoomNumbers(nene);
         reservationDao.update(reservation);
         Timetable.drawWeek(reservation.getArrival());
         return true;
