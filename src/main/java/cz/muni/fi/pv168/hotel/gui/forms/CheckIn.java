@@ -76,6 +76,26 @@ public class CheckIn {
 
     }
 
+
+    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, Reservation reservation) {
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
+        this.guestDao = guestDao;
+        this.reservationDao = reservationDao;
+        dialog.setSize(500, 400);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setEnabled(true);
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        GridBagLayout layout = new GridBagLayout();
+        dialog.setLayout(layout);
+        initMap();
+        initLayout();
+        reservationPicker.setSelectedItem(reservation.toString());
+        dialog.setVisible(true);
+
+    }
+
     /**
      * fills map with reservations starting today
      */
@@ -107,13 +127,14 @@ public class CheckIn {
         reservationPicker.setPreferredSize(new Dimension(300, 20));
         reservationPicker.addActionListener(this::actionPerformed);
         gbc.anchor = GridBagConstraints.CENTER;
+        reservationPicker.setSelectedItem(0);
     }
 
     /**
      * Sets layout in frame using GridBagLayout
      */
     private void initLayout() {
-        gbc.weighty = 1;
+        gbc.weighty = 1.5;
 
         JLabel reservation = new JLabel(I18N.getString("reservation") + ":");
         gbc.anchor = GridBagConstraints.LINE_START;
