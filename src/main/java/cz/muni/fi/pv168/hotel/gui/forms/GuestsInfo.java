@@ -1,5 +1,7 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import cz.muni.fi.pv168.hotel.guests.Guest;
+import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.gui.I18N;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
@@ -22,6 +24,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,6 +33,7 @@ import java.util.Map;
 public class GuestsInfo {
 
     private static final I18N I18N = new I18N(GuestsInfo.class);
+    public final GuestDao guestDao;
     private final JDialog dialog;
     private final JComboBox<String> reservationPicker = new JComboBox<>();
     private final GridBagConstraints gbc = new GridBagConstraints();
@@ -37,8 +41,9 @@ public class GuestsInfo {
     private JTable table;
     private Map<String, Reservation> reservationMap;
 
-    public GuestsInfo(JFrame frame, ReservationDao reservationDao) {
+    public GuestsInfo(JFrame frame, ReservationDao reservationDao, GuestDao guestDao) {
         this.reservationDao = reservationDao;
+        this.guestDao = guestDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -88,13 +93,9 @@ public class GuestsInfo {
     }
 
     private void displayGuests(Reservation reservation) {
-        clearTable();
-        //setTable();
-    }
-
-    private void clearTable() {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
+        new LoadGuests(reservation, model).execute();
     }
 
     private class LoadReservations extends SwingWorker<Map<String, Reservation>, Void> {
@@ -122,6 +123,34 @@ public class GuestsInfo {
             Reservation reservation = reservationMap.get(selected);
             if (reservation != null) {
                 displayGuests(reservation);
+            }
+        }
+    }
+
+    private class LoadGuests extends SwingWorker<List<Guest>, Void> {
+
+        private final Reservation reservation;
+        private final DefaultTableModel model;
+
+        private LoadGuests(Reservation reservation, DefaultTableModel model) {
+            this.reservation = reservation;
+            this.model = model;
+        }
+
+        @Override
+        protected List<Guest> doInBackground() {
+            return guestDao.getGuests(reservation.getId());
+        }
+
+        @Override
+        protected void done() {
+            try {
+                List<Guest> guests = get();
+                for (Guest guest : guests) {
+                    model.addRow(new Object[]{guest.getName(), guest.getBirthDate(), guest.getGuestId()});
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }
