@@ -104,6 +104,29 @@ public final class GuestDao {
         return guests;
     }
 
+    public List<Guest> getGuests(Long reservationId){
+        List<Guest> guests = new ArrayList<>();
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID" +
+                     " FROM GUEST WHERE RESERVATIONID=?")) {
+            st.setLong(1,reservationId);
+            try (var rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Guest guest = new Guest(
+                            rs.getString("NAME"),
+                            rs.getDate("BIRTHDATE").toLocalDate(),
+                            rs.getString("GUESTID"),
+                            rs.getLong("RESERVATIONID"));
+                    guest.setId(rs.getLong("ID"));
+                    guests.add(guest);
+                }
+            }
+            return guests;
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all guests for id: "+ reservationId, ex);
+        }
+    }
+
     private boolean tableExists(String schemaName, String tableName) {
         try (var connection = dataSource.getConnection();
              var rs = connection.getMetaData().getTables(null, schemaName, tableName, null)) {

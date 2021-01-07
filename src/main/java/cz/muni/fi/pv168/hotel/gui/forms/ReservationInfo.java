@@ -195,24 +195,22 @@ public class ReservationInfo {
         if (checkEmptyFields()) {
             showError(I18N.getString("fieldsError"));
             return false;
-        }
-        if (!Validation.isAlpha(nameField.getText())) {
+        } else if (!Validation.isAlpha(nameField.getText())) {
             showError(I18N.getString("nameError"));
             return false;
-        }
-        if (!emailField.getText().equals("") && !Validation.isEmail(emailField.getText())) {
+        } else if (Validation.isAlpha(phoneField.getText())) {
+            showError(I18N.getString("phoneError"));
+            return false;
+        } else if (!emailField.getText().equals("") && !Validation.isEmail(emailField.getText())) {
             showError(I18N.getString("emailError"));
             return false;
-        }
-        if (!Validation.isNumeric(guestsField.getText())) {
+        } else if (!Validation.isNumeric(guestsField.getText())) {
             showError(I18N.getString("guestsError"));
             return false;
-        }
-        if (roomDao.numberOfBeds(rooms) < Integer.parseInt(guestsField.getText())) {
+        } else if (roomDao.numberOfBeds(rooms) < Integer.parseInt(guestsField.getText())) {
             showError(I18N.getString("bedError"));
             return false;
-        }
-        if (arrival.getDate() == null || !departure.getDate().isAfter(arrival.getDate())) {
+        } else if (arrival.getDate() == null || !departure.getDate().isAfter(arrival.getDate())) {
             showError(I18N.getString("dateError"));
             return false;
         }
