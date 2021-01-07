@@ -1,10 +1,13 @@
 package cz.muni.fi.pv168.hotel.guests;
 
 import cz.muni.fi.pv168.hotel.DataAccessException;
+import cz.muni.fi.pv168.hotel.reservations.Reservation;
 
 import javax.sql.DataSource;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -78,6 +81,29 @@ public final class GuestDao {
             }
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to update guest " + guest, ex);
+        }
+    }
+
+    public List<Guest> getGuests(Long reservationId){
+        List<Guest> guests = new ArrayList<>();
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID" +
+                     " FROM GUEST WHERE RESERVATIONID=?")) {
+            st.setLong(1,reservationId);
+            try (var rs = st.executeQuery()) {
+                while (rs.next()) {
+                    Guest guest = new Guest(
+                            rs.getString("NAME"),
+                            rs.getDate("BIRTHDATE").toLocalDate(),
+                            rs.getString("GUESTID"),
+                            rs.getLong("RESERVATIONID"));
+                    guest.setId(rs.getLong("ID"));
+                    guests.add(guest);
+                }
+            }
+            return guests;
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all guests for id: "+ reservationId, ex);
         }
     }
 

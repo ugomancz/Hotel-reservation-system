@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.hotel.DataAccessException;
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,31 +15,26 @@ public final class RoomDao {
 
     private final DataSource dataSource;
     private final Map<Integer, Room> rooms = Map.ofEntries(
-            // one-bed rooms
-            Map.entry(1, new Room(1, 1500, 1, 0)),
-            Map.entry(2, new Room(2, 1500, 1, 0)),
-            Map.entry(3, new Room(3, 1500, 1, 0)),
-            Map.entry(4, new Room(4, 1500, 1, 0)),
-            Map.entry(5, new Room(5, 1500, 1, 0)),
-            // two-bed rooms
-            Map.entry(6, new Room(6, 2800, 2, 0)),
-            Map.entry(7, new Room(7, 2900, 0, 1)),
-            Map.entry(8, new Room(8, 2800, 0, 1)),
-            Map.entry(9, new Room(9, 2800, 0, 1)),
-            Map.entry(10, new Room(10, 2900, 2, 0)),
-            Map.entry(11, new Room(11, 2800, 2, 0)),
-            Map.entry(12, new Room(12, 2850, 0, 1)),
-            Map.entry(13, new Room(13, 2800, 2, 0)),
-            // three-bed rooms
-            Map.entry(14, new Room(14, 4200, 3, 0)),
-            Map.entry(15, new Room(15, 4200, 1, 1)),
-            Map.entry(16, new Room(16, 4200, 3, 0)),
-            Map.entry(17, new Room(17, 4200, 1, 1)),
-            Map.entry(18, new Room(18, 4200, 3, 0)),
-            Map.entry(19, new Room(19, 4200, 1, 1)),
-            Map.entry(20, new Room(20, 4200, 3, 0))
+            // first floor, one bed
+            Map.entry(101, new Room(101, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
+            Map.entry(102, new Room(102, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
+            Map.entry(103, new Room(103, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
+            Map.entry(104, new Room(104, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
+            // first floor, two separate beds
+            Map.entry(105, new Room(105, RoomType.DOUBLE_ROOM.getPrice(), 2, 0)),
+            Map.entry(106, new Room(106, RoomType.DOUBLE_ROOM.getPrice(), 2, 0)),
+            // second floor, king-size bed
+            Map.entry(201, new Room(201, RoomType.DOUBLE_ROOM.getPrice(), 0, 1)),
+            Map.entry(202, new Room(202, RoomType.DOUBLE_ROOM.getPrice(), 0, 1)),
+            Map.entry(203, new Room(203, RoomType.DOUBLE_ROOM.getPrice(), 0, 1)),
+            // second floor, king-size + one single bed
+            Map.entry(204, new Room(204, RoomType.TRIPLE_ROOM.getPrice(), 1, 1)),
+            Map.entry(205, new Room(205, RoomType.TRIPLE_ROOM.getPrice(), 1, 1)),
+            // third floor, apartments (king-size + two single beds)
+            Map.entry(301, new Room(301, RoomType.APARTMENT.getPrice(), 2, 1)),
+            Map.entry(302, new Room(302, RoomType.APARTMENT.getPrice(), 2, 1)),
+            Map.entry(303, new Room(303, RoomType.APARTMENT.getPrice(), 2, 1))
     );
-
     public RoomDao(DataSource dataSource) {
         this.dataSource = dataSource;
         if (!tableExists()) {
@@ -119,6 +115,26 @@ public final class RoomDao {
         }
     }
 
+    public List<Room> findAll() {
+        ArrayList<Room> rooms = new ArrayList<>();
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement("SELECT ROOMNUMBER, PRICE, STANDARD, KINGSIZE FROM ROOM ORDER BY ROOMNUMBER")) {
+            try (var rs = st.executeQuery()) {
+                while (rs.next()) {
+                    rooms.add(new Room(
+                            rs.getInt("ROOMNUMBER"),
+                            rs.getInt("PRICE"),
+                            rs.getInt("STANDARD"),
+                            rs.getInt("KINGSIZE")
+                    ));
+                }
+                return rooms;
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all reservations", ex);
+        }
+    }
+
     private void create(Room room) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
@@ -178,5 +194,34 @@ public final class RoomDao {
         for (Room room : rooms.values()) {
             create(room);
         }
+    }
+
+    private enum RoomType {
+        SINGLE_ROOM {
+            @Override
+            int getPrice() {
+                return 849;
+            }
+        },
+        DOUBLE_ROOM {
+            @Override
+            int getPrice() {
+                return 1199;
+            }
+        },
+        TRIPLE_ROOM {
+            @Override
+            int getPrice() {
+                return 1649;
+            }
+        },
+        APARTMENT {
+            @Override
+            int getPrice() {
+                return 2199;
+            }
+        };
+
+        abstract int getPrice();
     }
 }
