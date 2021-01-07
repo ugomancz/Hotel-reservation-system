@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Timetable {
 
@@ -30,6 +31,22 @@ public class Timetable {
             ReservationStatus.PLANNED, new Color(13, 218, 13),
             ReservationStatus.ONGOING, Color.orange,
             ReservationStatus.PAST, Color.lightGray
+    );
+    private static final Map<Integer, Integer> ROOM_INDEX = Map.ofEntries(
+            Map.entry(101, 0),
+            Map.entry(102, 1),
+            Map.entry(103, 2),
+            Map.entry(104, 3),
+            Map.entry(105, 4),
+            Map.entry(106, 5),
+            Map.entry(201, 6),
+            Map.entry(202, 7),
+            Map.entry(203, 8),
+            Map.entry(204, 9),
+            Map.entry(205, 10),
+            Map.entry(301, 11),
+            Map.entry(302, 12),
+            Map.entry(303, 13)
     );
     private static RoomDao roomDao;
     private static JTextPane[][] TEXT_PANES;
@@ -128,11 +145,10 @@ public class Timetable {
         }
     }
 
-    private static class GetReservation extends SwingWorker<Void, Void> {
+    private static class GetReservation extends SwingWorker<List<Reservation>, Void> {
 
         int room, day;
         LocalDate date;
-        private List<Reservation> reservations;
 
         public GetReservation(int room, int day, LocalDate date) {
             this.room = room;
@@ -141,14 +157,19 @@ public class Timetable {
         }
 
         @Override
-        protected Void doInBackground() {
-            reservations = reservationDao.getReservation(room + 1, date);
-            return null;
+        protected List<Reservation> doInBackground() {
+            Map<Integer, Integer> reversedRoomIndex = ROOM_INDEX.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+            return reservationDao.getReservation(reversedRoomIndex.get(room), date);
         }
 
         @Override
         protected void done() {
-            updatePane(reservations, date, room, day);
+            try {
+                updatePane(get(), date, room, day);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
