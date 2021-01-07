@@ -7,7 +7,13 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -16,9 +22,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Timotej Cirok
@@ -27,73 +33,26 @@ import java.util.Map;
 public class CancelReservation {
 
     private static final I18N I18N = new I18N(CancelReservation.class);
-    private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private static Map<String, Reservation> reservationMap = new HashMap<>();
+    private static ReservationDao reservationDao;
+    private static JDialog dialog;
+    private static Button cancelButton, okayButton;
+    private static JComboBox<String> reservationPicker;
     private final GridBagConstraints gbc = new GridBagConstraints();
-    private final ReservationDao reservationDao;
-    private final JDialog dialog;
-    private Button cancelButton, okayButton;
-    private JComboBox<String> reservationPicker;
 
     public CancelReservation(JFrame frame, ReservationDao reservationDao) {
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
-        this.reservationDao = reservationDao;
+        CancelReservation.reservationDao = reservationDao;
         dialog.setLocationRelativeTo(frame);
         dialog.setMinimumSize(new Dimension(350, 200));
         dialog.setLayout(new GridBagLayout());
-        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        dialog.getRootPane().registerKeyboardAction(CancelReservation::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         initLayout();
         dialog.setVisible(true);
     }
 
-    private void placeComponent(int x, int y, Component component) {
-        gbc.gridx = x;
-        gbc.gridy = y;
-        dialog.add(component, gbc);
-    }
-
-    private void setupComboBox() {
-        for (Reservation reservation : reservationDao.findAll()) {
-            if (reservation.getStatus().equals(ReservationStatus.PLANNED)) {
-                reservationMap.put(reservation.toString(), reservation);
-            }
-        }
-        reservationPicker = new JComboBox<>();
-        for (String name : reservationMap.keySet()) {
-            reservationPicker.addItem(name);
-        }
-        reservationPicker.setPreferredSize(new Dimension(223, 20));
-        reservationPicker.addActionListener(this::actionPerformed);
-    }
-
-    private void addButtons() {
-        gbc.anchor = GridBagConstraints.SOUTH;
-        okayButton = new Button(I18N.getString("confirmButton"));
-        okayButton.addActionListener(this::actionPerformed);
-        placeComponent(0, 10, okayButton);
-
-        gbc.anchor = GridBagConstraints.LAST_LINE_END;
-        cancelButton = new Button(I18N.getString("cancelButton"));
-        cancelButton.addActionListener(this::actionPerformed);
-        placeComponent(5, 10, cancelButton);
-    }
-
-    private void initLayout() {
-        setupComboBox();
-        gbc.weightx = 0.5;
-        gbc.weighty = 0.5;
-        gbc.insets = new Insets(5, 5, 5, 5);
-
-        gbc.anchor = GridBagConstraints.CENTER;
-
-        placeComponent(0, 0, new JLabel(I18N.getString("reservation") + ": "));
-
-        gbc.anchor = GridBagConstraints.LINE_START;
-        placeComponent(5, 0, reservationPicker);
-        addButtons();
-    }
-
-    private void actionPerformed(ActionEvent e) {
+    private static void actionPerformed(ActionEvent e) {
         if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
             dialog.dispose();
         } else if (e.getSource().equals(okayButton)) {
@@ -105,7 +64,38 @@ public class CancelReservation {
             }
         }
     }
-    private class DeleteReservation extends SwingWorker<Void, Void> {
+
+    private void placeComponent(int x, int y, Component component) {
+        gbc.gridx = x;
+        gbc.gridy = y;
+        dialog.add(component, gbc);
+    }
+
+    private void addButtons() {
+        gbc.anchor = GridBagConstraints.SOUTH;
+        okayButton = new Button(I18N.getString("confirmButton"));
+        okayButton.addActionListener(CancelReservation::actionPerformed);
+        placeComponent(0, 10, okayButton);
+
+        gbc.anchor = GridBagConstraints.LAST_LINE_END;
+        cancelButton = new Button(I18N.getString("cancelButton"));
+        cancelButton.addActionListener(CancelReservation::actionPerformed);
+        placeComponent(5, 10, cancelButton);
+    }
+
+    private void initLayout() {
+        new LoadReservations().execute();
+        gbc.weightx = 0.5;
+        gbc.weighty = 0.5;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        placeComponent(0, 0, new JLabel(I18N.getString("reservation") + ": "));
+        addButtons();
+    }
+
+    private static class DeleteReservation extends SwingWorker<Void, Void> {
 
         private final Reservation reservation;
 
@@ -123,6 +113,42 @@ public class CancelReservation {
         public void done() {
             Timetable.refresh();
             dialog.dispose();
+        }
+    }
+
+    private class LoadReservations extends SwingWorker<Map<String, Reservation>, Void> {
+
+        @Override
+        protected Map<String, Reservation> doInBackground() {
+            Map<String, Reservation> map = new HashMap<>();
+            for (Reservation reservation : reservationDao.findAll().stream()
+                    .filter((x) -> x.getStatus() == ReservationStatus.PLANNED)
+                    .collect(Collectors.toList())) {
+                map.put(reservation.toString(), reservation);
+            }
+            return map;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                reservationMap = get();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            reservationPicker = new JComboBox<>();
+            try {
+                for (String name : get().keySet()) {
+                    reservationPicker.addItem(name);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            reservationPicker.setPreferredSize(new Dimension(223, 20));
+            reservationPicker.addActionListener(CancelReservation::actionPerformed);
+            gbc.anchor = GridBagConstraints.LINE_START;
+            placeComponent(5, 0, reservationPicker);
+            dialog.pack();
         }
     }
 }
