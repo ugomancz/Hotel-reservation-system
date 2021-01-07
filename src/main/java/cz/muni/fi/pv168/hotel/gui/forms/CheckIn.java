@@ -340,12 +340,17 @@ public class CheckIn {
                     .filter(x -> x.getArrival().equals(LocalDate.now()))
                     .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
                     .collect(Collectors.toList())) {
-                reservationMap.put(reservation.toString(), reservation);
+                map.put(reservation.toString(), reservation);
             }
             return map;
         }
         @Override
         public void done() {
+            try {
+                reservationMap = get();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             for (String reservation : reservationMap.keySet()) {
                 reservationPicker.addItem(reservation);
             }
@@ -353,6 +358,8 @@ public class CheckIn {
             Reservation reservation = reservationMap.get(selected);
             if (reservation != null) {
                 fillReservation(reservation);
+                add.setEnabled(true);
+                delete.setEnabled(true);
             }
         }
     }
