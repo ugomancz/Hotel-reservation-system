@@ -23,12 +23,12 @@ import java.awt.event.KeyEvent;
 /**
  * @author Ondrej Kostik
  */
-class ErrorDialog {
+public class ErrorDialog {
 
     private static final I18N I18N = new I18N(ErrorDialog.class);
     private final JDialog dialog;
 
-    ErrorDialog(Window owner, String message) {
+    public ErrorDialog(Window owner, String message) {
         dialog = new JDialog(owner, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setLocationRelativeTo(owner);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
