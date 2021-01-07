@@ -258,7 +258,7 @@ public class ReservationInfo {
 
     private void setSelectedRooms(Integer[] roomNumbers) {
         for (Integer roomNumber : roomNumbers) {
-            roomPicker.setValueAt(true, roomNumber - 1, 0);
+            roomPicker.setValueAt(true, roomIndex.get(roomNumber), 0);
         }
     }
 
@@ -361,8 +361,9 @@ public class ReservationInfo {
                 for (int i = 0; i < roomDao.numberOfRooms(); i++) {
                     model.setCellEditable(i, 0, false);
                 }
-                for (Room room : get()) {
-                    model.setCellEditable(roomIndex.get(room.getRoomNumber()), 0, true);
+                for (Integer roomIndex : get().stream()
+                        .map((x) -> roomIndex.get(x.getRoomNumber())).toArray(Integer[]::new)) {
+                    model.setCellEditable(roomIndex, 0, true);
                 }
                 for (int i = 0; i < roomDao.numberOfRooms(); i++) {
                     if (!model.isCellEditable(i, 0) && (boolean) roomPicker.getValueAt(i, 0)) {

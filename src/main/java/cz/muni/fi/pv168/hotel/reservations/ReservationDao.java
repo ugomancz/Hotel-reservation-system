@@ -247,12 +247,8 @@ public final class ReservationDao {
 
     private List<Room> collectFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, PreparedStatement st) throws SQLException {
         HashSet<Integer> hashSet = collectRoomNumbers(arrival, departure, st);
-        ArrayList<Room> emptyRooms = new ArrayList<>();
-        for (int i = 1; i <= roomDao.numberOfRooms(); i++) {
-            if (!hashSet.contains(i)){
-                emptyRooms.add(roomDao.getRoom(i));
-            }
-        }
+        List<Room> emptyRooms = roomDao.findAll();
+        emptyRooms.removeIf(room -> hashSet.contains(room.getRoomNumber()));
         return emptyRooms;
     }
 
