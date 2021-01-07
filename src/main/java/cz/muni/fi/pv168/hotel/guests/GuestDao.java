@@ -5,6 +5,7 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 
 import javax.sql.DataSource;
 import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,25 @@ public final class GuestDao {
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to update guest " + guest, ex);
         }
+    }
+    public List<Guest> findAll() {
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID FROM GUEST")) {
+            return createGuest(st);
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all guests", ex);
+        }
+    }
+    private List<Guest> createGuest(PreparedStatement st) throws SQLException {
+        List<Guest> guests = new ArrayList<>();
+        try (var rs = st.executeQuery()) {
+            while (rs.next()) {
+                Guest guest = new Guest(rs.getString("NAME"), rs.getDate("BIRTHDATE").toLocalDate(),rs.getString("GUESTID"),rs.getLong("RESERVATIONID"));
+                guest.setId(rs.getLong("ID"));
+                guests.add(guest);
+            }
+        }
+        return guests;
     }
 
     public List<Guest> getGuests(Long reservationId){

@@ -13,7 +13,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
@@ -24,6 +23,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -51,17 +51,14 @@ public class CheckOut {
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
 
-    public CheckOut(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
+    public CheckOut(Window owner, ReservationDao reservationDao, RoomDao roomDao) {
         this.roomDao = roomDao;
-        dialog = new JDialog(frame, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
-        dialog.setLayout(new GridBagLayout());
-        dialog.setLocationRelativeTo(frame);
+        dialog = new JDialog(owner, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
+        dialog.setLocationRelativeTo(owner);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setMinimumSize(new Dimension(250, 250));
-        dialog.getRootPane().registerKeyboardAction(this::actionPerformed, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
-
         new LoadOngoingReservations().execute();
         new LoadProperties().execute();
         initLayout();
@@ -69,6 +66,8 @@ public class CheckOut {
     }
 
     private void initLayout() {
+        dialog.setLayout(new GridBagLayout());
+        dialog.setMinimumSize(new Dimension(250, 250));
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridx = 0;
         addComponent(addComboBox(), 0);
@@ -103,9 +102,7 @@ public class CheckOut {
     }
 
     private int calculateTotalPrice(Reservation reservation) {
-        /* calculates length of stay if departure != day of checkout */
-        int length = reservation.getDeparture().isEqual(LocalDate.now()) ?
-                reservation.getLength() : LocalDate.now().compareTo(reservation.getArrival());
+        int length = LocalDate.now().compareTo(reservation.getArrival());
         return length * roomDao.getPricePerNight(reservation.getRoomNumbers()) +
                 length * localFee * reservation.getGuests();
     }
@@ -140,7 +137,7 @@ public class CheckOut {
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
             displayInfo(reservationMap.get(selected));
-        } else if (e.getSource().equals(cancelButton) | e.getSource().equals(dialog.getRootPane())) {
+        } else if (e.getSource().equals(cancelButton)) {
             dialog.dispose();
         }
     }
