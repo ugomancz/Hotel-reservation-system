@@ -1,13 +1,26 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
-import cz.muni.fi.pv168.hotel.gui.*;
+import cz.muni.fi.pv168.hotel.gui.Button;
+import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
+import cz.muni.fi.pv168.hotel.gui.I18N;
+import cz.muni.fi.pv168.hotel.gui.Timetable;
+import cz.muni.fi.pv168.hotel.gui.Validation;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -18,6 +31,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
@@ -33,6 +48,22 @@ public class NewReservation {
     private final RoomDao roomDao;
     private final GuestDao guestDao;
     private final JFrame frame;
+    private final Map<Integer, Integer> roomIndex = Map.ofEntries(
+            Map.entry(101, 0),
+            Map.entry(102, 1),
+            Map.entry(103, 2),
+            Map.entry(104, 3),
+            Map.entry(105, 4),
+            Map.entry(106, 5),
+            Map.entry(201, 6),
+            Map.entry(202, 7),
+            Map.entry(203, 8),
+            Map.entry(204, 9),
+            Map.entry(205, 10),
+            Map.entry(301, 11),
+            Map.entry(302, 12),
+            Map.entry(303, 13)
+    );
     private Button cancelButton, checkinButton;
     private JTextField name, phone, email, people;
     private JTable picker;
@@ -92,7 +123,7 @@ public class NewReservation {
 
         toDate = new DesignedDatePicker();
         toDate.setFirstAllowedDate(LocalDate.now().plusDays(1));
-        toDate.setDate(LocalDate.now().plusDays(1)) ;
+        toDate.setDate(LocalDate.now().plusDays(1));
         placeComponent(1, 5, toDate.getDatePicker());
     }
 
@@ -144,7 +175,6 @@ public class NewReservation {
     }
 
     private void actionPerformed(ActionEvent e) {
-        boolean flag = true;
         if (e.getSource().equals(cancelButton)) {
             dialog.dispose();
         } else {
@@ -153,10 +183,12 @@ public class NewReservation {
             String usedMail = email.getText();
             int checkedPeople = 0;
             ArrayList<Integer> rooms = new ArrayList<>();
+            Map<Integer, Integer> reversedRoomIndex = roomIndex.entrySet().stream()
+                    .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
             for (int i = 0; i < picker.getRowCount(); i++) {
                 if (picker.getValueAt(i, 0).equals(true)) {
-                    checkedPeople += roomDao.numberOfBeds(i + 1);
-                    rooms.add(i + 1);
+                    checkedPeople += roomDao.numberOfBeds(reversedRoomIndex.get(i));
+                    rooms.add(roomDao.getRoom(reversedRoomIndex.get(i)).getRoomNumber());
                 }
             }
             LocalDate from = fromDate.getDate();
@@ -165,10 +197,10 @@ public class NewReservation {
                 new ErrorDialog(dialog, I18N.getString("nameEmptyError"));
             } else if (usedPhone.length() == 0) {
                 new ErrorDialog(dialog, I18N.getString("phoneEmptyError"));
-            } else if (Validation.isAlpha(usedPhone)){
-                new ErrorDialog(dialog,I18N.getString("phoneFormatError"));
-            } else if (usedMail.length() != 0 && !Validation.isEmail(usedMail)){
-                new ErrorDialog(dialog,I18N.getString("emailFormatError"));
+            } else if (Validation.isAlpha(usedPhone)) {
+                new ErrorDialog(dialog, I18N.getString("phoneFormatError"));
+            } else if (usedMail.length() != 0 && !Validation.isEmail(usedMail)) {
+                new ErrorDialog(dialog, I18N.getString("emailFormatError"));
             } else if (!Validation.isNumeric(people.getText())) {
                 new ErrorDialog(dialog, I18N.getString("guestsError"));
             } else if (checkedPeople == 0) {
@@ -177,24 +209,12 @@ public class NewReservation {
                 new ErrorDialog(dialog, I18N.getString("noSpace"));
             } else {
                 int usedPeople = parseInt(people.getText());
-                for (Integer room : rooms) {
-                    if (!reservationDao.isFree(room, from, to)) {
-                        flag = false;
-                        break;
-                    }
+                Reservation reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, rooms.toArray(Integer[]::new), from, to,
+                        ReservationStatus.PLANNED.toString());
+                if (e.getSource().equals(checkinButton)) { // go straight to check-in
+                    //new CheckIn(frame, reservationDao, guestDao, reservation);
                 }
-                if (flag) {
-                    Integer[] roomNumbers = new Integer[rooms.size()];
-                    roomNumbers = rooms.toArray(roomNumbers);
-                    Reservation reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, roomNumbers, from, to,
-                            ReservationStatus.PLANNED.toString());
-                    if (e.getSource().equals(checkinButton)) { // go straight to check-in
-                        //new CheckIn(frame, reservationDao, guestDao, reservation);
-                    }
-                    new CreateReservation(reservation).execute();
-                } else {
-                    new ErrorDialog(dialog, I18N.getString("roomFull"));
-                }
+                new CreateReservation(reservation).execute();
             }
         }
     }
