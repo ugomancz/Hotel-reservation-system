@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.hotel.gui;
 
 import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
+import cz.muni.fi.pv168.hotel.gui.forms.ErrorDialog;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.rooms.Room;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
@@ -39,6 +40,7 @@ public class MainWindow {
         try {
             new MainWindow(reservationDao, guestDao, roomDao);
         } catch (Exception ex) {
+            new ErrorDialog(null, I18N.getString("initError"));
             ex.printStackTrace();
             System.exit(-1);
         }
@@ -58,14 +60,14 @@ public class MainWindow {
     }
 
     private JPanel initSidePanel(ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
-        JPanel panel = new JPanel();
-        panel.setBackground(Constants.BACKGROUND_COLOR);
-        panel.setLayout(new BorderLayout(0, 10));
-        panel.setPreferredSize(sidePanelDimension);
+        JPanel sidePanel = new JPanel();
+        sidePanel.setBackground(Constants.BACKGROUND_COLOR);
+        sidePanel.setLayout(new BorderLayout(0, 10));
+        sidePanel.setPreferredSize(sidePanelDimension);
 
-        panel.add(new ButtonPanel(frame, reservationDao, guestDao, roomDao).getPanel(), BorderLayout.CENTER);
-        panel.add(new DesignedCalendar(reservationDao, roomDao).getCalendar(), BorderLayout.SOUTH);
-        return panel;
+        sidePanel.add(new ButtonPanel(frame, reservationDao, guestDao, roomDao).getPanel(), BorderLayout.CENTER);
+        sidePanel.add(new DesignedCalendar(reservationDao, roomDao).getCalendar(), BorderLayout.SOUTH);
+        return sidePanel;
     }
 
     private static class RoomNames extends JPanel {
