@@ -44,7 +44,7 @@ public class CheckIn {
     private JTable table;
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel;
-    private JComboBox<String> reservationPicker;
+    private JComboBox<String> reservationPicker, rooms;
     private JTextField addNameField, addIDfield;
     private Reservation res;
     private BirthDatePicker birthDatePicker;
@@ -119,6 +119,15 @@ public class CheckIn {
         reservationPicker.addActionListener(this::actionPerformed);
         gbc.anchor = GridBagConstraints.CENTER;
         reservationPicker.setSelectedItem(0);
+    }
+
+    private void initRoomComboBox(JComboBox<String> comboBox, Reservation reservation) {
+        for (Integer number : reservation.getRoomNumbers()) {
+            comboBox.addItem(number.toString());
+        }
+        comboBox.setPreferredSize(new Dimension(100, 20));
+        gbc.anchor = GridBagConstraints.CENTER;
+        comboBox.setSelectedItem(0);
     }
 
     /**
@@ -236,15 +245,24 @@ public class CheckIn {
         addIDfield.setText("-");
         placeComponent(addPanel, 1, 2, addIDfield);
 
+
+        JLabel roomsLabel = new JLabel(I18N.getString("roomNumber") + ":");
+        placeComponent(addPanel, 0, 3, roomsLabel);
+        rooms = new JComboBox<>();
+        initRoomComboBox(rooms, res);
+        gbc.insets = new Insets(5, 5, 5, 70);
+        placeComponent(addPanel, 1, 3, rooms);
+
+        gbc.insets = new Insets(5, 5, 5, 5);
         addConfirm = new Button(I18N.getString("add"));
         addConfirm.setPreferredSize(new Dimension(90, 25));
         addConfirm.addActionListener(this::actionPerformed);
-        placeComponent(addPanel, 0, 3, addConfirm);
+        placeComponent(addPanel, 0, 4, addConfirm);
         gbc.insets = new Insets(0, 75, 0, 0);
         addCancel = new Button(I18N.getString("cancel"));
         addCancel.setPreferredSize(new Dimension(85, 25));
         addCancel.addActionListener(this::actionPerformed);
-        placeComponent(addPanel, 1, 3, addCancel);
+        placeComponent(addPanel, 1, 4, addCancel);
     }
 
     private void removeGuest(Guest guest) {
@@ -319,7 +337,7 @@ public class CheckIn {
                 String id = addIDfield.getText();
                 Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId());
                 DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
-                dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText()});
+                dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText(), rooms.getSelectedItem()});
                 guestList.add(guest);
                 addWindow.dispose();
                 confirm.setEnabled(guestList.size() == res.getGuests());
