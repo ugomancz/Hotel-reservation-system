@@ -163,15 +163,6 @@ public final class RoomDao {
         st.setInt(4, room.getKingsizeBeds());
     }
 
-    public List<Room> findAll() {
-        try (var connection = dataSource.getConnection();
-             var st = connection.prepareStatement("SELECT ROOMNUMBER, PRICE, STANDARD, KINGSIZE FROM ROOM")) {
-            return createRooms(st);
-        } catch (SQLException ex) {
-            throw new DataAccessException("Failed to load all rooms", ex);
-        }
-    }
-
     private List<Room> createRooms(PreparedStatement st) throws SQLException {
         List<Room> rooms = new ArrayList<>();
         try (var rs = st.executeQuery()) {
