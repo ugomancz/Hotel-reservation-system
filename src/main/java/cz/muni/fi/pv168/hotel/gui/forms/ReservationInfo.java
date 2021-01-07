@@ -49,6 +49,22 @@ public class ReservationInfo {
     private final DesignedDatePicker departure = new DesignedDatePicker();
     private final JDialog dialog;
     private final RoomDao roomDao;
+    private final Map<Integer, Integer> roomIndex = Map.ofEntries(
+            Map.entry(101, 0),
+            Map.entry(102, 1),
+            Map.entry(103, 2),
+            Map.entry(104, 3),
+            Map.entry(105, 4),
+            Map.entry(106, 5),
+            Map.entry(201, 6),
+            Map.entry(202, 7),
+            Map.entry(203, 8),
+            Map.entry(204, 9),
+            Map.entry(205, 10),
+            Map.entry(301, 11),
+            Map.entry(302, 12),
+            Map.entry(303, 13)
+    );
     private Map<String, Reservation> reservationMap;
     private Button cancelButton, confirmButton;
     private JTextField nameField, phoneField, emailField, guestsField;
@@ -144,12 +160,27 @@ public class ReservationInfo {
     }
 
     private void addDateChangeListeners() {
-        arrival.addDateChangeListener(this::datePicked);
-        departure.addDateChangeListener(this::datePicked);
+        arrival.addDateChangeListener(this::arrivalPicked);
+        departure.addDateChangeListener(this::departurePicked);
     }
 
-    private void datePicked(DateChangeEvent event) {
-        new UpdateTable().execute();
+    private void arrivalPicked(DateChangeEvent event) {
+        departure.setFirstAllowedDate(arrival.getDate().plusDays(1));
+        if (departure.getDate() == null || departure.getDate().isBefore(arrival.getDate())) {
+            departure.setDate(arrival.getDate().plusDays(1));
+        }
+        if (arrival.getDate() != null && departure.getDate() != null && getSelectedReservation() != null) {
+            new UpdateTable().execute();
+        }
+    }
+
+    private void departurePicked(DateChangeEvent event) {
+        if (arrival.getDate() == null || departure.getDate().isBefore(arrival.getDate())) {
+            arrival.setDate(departure.getDate().minusDays(1));
+        }
+        if (arrival.getDate() != null && departure.getDate() != null && getSelectedReservation() != null) {
+            new UpdateTable().execute();
+        }
     }
 
     private Reservation getSelectedReservation() {
@@ -214,10 +245,12 @@ public class ReservationInfo {
     }
 
     private Integer[] getSelectedRooms() {
+        Map<Integer, Integer> reversedRoomIndex = roomIndex.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
         List<Integer> selected = new ArrayList<>();
         for (int i = 0; i < roomPicker.getRowCount(); i++) {
             if ((boolean) roomPicker.getValueAt(i, 0)) {
-                selected.add(i + 1);
+                selected.add(reversedRoomIndex.get((i + 1)));
             }
         }
         return selected.toArray(Integer[]::new);
@@ -279,11 +312,11 @@ public class ReservationInfo {
                 reservationPicker.addItem(reservation);
             }
             Reservation reservation = getSelectedReservation();
+            addDateChangeListeners();
             if (reservation != null) {
                 displayInfo(reservation);
                 new UpdateTable().execute();
             }
-            addDateChangeListeners();
             confirmButton.setEnabled(true);
         }
     }
@@ -329,7 +362,7 @@ public class ReservationInfo {
                     model.setCellEditable(i, 0, false);
                 }
                 for (Room room : get()) {
-                    model.setCellEditable(room.getRoomNumber() - 1, 0, true);
+                    model.setCellEditable(roomIndex.get(room.getRoomNumber()), 0, true);
                 }
                 for (int i = 0; i < roomDao.numberOfRooms(); i++) {
                     if (!model.isCellEditable(i, 0) && (boolean) roomPicker.getValueAt(i, 0)) {
@@ -339,7 +372,6 @@ public class ReservationInfo {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
         }
     }
 }
