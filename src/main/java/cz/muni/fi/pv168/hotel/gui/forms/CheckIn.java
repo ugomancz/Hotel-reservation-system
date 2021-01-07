@@ -12,12 +12,7 @@ import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
@@ -37,7 +32,7 @@ public class CheckIn {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
     private final GuestDao guestDao;
-    private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private Map<String, Reservation> reservationMap = new HashMap<>();
     private final JDialog dialog;
     private final ArrayList<Guest> guestList = new ArrayList<>();
     private JDialog addWindow;
@@ -61,7 +56,7 @@ public class CheckIn {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         GridBagLayout layout = new GridBagLayout();
         dialog.setLayout(layout);
-        initMap();
+        new LoadPlannedReservations().execute();
         initLayout();
         dialog.setVisible(true);
 
@@ -80,23 +75,11 @@ public class CheckIn {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         GridBagLayout layout = new GridBagLayout();
         dialog.setLayout(layout);
-        initMap();
+        new LoadPlannedReservations().execute();
         initLayout();
         reservationPicker.setSelectedItem(reservation.toString());
         dialog.setVisible(true);
 
-    }
-
-    /**
-     * fills map with reservations starting today
-     */
-    private void initMap() {
-        for (Reservation reservation : reservationDao.findAll().stream()
-                .filter(x -> x.getArrival().equals(LocalDate.now()))
-                .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
-                .collect(Collectors.toList())) {
-            reservationMap.put(reservation.toString(), reservation);
-        }
     }
 
     /**
@@ -348,6 +331,32 @@ public class CheckIn {
         }
     }
 
+    private class LoadPlannedReservations extends SwingWorker<Map<String, Reservation>, Void> {
+
+        @Override
+        protected Map<String, Reservation> doInBackground() {
+            Map<String, Reservation> map = new HashMap<>();
+            for (Reservation reservation : reservationDao.findAll().stream()
+                    .filter(x -> x.getArrival().equals(LocalDate.now()))
+                    .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
+                    .collect(Collectors.toList())) {
+                reservationMap.put(reservation.toString(), reservation);
+            }
+            return map;
+        }
+        @Override
+        public void done() {
+            for (String reservation : reservationMap.keySet()) {
+                reservationPicker.addItem(reservation);
+            }
+            String selected = (String) reservationPicker.getSelectedItem();
+            Reservation reservation = reservationMap.get(selected);
+            if (reservation != null) {
+                fillReservation(reservation);
+            }
+        }
+    }
+
     private class CreateGuest extends SwingWorker<Void, Void> {
 
         private final Guest guest;
@@ -376,9 +385,13 @@ public class CheckIn {
         @Override
         protected Void doInBackground() {
             reservationDao.update(reservation);
+            return null;
+        }
+
+        @Override
+        protected void done() {
             Timetable.refresh();
             dialog.dispose();
-            return null;
         }
     }
 }
