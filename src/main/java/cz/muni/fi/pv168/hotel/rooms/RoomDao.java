@@ -14,26 +14,32 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public final class RoomDao {
 
     private final DataSource dataSource;
+    private Map<RoomType, Integer> roomPrices = Map.ofEntries(
+            Map.entry(RoomType.SINGLE_ROOM, 849),
+            Map.entry(RoomType.DOUBLE_ROOM, 1199),
+            Map.entry(RoomType.TRIPLE_ROOM, 1649),
+            Map.entry(RoomType.APARTMENT, 2199)
+    );
     private final Map<Integer, Room> rooms = Map.ofEntries(
             // first floor, one bed
-            Map.entry(101, new Room(101, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
-            Map.entry(102, new Room(102, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
-            Map.entry(103, new Room(103, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
-            Map.entry(104, new Room(104, RoomType.SINGLE_ROOM.getPrice(), 1, 0)),
+            Map.entry(101, new Room(101, roomPrices.get(RoomType.SINGLE_ROOM), 1, 0)),
+            Map.entry(102, new Room(102, roomPrices.get(RoomType.SINGLE_ROOM), 1, 0)),
+            Map.entry(103, new Room(103, roomPrices.get(RoomType.SINGLE_ROOM), 1, 0)),
+            Map.entry(104, new Room(104, roomPrices.get(RoomType.SINGLE_ROOM), 1, 0)),
             // first floor, two separate beds
-            Map.entry(105, new Room(105, RoomType.DOUBLE_ROOM.getPrice(), 2, 0)),
-            Map.entry(106, new Room(106, RoomType.DOUBLE_ROOM.getPrice(), 2, 0)),
+            Map.entry(105, new Room(105, roomPrices.get(RoomType.DOUBLE_ROOM), 2, 0)),
+            Map.entry(106, new Room(106, roomPrices.get(RoomType.DOUBLE_ROOM), 2, 0)),
             // second floor, king-size bed
-            Map.entry(201, new Room(201, RoomType.DOUBLE_ROOM.getPrice(), 0, 1)),
-            Map.entry(202, new Room(202, RoomType.DOUBLE_ROOM.getPrice(), 0, 1)),
-            Map.entry(203, new Room(203, RoomType.DOUBLE_ROOM.getPrice(), 0, 1)),
+            Map.entry(201, new Room(201, roomPrices.get(RoomType.DOUBLE_ROOM), 0, 1)),
+            Map.entry(202, new Room(202, roomPrices.get(RoomType.DOUBLE_ROOM), 0, 1)),
+            Map.entry(203, new Room(203, roomPrices.get(RoomType.DOUBLE_ROOM), 0, 1)),
             // second floor, king-size + one single bed
-            Map.entry(204, new Room(204, RoomType.TRIPLE_ROOM.getPrice(), 1, 1)),
-            Map.entry(205, new Room(205, RoomType.TRIPLE_ROOM.getPrice(), 1, 1)),
+            Map.entry(204, new Room(204, roomPrices.get(RoomType.TRIPLE_ROOM), 1, 1)),
+            Map.entry(205, new Room(205, roomPrices.get(RoomType.TRIPLE_ROOM), 1, 1)),
             // third floor, apartments (king-size + two single beds)
-            Map.entry(301, new Room(301, RoomType.APARTMENT.getPrice(), 2, 1)),
-            Map.entry(302, new Room(302, RoomType.APARTMENT.getPrice(), 2, 1)),
-            Map.entry(303, new Room(303, RoomType.APARTMENT.getPrice(), 2, 1))
+            Map.entry(301, new Room(301, roomPrices.get(RoomType.APARTMENT), 2, 1)),
+            Map.entry(302, new Room(302, roomPrices.get(RoomType.APARTMENT), 2, 1)),
+            Map.entry(303, new Room(303, roomPrices.get(RoomType.APARTMENT), 2, 1))
     );
     public RoomDao(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -197,31 +203,9 @@ public final class RoomDao {
     }
 
     private enum RoomType {
-        SINGLE_ROOM {
-            @Override
-            int getPrice() {
-                return 849;
-            }
-        },
-        DOUBLE_ROOM {
-            @Override
-            int getPrice() {
-                return 1199;
-            }
-        },
-        TRIPLE_ROOM {
-            @Override
-            int getPrice() {
-                return 1649;
-            }
-        },
-        APARTMENT {
-            @Override
-            int getPrice() {
-                return 2199;
-            }
-        };
-
-        abstract int getPrice();
+        SINGLE_ROOM,
+        DOUBLE_ROOM,
+        TRIPLE_ROOM,
+        APARTMENT
     }
 }
