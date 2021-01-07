@@ -149,29 +149,7 @@ public class ReservationInfo {
     }
 
     private void datePicked(DateChangeEvent event) {
-        updateTable();
-    }
-
-    private void updateTable() {
-        Reservation reservation = getSelectedReservation();
-        RoomPicker.DesignedTableModel model = (RoomPicker.DesignedTableModel) roomPicker.getModel();
-        List<Room> freeRooms;
-        try {
-            freeRooms = reservationDao.getFreeRooms(arrival.getDate(), departure.getDate(), roomDao, reservation.getId());
-        } catch (NullPointerException ex) {
-            freeRooms = reservationDao.getFreeRooms(reservation.getArrival(), departure.getDate(), roomDao, reservation.getId());
-        }
-        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
-            model.setCellEditable(i, 0, false);
-        }
-        for (Room room : freeRooms) {
-            model.setCellEditable(room.getRoomNumber() - 1, 0, true);
-        }
-        for (int i = 0; i < roomDao.numberOfRooms(); i++) {
-            if (!model.isCellEditable(i, 0) && (boolean) roomPicker.getValueAt(i, 0)) {
-                roomPicker.setValueAt(false, i, 0);
-            }
-        }
+        new UpdateTable().execute();
     }
 
     private Reservation getSelectedReservation() {
@@ -303,7 +281,7 @@ public class ReservationInfo {
             Reservation reservation = getSelectedReservation();
             if (reservation != null) {
                 displayInfo(reservation);
-                updateTable();
+                new UpdateTable().execute();
             }
             addDateChangeListeners();
             confirmButton.setEnabled(true);
@@ -328,6 +306,40 @@ public class ReservationInfo {
         public void done() {
             Timetable.refresh();
             dialog.dispose();
+        }
+    }
+
+    private class UpdateTable extends SwingWorker<List<Room>, Void> {
+
+        @Override
+        protected List<Room> doInBackground() {
+            Reservation reservation = getSelectedReservation();
+            try {
+                return reservationDao.getFreeRooms(arrival.getDate(), departure.getDate(), roomDao, reservation.getId());
+            } catch (NullPointerException ex) {
+                return reservationDao.getFreeRooms(reservation.getArrival(), departure.getDate(), roomDao, reservation.getId());
+            }
+        }
+
+        @Override
+        protected void done() {
+            RoomPicker.DesignedTableModel model = (RoomPicker.DesignedTableModel) roomPicker.getModel();
+            try {
+                for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+                    model.setCellEditable(i, 0, false);
+                }
+                for (Room room : get()) {
+                    model.setCellEditable(room.getRoomNumber() - 1, 0, true);
+                }
+                for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+                    if (!model.isCellEditable(i, 0) && (boolean) roomPicker.getValueAt(i, 0)) {
+                        roomPicker.setValueAt(false, i, 0);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
         }
     }
 }
