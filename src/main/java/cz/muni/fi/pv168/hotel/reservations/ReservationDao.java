@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -27,9 +26,11 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public final class ReservationDao {
 
     private final DataSource dataSource;
+    private final ReservedRoom reservedRoom;
 
     public ReservationDao(DataSource dataSource) {
         this.dataSource = dataSource;
+        this.reservedRoom = new ReservedRoom();
         if (!tableExists()) {
             createTable();
         }
@@ -218,7 +219,7 @@ public final class ReservationDao {
         }
     }
 
-    public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao){
+    public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
                      "SELECT ROOMNUMBERS FROM RESERVATION WHERE STATUS<>? AND ("
@@ -231,7 +232,7 @@ public final class ReservationDao {
         }
     }
 
-    public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, long reservationId){
+    public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, long reservationId) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
                      "SELECT ROOMNUMBERS FROM RESERVATION WHERE STATUS<>? AND ("
@@ -307,5 +308,45 @@ public final class ReservationDao {
         String[] numbers = roomnumbers.split(";");
         return Stream.of(numbers).skip(1).limit(numbers.length - 1)
                 .mapToInt(Integer::parseInt).boxed().toArray(Integer[]::new);
+    }
+
+    private class ReservedRoom {
+        private ReservedRoom() {
+            if (!tableExists()) {
+                createTable();
+            }
+        }
+
+        private boolean tableExists() {
+            try (var connection = dataSource.getConnection();
+                 var rs = connection.getMetaData().getTables(null, "APP", "RESERVEDROOM", null)) {
+                return rs.next();
+            } catch (SQLException ex) {
+                throw new DataAccessException("Failed to detect if the table " + "APP" + "." + "RESERVEDROOM" + " exists", ex);
+            }
+        }
+
+        private void createTable() {
+            try (var connection = dataSource.getConnection();
+                 var st = connection.createStatement()) {
+
+                st.executeUpdate("CREATE TABLE APP.RESERVEDROOM (" +
+                        "RESERVATIONID BIGINT REFERENCES Reservation(ID)," +
+                        "ROOMID INT REFERENCES Room(ROOMNUMBER)," +
+                        "PRICEPERNIGHT VARCHAR(100) NOT NULL," +
+                        "PRIMARY KEY (RESERVATIONID, ROOMID))");
+            } catch (SQLException ex) {
+                throw new DataAccessException("Failed to create RESERVATION table", ex);
+            }
+        }
+
+        public void dropTable() {
+            try (var connection = dataSource.getConnection();
+                 var st = connection.createStatement()) {
+                st.executeUpdate("DROP TABLE APP.RESERVATION");
+            } catch (SQLException ex) {
+                throw new DataAccessException("Failed to drop RESERVATION table", ex);
+            }
+        }
     }
 }
