@@ -3,25 +3,31 @@ package cz.muni.fi.pv168.hotel.gui;
 import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
+import cz.muni.fi.pv168.hotel.rooms.Room;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.time.LocalDate;
+import java.util.List;
 
 public class MainWindow {
 
     private static final I18N I18N = new I18N(MainWindow.class);
     static Dimension sidePanelDimension = new Dimension(255, 30);
     private static JFrame frame;
+    private final RoomDao roomDao;
+    private final JPanel panel = new JPanel();
 
     public MainWindow(ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
+        this.roomDao = roomDao;
         frame = new JFrame(I18N.getString("windowTitle"));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(1280, 720));
@@ -40,14 +46,13 @@ public class MainWindow {
 
 
     private JPanel initMainPanel(ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
-        JPanel panel = new JPanel();
         panel.setBorder(new EmptyBorder(5, 5, 5, 5));
         panel.setLayout(new BorderLayout(5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
 
         panel.add(initSidePanel(reservationDao, guestDao, roomDao), BorderLayout.EAST);
         panel.add(new Timetable(reservationDao, roomDao).getPanel(), BorderLayout.CENTER);
-        panel.add(new RoomNames(roomDao), BorderLayout.WEST);
+        new LoadRooms().execute();
         panel.add(new TimetableHeader(LocalDate.now()).getPanel(), BorderLayout.NORTH);
         return panel;
     }
@@ -65,16 +70,33 @@ public class MainWindow {
 
     private static class RoomNames extends JPanel {
 
-        private RoomNames(RoomDao roomDao) {
+        private RoomNames(List<Room> rooms) {
             super();
-            setLayout(new GridLayout(roomDao.numberOfRooms(), 1, 0, 1));
+            setLayout(new GridLayout(rooms.size(), 1, 0, 1));
             setBorder(new EmptyBorder(0, 0, 0, 0));
             setBackground(Constants.BACKGROUND_COLOR);
             setPreferredSize(new Dimension(75, 500));
-            for (int i = 0; i < roomDao.numberOfRooms(); i++) {
-                JLabel label = new JLabel(I18N.getString("roomLabel") + (i + 1), SwingConstants.CENTER);
+            for (Room room : rooms) {
+                JLabel label = new JLabel(I18N.getString("roomLabel") + room.getRoomNumber(), SwingConstants.CENTER);
                 label.setBackground(Constants.BACKGROUND_COLOR);
                 add(label);
+            }
+        }
+    }
+
+    private class LoadRooms extends SwingWorker<List<Room>, Void> {
+
+        @Override
+        protected List<Room> doInBackground() {
+            return roomDao.findAll();
+        }
+
+        @Override
+        protected void done() {
+            try {
+                panel.add(new RoomNames(get()), BorderLayout.WEST);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }
