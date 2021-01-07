@@ -10,16 +10,7 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -280,7 +271,7 @@ public class CheckIn {
 
     private void createGuests() {
         for (Guest guest : guestList) {
-            guestDao.create(guest);
+            new CreateGuest(guest).execute();
         }
     }
 
@@ -300,9 +291,7 @@ public class CheckIn {
                 } else {
                     createGuests();
                     res.setStatus(ReservationStatus.ONGOING);
-                    reservationDao.update(res);
-                    Timetable.drawWeek(LocalDate.now());
-                    dialog.dispose();
+                    new UpdateReservation(res).execute();
                 }
             }
         }
@@ -338,6 +327,40 @@ public class CheckIn {
         }
         if (e.getSource().equals(addCancel)) {
             addWindow.dispose();
+        }
+    }
+
+    private class CreateGuest extends SwingWorker<Void, Void> {
+
+        private final Guest guest;
+
+        public CreateGuest(Guest guest) {
+            this.guest = guest;
+        }
+
+
+        @Override
+        protected Void doInBackground() {
+            guestDao.create(guest);
+            return null;
+        }
+    }
+
+    private class UpdateReservation extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+
+
+        private UpdateReservation(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.update(reservation);
+            Timetable.refresh();
+            dialog.dispose();
+            return null;
         }
     }
 }
