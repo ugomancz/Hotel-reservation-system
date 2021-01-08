@@ -49,8 +49,6 @@ public class NewReservation {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
     private final RoomDao roomDao;
-    private final GuestDao guestDao;
-    private final JFrame frame;
     private final Map<Integer, Integer> roomIndex = Map.ofEntries(
             Map.entry(101, 0),
             Map.entry(102, 1),
@@ -67,16 +65,15 @@ public class NewReservation {
             Map.entry(302, 12),
             Map.entry(303, 13)
     );
-    private Button cancelButton, checkinButton, okayButton;
+    private Button cancelButton;
+    private Button checkinButton;
     private JTextField name, phone, email, people;
     private JTable picker;
     private DesignedDatePicker fromDate, toDate;
 
 
     public NewReservation(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
-        this.frame = frame;
         this.roomDao = roomDao;
-        this.guestDao = guestDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -157,7 +154,7 @@ public class NewReservation {
     private void addButtons() {
         gbc.anchor = GridBagConstraints.LINE_START;
 
-        okayButton = new Button(I18N.getString("confirmButton"));
+        Button okayButton = new Button(I18N.getString("confirmButton"));
         okayButton.addActionListener(this::actionPerformed);
         placeComponent(0, 10, okayButton);
 
@@ -224,7 +221,7 @@ public class NewReservation {
             LocalDate to = toDate.getDate();
             if (usedName.length() == 0) {
                 new ErrorDialog(dialog, I18N.getString("nameEmptyError"));
-            } else if (!Validation.isAlpha(usedName)){
+            } else if (!Validation.isAlpha(usedName)) {
                 new ErrorDialog(dialog, I18N.getString("nameFormatError"));
             } else if (usedPhone.length() == 0) {
                 new ErrorDialog(dialog, I18N.getString("phoneEmptyError"));
