@@ -129,10 +129,11 @@ public class CheckIn {
                 prices.addItem(price.toString() + ",-");
             }
         }
+        prices.addItem(reservationDao.getOldPrice(res.getId(), roomNumber).toString() + ",- "+ "(" + I18N.getString("old") + ")");
         prices.addActionListener(this::actionPerformed);
         prices.setPreferredSize(new Dimension(170, 20));
         gbc.anchor = GridBagConstraints.CENTER;
-        prices.setSelectedItem(roomDao.getPricePerNight(roomNumber) + ",- " + "(" + I18N.getString("current") + ")");
+        prices.setSelectedItem(reservationDao.getOldPrice(res.getId(), roomNumber).toString() + ",- " + "(" + I18N.getString("old") + ")");
     }
 
     /**
