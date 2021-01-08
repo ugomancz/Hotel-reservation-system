@@ -42,7 +42,7 @@ public class CheckIn {
     private JDialog addWindow, priceWindow;
     private JTable table;
     private JLabel resName, resGuests, resRooms;
-    private Button confirm, cancel, add, delete, addConfirm, addCancel, priceConfirm, priceCancel;
+    private Button confirm, cancel, add, delete, addConfirm, addCancel, priceConfirm;
     private int price;
     private Integer roomNumber;
     private JComboBox<String> reservationPicker, rooms, prices;
@@ -133,7 +133,6 @@ public class CheckIn {
         prices.setPreferredSize(new Dimension(170, 20));
         gbc.anchor = GridBagConstraints.CENTER;
         prices.setSelectedItem(roomDao.getPricePerNight(roomNumber) + ",- " + "(" + I18N.getString("current") + ")");
-
     }
 
     /**
@@ -255,17 +254,12 @@ public class CheckIn {
         initPriceComboBox(prices, roomNumber);
         placeComponent(priceWindow, 1, 1, prices);
 
-        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.anchor = GridBagConstraints.CENTER;
         priceConfirm = new Button(I18N.getString("confirm"));
         priceConfirm.setPreferredSize(new Dimension(90, 25));
         priceConfirm.addActionListener(this::actionPerformed);
-        placeComponent(priceWindow, 0, 2, priceConfirm);
+        placeComponent(priceWindow, 1, 2, priceConfirm);
 
-        gbc.anchor = GridBagConstraints.LINE_END;
-        priceCancel = new Button(I18N.getString("cancel"));
-        priceCancel.setPreferredSize(new Dimension(90, 25));
-        priceCancel.addActionListener(this::actionPerformed);
-        placeComponent(priceWindow, 1, 2, priceCancel);
     }
 
     /**
