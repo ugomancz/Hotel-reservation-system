@@ -34,7 +34,7 @@ class ButtonPanel {
 
         panel.add(new Button(I18N.getString("newReservationButton"), (e) -> new NewReservation(frame, reservationDao, guestDao, roomDao)));
         panel.add(new Button(I18N.getString("cancelReservationButton"), (e) -> new CancelReservation(frame, reservationDao)));
-        panel.add(new Button(I18N.getString("checkInButton"), (e) -> new CheckIn(frame, reservationDao, guestDao)));
+        panel.add(new Button(I18N.getString("checkInButton"), (e) -> new CheckIn(frame, reservationDao, guestDao, roomDao)));
         panel.add(new Button(I18N.getString("checkOutButton"), (e) -> new CheckOut(frame, reservationDao, roomDao)));
         panel.add(new Button(I18N.getString("reservationInfoButton"), (e) -> new ReservationInfo(frame, reservationDao, roomDao)));
         panel.add(new Button(I18N.getString("guestsInfoButton"), (e) -> new GuestsInfo(frame, reservationDao, guestDao)));
