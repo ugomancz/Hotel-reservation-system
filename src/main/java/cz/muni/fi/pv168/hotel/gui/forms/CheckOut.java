@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -229,12 +230,15 @@ public class CheckOut {
             Properties defaultProperties = new Properties();
             defaultProperties.setProperty("localFee", "50");
             Properties properties = new Properties(defaultProperties);
-
-            File configFile = new File(Constants.CONFIG_FILE_PATH);
-            try (InputStream inputStream = new FileInputStream(configFile)) {
-                properties.load(inputStream);
+            try {
+                File configFile = new File(Constants.CONFIG_FILE_PATH);
+                try (InputStream inputStream = new FileInputStream(configFile)) {
+                    properties.load(inputStream);
+                }
+                return properties.getProperty("localFee");
+            } catch (IOException ex) {
+                return "50";
             }
-            return properties.getProperty("localFee");
         }
 
         @Override
