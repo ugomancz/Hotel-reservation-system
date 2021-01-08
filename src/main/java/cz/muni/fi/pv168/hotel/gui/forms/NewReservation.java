@@ -224,6 +224,8 @@ public class NewReservation {
             LocalDate to = toDate.getDate();
             if (usedName.length() == 0) {
                 new ErrorDialog(dialog, I18N.getString("nameEmptyError"));
+            } else if (!Validation.isAlpha(usedName)){
+                new ErrorDialog(dialog, I18N.getString("nameFormatError"));
             } else if (usedPhone.length() == 0) {
                 new ErrorDialog(dialog, I18N.getString("phoneEmptyError"));
             } else if (Validation.isAlpha(usedPhone)) {

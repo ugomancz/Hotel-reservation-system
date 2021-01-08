@@ -25,6 +25,6 @@ public class Validation {
     }
 
     public static boolean isAlpha(String input) {
-        return input.chars().allMatch(Character::isLetter);
+        return input.replaceAll("\\s+","").chars().allMatch(Character::isLetter);
     }
 }
