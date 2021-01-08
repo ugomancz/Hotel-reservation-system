@@ -1,20 +1,29 @@
 package cz.muni.fi.pv168.hotel.rooms;
 
+import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.gui.I18N;
 
 public class Room {
 
     private static final I18N I18N = new I18N(Room.class);
     private int roomNumber;
-    private int pricePerNight;
+    private RoomDao.RoomPriceCategory roomPriceCategory;
     private int standardBeds;
     private int kingsizeBeds;
 
-    public Room(int roomNumber, int pricePerNight, int standardBeds, int kingsizeBeds) {
+    public Room(int roomNumber, RoomDao.RoomPriceCategory roomPriceCategory, int standardBeds, int kingsizeBeds) {
         this.roomNumber = roomNumber;
-        this.pricePerNight = pricePerNight;
+        this.roomPriceCategory = roomPriceCategory;
         this.standardBeds = standardBeds;
         this.kingsizeBeds = kingsizeBeds;
+    }
+
+    public RoomDao.RoomPriceCategory getRoomPriceCategory() {
+        return roomPriceCategory;
+    }
+
+    public void setRoomPriceCategory(RoomDao.RoomPriceCategory roomPriceCategory) {
+        this.roomPriceCategory = roomPriceCategory;
     }
 
     public int getRoomNumber() {
@@ -26,11 +35,7 @@ public class Room {
     }
 
     public int getPricePerNight() {
-        return pricePerNight;
-    }
-
-    public void setPricePerNight(int pricePerNight) {
-        this.pricePerNight = pricePerNight;
+        return Constants.ROOM_PRICES.get(roomPriceCategory);
     }
 
     public int getStandardBeds() {
