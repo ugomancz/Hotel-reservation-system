@@ -10,23 +10,9 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
@@ -46,14 +32,14 @@ public class CheckIn {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
     private final GuestDao guestDao;
-    private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private Map<String, Reservation> reservationMap = new HashMap<>();
     private final JDialog dialog;
     private final ArrayList<Guest> guestList = new ArrayList<>();
     private JDialog addWindow;
     private JTable table;
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel;
-    private JComboBox<String> reservationPicker;
+    private JComboBox<String> reservationPicker, rooms;
     private JTextField addNameField, addIDfield;
     private Reservation res;
     private BirthDatePicker birthDatePicker;
@@ -70,22 +56,30 @@ public class CheckIn {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         GridBagLayout layout = new GridBagLayout();
         dialog.setLayout(layout);
-        initMap();
+        new LoadPlannedReservations().execute();
         initLayout();
         dialog.setVisible(true);
 
     }
 
-    /**
-     * fills map with reservations starting today
-     */
-    private void initMap() {
-        for (Reservation reservation : reservationDao.findAll().stream()
-                .filter(x -> x.getArrival().equals(LocalDate.now()))
-                .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
-                .collect(Collectors.toList())) {
-            reservationMap.put(reservation.toString(), reservation);
-        }
+
+    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, Reservation reservation) {
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
+        this.guestDao = guestDao;
+        this.reservationDao = reservationDao;
+        dialog.setSize(500, 400);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setEnabled(true);
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        GridBagLayout layout = new GridBagLayout();
+        dialog.setLayout(layout);
+        new LoadPlannedReservations().execute();
+        initLayout();
+        reservationPicker.setSelectedItem(reservation.toString());
+        dialog.setVisible(true);
+
     }
 
     /**
@@ -107,13 +101,23 @@ public class CheckIn {
         reservationPicker.setPreferredSize(new Dimension(300, 20));
         reservationPicker.addActionListener(this::actionPerformed);
         gbc.anchor = GridBagConstraints.CENTER;
+        reservationPicker.setSelectedItem(0);
+    }
+
+    private void initRoomComboBox(JComboBox<String> comboBox, Reservation reservation) {
+        for (Integer number : reservation.getRoomNumbers()) {
+            comboBox.addItem(number.toString());
+        }
+        comboBox.setPreferredSize(new Dimension(100, 20));
+        gbc.anchor = GridBagConstraints.CENTER;
+        comboBox.setSelectedItem(0);
     }
 
     /**
      * Sets layout in frame using GridBagLayout
      */
     private void initLayout() {
-        gbc.weighty = 1;
+        gbc.weighty = 1.5;
 
         JLabel reservation = new JLabel(I18N.getString("reservation") + ":");
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -224,15 +228,24 @@ public class CheckIn {
         addIDfield.setText("-");
         placeComponent(addPanel, 1, 2, addIDfield);
 
+
+        JLabel roomsLabel = new JLabel(I18N.getString("roomNumber") + ":");
+        placeComponent(addPanel, 0, 3, roomsLabel);
+        rooms = new JComboBox<>();
+        initRoomComboBox(rooms, res);
+        gbc.insets = new Insets(5, 5, 5, 70);
+        placeComponent(addPanel, 1, 3, rooms);
+
+        gbc.insets = new Insets(5, 5, 5, 5);
         addConfirm = new Button(I18N.getString("add"));
         addConfirm.setPreferredSize(new Dimension(90, 25));
         addConfirm.addActionListener(this::actionPerformed);
-        placeComponent(addPanel, 0, 3, addConfirm);
+        placeComponent(addPanel, 0, 4, addConfirm);
         gbc.insets = new Insets(0, 75, 0, 0);
         addCancel = new Button(I18N.getString("cancel"));
         addCancel.setPreferredSize(new Dimension(85, 25));
         addCancel.addActionListener(this::actionPerformed);
-        placeComponent(addPanel, 1, 3, addCancel);
+        placeComponent(addPanel, 1, 4, addCancel);
     }
 
     private void removeGuest(Guest guest) {
@@ -259,7 +272,7 @@ public class CheckIn {
 
     private void createGuests() {
         for (Guest guest : guestList) {
-            guestDao.create(guest);
+            new CreateGuest(guest).execute();
         }
     }
 
@@ -279,9 +292,7 @@ public class CheckIn {
                 } else {
                     createGuests();
                     res.setStatus(ReservationStatus.ONGOING);
-                    reservationDao.update(res);
-                    Timetable.drawWeek(LocalDate.now());
-                    dialog.dispose();
+                    new UpdateReservation(res).execute();
                 }
             }
         }
@@ -309,7 +320,7 @@ public class CheckIn {
                 String id = addIDfield.getText();
                 Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId());
                 DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
-                dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText()});
+                dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText(), rooms.getSelectedItem()});
                 guestList.add(guest);
                 addWindow.dispose();
                 confirm.setEnabled(guestList.size() == res.getGuests());
@@ -317,6 +328,70 @@ public class CheckIn {
         }
         if (e.getSource().equals(addCancel)) {
             addWindow.dispose();
+        }
+    }
+
+    private class LoadPlannedReservations extends SwingWorker<Map<String, Reservation>, Void> {
+
+        @Override
+        protected Map<String, Reservation> doInBackground() {
+            Map<String, Reservation> map = new HashMap<>();
+            for (Reservation reservation : reservationDao.findAll().stream()
+                    .filter(x -> x.getArrival().equals(LocalDate.now()))
+                    .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
+                    .collect(Collectors.toList())) {
+                reservationMap.put(reservation.toString(), reservation);
+            }
+            return map;
+        }
+        @Override
+        public void done() {
+            for (String reservation : reservationMap.keySet()) {
+                reservationPicker.addItem(reservation);
+            }
+            String selected = (String) reservationPicker.getSelectedItem();
+            Reservation reservation = reservationMap.get(selected);
+            if (reservation != null) {
+                fillReservation(reservation);
+            }
+        }
+    }
+
+    private class CreateGuest extends SwingWorker<Void, Void> {
+
+        private final Guest guest;
+
+        public CreateGuest(Guest guest) {
+            this.guest = guest;
+        }
+
+
+        @Override
+        protected Void doInBackground() {
+            guestDao.create(guest);
+            return null;
+        }
+    }
+
+    private class UpdateReservation extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+
+
+        private UpdateReservation(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.update(reservation);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            Timetable.refresh();
+            dialog.dispose();
         }
     }
 }
