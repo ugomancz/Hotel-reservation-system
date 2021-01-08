@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import com.github.lgooddatepicker.zinternaltools.DateChangeEvent;
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.DesignedDatePicker;
@@ -9,6 +10,7 @@ import cz.muni.fi.pv168.hotel.gui.Validation;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel.rooms.Room;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JComponent;
@@ -31,6 +33,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -127,6 +130,30 @@ public class NewReservation {
         placeComponent(1, 5, toDate.getDatePicker());
     }
 
+    private void addDateChangeListeners() {
+        toDate.addDateChangeListener(this::arrivalPicked);
+        fromDate.addDateChangeListener(this::departurePicked);
+    }
+
+    private void arrivalPicked(DateChangeEvent event) {
+        toDate.setFirstAllowedDate(fromDate.getDate().plusDays(1));
+        if (toDate.getDate() == null || toDate.getDate().isBefore(fromDate.getDate())) {
+            toDate.setDate(fromDate.getDate().plusDays(1));
+        }
+        if (fromDate.getDate() != null && toDate.getDate() != null) {
+            new UpdateTable().execute();
+        }
+    }
+
+    private void departurePicked(DateChangeEvent event) {
+        if (fromDate.getDate() == null || toDate.getDate().isBefore(fromDate.getDate())) {
+            fromDate.setDate(toDate.getDate().minusDays(1));
+        }
+        if (fromDate.getDate() != null && toDate.getDate() != null) {
+            new UpdateTable().execute();
+        }
+    }
+
     private void addButtons() {
         gbc.anchor = GridBagConstraints.LINE_START;
         Button okayButton = new Button(I18N.getString("confirmButton"));
@@ -158,6 +185,8 @@ public class NewReservation {
         addDatePickers();
         addButtons();
         addTable();
+        addDateChangeListeners();
+        new UpdateTable().execute();
         dialog.pack();
     }
 
@@ -237,6 +266,39 @@ public class NewReservation {
         public void done() {
             Timetable.refresh();
             dialog.dispose();
+        }
+    }
+
+    private class UpdateTable extends SwingWorker<List<Room>, Void> {
+
+        @Override
+        protected List<Room> doInBackground() {
+            try {
+                return reservationDao.getFreeRooms(fromDate.getDate(), toDate.getDate(), roomDao);
+            } catch (NullPointerException ex) {
+                return reservationDao.getFreeRooms(fromDate.getDate(), toDate.getDate(), roomDao);
+            }
+        }
+
+        @Override
+        protected void done() {
+            RoomPicker.DesignedTableModel model = (RoomPicker.DesignedTableModel) picker.getModel();
+            try {
+                for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+                    model.setCellEditable(i, 0, false);
+                }
+                for (Integer roomIndex : get().stream()
+                        .map((x) -> roomIndex.get(x.getRoomNumber())).toArray(Integer[]::new)) {
+                    model.setCellEditable(roomIndex, 0, true);
+                }
+                for (int i = 0; i < roomDao.numberOfRooms(); i++) {
+                    if (!model.isCellEditable(i, 0) && (boolean) picker.getValueAt(i, 0)) {
+                        picker.setValueAt(false, i, 0);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
