@@ -29,12 +29,13 @@ public final class GuestDao {
     public void create(Guest guest) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "INSERT INTO GUEST (NAME, BIRTHDATE, GUESTID, RESERVATIONID) VALUES (?, ?, ?,?)",
+                     "INSERT INTO GUEST (NAME, BIRTHDATE, GUESTID, RESERVATIONID, ROOMNUMBER) VALUES (?, ?, ?, ?, ?)",
                      RETURN_GENERATED_KEYS)) {
             st.setString(1, guest.getName());
             st.setDate(2, Date.valueOf(guest.getBirthDate()));
             st.setString(3, guest.getGuestId());
             st.setLong(4, guest.getReservationId());
+            st.setInt(5, guest.getRoomNumber());
             st.executeUpdate();
             try (var rs = st.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -70,12 +71,13 @@ public final class GuestDao {
         }
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
-                     "UPDATE GUEST SET NAME = ?, BIRTHDATE = ?, GUESTID = ?, RESERVATIONID=? WHERE ID = ?")) {
+                     "UPDATE GUEST SET NAME = ?, BIRTHDATE = ?, GUESTID = ?, RESERVATIONID=?, ROOMNUMBER = ? WHERE ID = ?")) {
             st.setString(1, guest.getName());
             st.setDate(2, Date.valueOf(guest.getBirthDate()));
             st.setString(3, guest.getGuestId());
             st.setLong(4, guest.getReservationId());
             st.setLong(5, guest.getId());
+            st.setInt(6, guest.getRoomNumber());
             int rowsUpdated = st.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new DataAccessException("Failed to update non-existing guest: " + guest);
@@ -84,47 +86,47 @@ public final class GuestDao {
             throw new DataAccessException("Failed to update guest " + guest, ex);
         }
     }
+
     public List<Guest> findAll() {
         try (var connection = dataSource.getConnection();
-             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID FROM GUEST")) {
+             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID, ROOMNUMBER FROM GUEST")) {
             return createGuest(st);
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all guests", ex);
         }
     }
+
     private List<Guest> createGuest(PreparedStatement st) throws SQLException {
         List<Guest> guests = new ArrayList<>();
+        return initializeGuest(guests, st);
+    }
+
+    public List<Guest> getGuests(Long reservationId) {
+        List<Guest> guests = new ArrayList<>();
+        try (var connection = dataSource.getConnection();
+             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID, ROOMNUMBER" +
+                     " FROM GUEST WHERE RESERVATIONID=?")) {
+            st.setLong(1, reservationId);
+            return initializeGuest(guests, st);
+        } catch (SQLException ex) {
+            throw new DataAccessException("Failed to load all guests for id: " + reservationId, ex);
+        }
+    }
+
+    private List<Guest> initializeGuest(List<Guest> guests, PreparedStatement st) throws SQLException {
         try (var rs = st.executeQuery()) {
             while (rs.next()) {
-                Guest guest = new Guest(rs.getString("NAME"), rs.getDate("BIRTHDATE").toLocalDate(),rs.getString("GUESTID"),rs.getLong("RESERVATIONID"));
+                Guest guest = new Guest(
+                        rs.getString("NAME"),
+                        rs.getDate("BIRTHDATE").toLocalDate(),
+                        rs.getString("GUESTID"),
+                        rs.getLong("RESERVATIONID"),
+                        rs.getInt("ROOMNUMBER"));
                 guest.setId(rs.getLong("ID"));
                 guests.add(guest);
             }
         }
         return guests;
-    }
-
-    public List<Guest> getGuests(Long reservationId){
-        List<Guest> guests = new ArrayList<>();
-        try (var connection = dataSource.getConnection();
-             var st = connection.prepareStatement("SELECT ID, NAME, BIRTHDATE, GUESTID, RESERVATIONID" +
-                     " FROM GUEST WHERE RESERVATIONID=?")) {
-            st.setLong(1,reservationId);
-            try (var rs = st.executeQuery()) {
-                while (rs.next()) {
-                    Guest guest = new Guest(
-                            rs.getString("NAME"),
-                            rs.getDate("BIRTHDATE").toLocalDate(),
-                            rs.getString("GUESTID"),
-                            rs.getLong("RESERVATIONID"));
-                    guest.setId(rs.getLong("ID"));
-                    guests.add(guest);
-                }
-            }
-            return guests;
-        } catch (SQLException ex) {
-            throw new DataAccessException("Failed to load all guests for id: "+ reservationId, ex);
-        }
     }
 
     private boolean tableExists(String schemaName, String tableName) {
@@ -145,7 +147,8 @@ public final class GuestDao {
                     "NAME VARCHAR(100) NOT NULL," +
                     "BIRTHDATE DATE NOT NULL," +
                     "GUESTID VARCHAR(100)," +
-                    "RESERVATIONID BIGINT REFERENCES Reservation(ID))");
+                    "RESERVATIONID BIGINT REFERENCES Reservation(ID)," +
+                    "ROOMNUMBER INT)");
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to create GUEST table", ex);
         }
