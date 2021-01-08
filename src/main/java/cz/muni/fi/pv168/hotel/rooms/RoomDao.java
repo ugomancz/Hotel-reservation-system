@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.hotel.rooms;
 
-import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.DataAccessException;
 
 import javax.sql.DataSource;
@@ -37,6 +36,7 @@ public final class RoomDao {
             Map.entry(302, new Room(302, RoomPriceCategory.APARTMENT, 2, 1)),
             Map.entry(303, new Room(303, RoomPriceCategory.APARTMENT, 2, 1))
     );
+
     public RoomDao(DataSource dataSource) {
         this.dataSource = dataSource;
         if (!tableExists()) {

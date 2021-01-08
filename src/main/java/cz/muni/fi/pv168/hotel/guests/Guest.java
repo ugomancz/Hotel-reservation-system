@@ -12,7 +12,7 @@ public class Guest {
     private String name;
     private LocalDate birthDate;
     private String guestId;
-    private Long reservationId;
+    private final Long reservationId;
     private int roomNumber;
 
     public Guest(String name, LocalDate birthDate, String guestId, Long reservationId, int roomNumber) {
@@ -33,10 +33,6 @@ public class Guest {
 
     public Long getReservationId() {
         return reservationId;
-    }
-
-    public void setReservationId(Long reservationId) {
-        this.reservationId = reservationId;
     }
 
     public LocalDate getBirthDate() {

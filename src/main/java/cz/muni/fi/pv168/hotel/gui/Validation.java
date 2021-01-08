@@ -11,20 +11,20 @@ public class Validation {
         throw new AssertionError();
     }
 
-    public static boolean isNumeric(String input) {
+    public static boolean isNotNumeric(String input) {
         try {
             Double.parseDouble(input);
-            return true;
-        } catch (NumberFormatException e) {
             return false;
+        } catch (NumberFormatException e) {
+            return true;
         }
     }
 
-    public static boolean isEmail(String input) {
-        return EmailValidator.getInstance().isValid(input);
+    public static boolean isNotEmail(String input) {
+        return !EmailValidator.getInstance().isValid(input);
     }
 
     public static boolean isAlpha(String input) {
-        return input.replaceAll("\\s+","").chars().allMatch(Character::isLetter);
+        return input.replaceAll("\\s+", "").chars().allMatch(Character::isLetter);
     }
 }

@@ -39,10 +39,10 @@ public class Reorganisation {
     private final RoomDao roomDao;
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
-    private Map<String, Reservation> reservationMap;
-    private Button okButton;
     private final JComboBox<Integer> oldRoom = new JComboBox<>();
     private final JComboBox<Integer> newRoom = new JComboBox<>();
+    private Map<String, Reservation> reservationMap;
+    private Button okButton;
     private JComboBox<String> reservationPicker;
 
     public Reorganisation(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {

@@ -42,7 +42,7 @@ public class RoomInfo {
 
     private void initLayout() {
         JTable table = createTable();
-        dialog.getRootPane().setBorder(new EmptyBorder(1,1,1,1));
+        dialog.getRootPane().setBorder(new EmptyBorder(1, 1, 1, 1));
         dialog.setBackground(new Color(240, 240, 240));
         new LoadRooms((DefaultTableModel) table.getModel()).execute();
         JScrollPane pane = new JScrollPane(table);

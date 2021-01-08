@@ -210,10 +210,10 @@ public class ReservationInfo {
         } else if (Validation.isAlpha(phoneField.getText())) {
             showError(I18N.getString("phoneError"));
             return false;
-        } else if (!emailField.getText().equals("") && !Validation.isEmail(emailField.getText())) {
+        } else if (!emailField.getText().equals("") && Validation.isNotEmail(emailField.getText())) {
             showError(I18N.getString("emailError"));
             return false;
-        } else if (!Validation.isNumeric(guestsField.getText())) {
+        } else if (Validation.isNotNumeric(guestsField.getText())) {
             showError(I18N.getString("guestsError"));
             return false;
         } else if (roomDao.numberOfBeds(rooms) < Integer.parseInt(guestsField.getText())) {

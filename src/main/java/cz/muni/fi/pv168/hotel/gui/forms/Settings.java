@@ -81,7 +81,7 @@ public class Settings {
     }
 
     private void updateProperty() {
-        if (!Validation.isNumeric(textField.getText())) {
+        if (Validation.isNotNumeric(textField.getText())) {
             new ErrorDialog(dialog, I18N.getString("numberError"));
         } else {
             new StoreProperties().execute();

@@ -231,9 +231,9 @@ public class NewReservation {
                 new ErrorDialog(dialog, I18N.getString("phoneEmptyError"));
             } else if (Validation.isAlpha(usedPhone)) {
                 new ErrorDialog(dialog, I18N.getString("phoneFormatError"));
-            } else if (usedMail.length() != 0 && !Validation.isEmail(usedMail)) {
+            } else if (usedMail.length() != 0 && Validation.isNotEmail(usedMail)) {
                 new ErrorDialog(dialog, I18N.getString("emailFormatError"));
-            } else if (!Validation.isNumeric(people.getText())) {
+            } else if (Validation.isNotNumeric(people.getText())) {
                 new ErrorDialog(dialog, I18N.getString("guestsError"));
             } else if (checkedPeople == 0) {
                 new ErrorDialog(dialog, I18N.getString("noRoom"));

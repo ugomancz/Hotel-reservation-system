@@ -13,9 +13,24 @@ import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.Room;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SwingWorker;
+import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
@@ -36,9 +51,9 @@ public class CheckIn {
     private final ReservationDao reservationDao;
     private final GuestDao guestDao;
     private final RoomDao roomDao;
-    private Map<String, Reservation> reservationMap = new HashMap<>();
     private final JDialog dialog;
     private final ArrayList<Guest> guestList = new ArrayList<>();
+    private Map<String, Reservation> reservationMap = new HashMap<>();
     private JDialog addWindow, priceWindow;
     private JTable table;
     private JLabel resName, resGuests, resRooms;
@@ -129,7 +144,7 @@ public class CheckIn {
                 prices.addItem(price.toString() + ",-");
             }
         }
-        prices.addItem(reservationDao.getOldPrice(res.getId(), roomNumber).toString() + ",- "+ "(" + I18N.getString("old") + ")");
+        prices.addItem(reservationDao.getOldPrice(res.getId(), roomNumber).toString() + ",- " + "(" + I18N.getString("old") + ")");
         prices.addActionListener(this::actionPerformed);
         prices.setPreferredSize(new Dimension(170, 20));
         gbc.anchor = GridBagConstraints.CENTER;
@@ -337,7 +352,7 @@ public class CheckIn {
 
     private int getNumOfRooms(Integer n) {
         int count = 0;
-        for (int i  = 0; i < table.getRowCount(); i++) {
+        for (int i = 0; i < table.getRowCount(); i++) {
 
             if (table.getValueAt(i, 3).toString().equals(n.toString())) {
                 count++;
@@ -451,6 +466,7 @@ public class CheckIn {
             addWindow.dispose();
         }
     }
+
     private class LoadPlannedReservations extends SwingWorker<Map<String, Reservation>, Void> {
 
         @Override
@@ -464,6 +480,7 @@ public class CheckIn {
             }
             return map;
         }
+
         @Override
         public void done() {
             try {

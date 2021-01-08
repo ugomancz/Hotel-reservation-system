@@ -124,14 +124,6 @@ public final class ReservationDao {
         st.setString(8, reservation.getGuestID());
     }
 
-    public void printAll(List<Reservation> list) {
-        for (Reservation entry : list) {
-            System.out.print(entry.getId() + " ");
-            System.out.print(Arrays.toString(entry.getRoomNumbers()) + " ");
-            System.out.println(entry);
-        }
-    }
-
     public List<Reservation> findAll() {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement("SELECT ID, NAME, PHONE, EMAIL, HOSTS," +

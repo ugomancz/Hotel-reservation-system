@@ -25,7 +25,6 @@ public class GuestTable {
 
             @Override
             public boolean isCellEditable(int row, int column) {
-                //all cells false
                 return false;
             }
         };

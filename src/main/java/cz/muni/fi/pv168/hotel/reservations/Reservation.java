@@ -109,10 +109,6 @@ public class Reservation {
         this.status = status;
     }
 
-    public int getLength() {
-        return getDeparture().compareTo(getArrival());
-    }
-
     @Override
     public String toString() {
         return getName() + ", "
