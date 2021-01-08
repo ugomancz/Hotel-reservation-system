@@ -138,8 +138,8 @@ public final class RoomDao {
                 Room room = new Room(
                         rs.getInt("ROOMNUMBER"),
                         RoomPriceCategory.valueOf(rs.getString("PRICECATEGORY")),
-                        rs.getInt("KINGSIZE"),
-                        rs.getInt("STANDARD"));
+                        rs.getInt("STANDARD"),
+                        rs.getInt("KINGSIZE"));
                 rooms.add(room);
             }
         }
