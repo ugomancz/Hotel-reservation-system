@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.guests.Guest;
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.gui.BirthDatePicker;
@@ -9,24 +10,12 @@ import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel.rooms.Room;
+import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
@@ -46,22 +35,26 @@ public class CheckIn {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
     private final GuestDao guestDao;
-    private final Map<String, Reservation> reservationMap = new HashMap<>();
+    private final RoomDao roomDao;
+    private Map<String, Reservation> reservationMap = new HashMap<>();
     private final JDialog dialog;
     private final ArrayList<Guest> guestList = new ArrayList<>();
-    private JDialog addWindow;
+    private JDialog addWindow, priceWindow;
     private JTable table;
     private JLabel resName, resGuests, resRooms;
-    private Button confirm, cancel, add, delete, addConfirm, addCancel;
-    private JComboBox<String> reservationPicker;
+    private Button confirm, cancel, add, delete, addConfirm, addCancel, priceConfirm;
+    private int price;
+    private Integer roomNumber;
+    private JComboBox<String> reservationPicker, rooms, prices;
     private JTextField addNameField, addIDfield;
     private Reservation res;
     private BirthDatePicker birthDatePicker;
 
-    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao) {
+    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.guestDao = guestDao;
         this.reservationDao = reservationDao;
+        this.roomDao = roomDao;
         dialog.setSize(500, 400);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(frame);
@@ -70,22 +63,31 @@ public class CheckIn {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         GridBagLayout layout = new GridBagLayout();
         dialog.setLayout(layout);
-        initMap();
+        new LoadPlannedReservations().execute();
         initLayout();
         dialog.setVisible(true);
 
     }
 
-    /**
-     * fills map with reservations starting today
-     */
-    private void initMap() {
-        for (Reservation reservation : reservationDao.findAll().stream()
-                .filter(x -> x.getArrival().equals(LocalDate.now()))
-                .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
-                .collect(Collectors.toList())) {
-            reservationMap.put(reservation.toString(), reservation);
-        }
+
+    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao, Reservation reservation) {
+        dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
+        this.guestDao = guestDao;
+        this.reservationDao = reservationDao;
+        this.roomDao = roomDao;
+        dialog.setSize(500, 400);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(frame);
+        dialog.setEnabled(true);
+        dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        GridBagLayout layout = new GridBagLayout();
+        dialog.setLayout(layout);
+        new LoadPlannedReservations().execute();
+        initLayout();
+        reservationPicker.setSelectedItem(reservation.toString());
+        dialog.setVisible(true);
+
     }
 
     /**
@@ -107,13 +109,38 @@ public class CheckIn {
         reservationPicker.setPreferredSize(new Dimension(300, 20));
         reservationPicker.addActionListener(this::actionPerformed);
         gbc.anchor = GridBagConstraints.CENTER;
+        reservationPicker.setSelectedItem(0);
+    }
+
+    private void initRoomComboBox(JComboBox<String> comboBox, Reservation reservation) {
+        for (Integer number : reservation.getRoomNumbers()) {
+            comboBox.addItem(number.toString());
+        }
+        comboBox.setPreferredSize(new Dimension(100, 20));
+        gbc.anchor = GridBagConstraints.CENTER;
+        comboBox.setSelectedItem(0);
+    }
+
+    private void initPriceComboBox(JComboBox<String> prices, Integer roomNumber) {
+        for (Integer price : Constants.ROOM_PRICES.values()) {
+            if (price == roomDao.getPricePerNight(roomNumber)) {
+                prices.addItem(price.toString() + ",- " + "(" + I18N.getString("current") + ")");
+            } else {
+                prices.addItem(price.toString() + ",-");
+            }
+        }
+        prices.addItem(reservationDao.getOldPrice(res.getId(), roomNumber).toString() + ",- "+ "(" + I18N.getString("old") + ")");
+        prices.addActionListener(this::actionPerformed);
+        prices.setPreferredSize(new Dimension(170, 20));
+        gbc.anchor = GridBagConstraints.CENTER;
+        prices.setSelectedItem(reservationDao.getOldPrice(res.getId(), roomNumber).toString() + ",- " + "(" + I18N.getString("old") + ")");
     }
 
     /**
      * Sets layout in frame using GridBagLayout
      */
     private void initLayout() {
-        gbc.weighty = 1;
+        gbc.weighty = 1.5;
 
         JLabel reservation = new JLabel(I18N.getString("reservation") + ":");
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -202,6 +229,40 @@ public class CheckIn {
         addWindow.setVisible(true);
     }
 
+    private void initPriceLayout(Integer roomNumber) {
+        priceWindow = new JDialog(dialog, I18N.getString("unfilledRoom"), Dialog.ModalityType.APPLICATION_MODAL);
+        GridBagLayout layout = new GridBagLayout();
+        priceWindow.setLayout(layout);
+        priceWindow.setLocationRelativeTo(dialog);
+        priceWindow.getRootPane().registerKeyboardAction((e) -> priceWindow.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        setPriceLayout(roomNumber);
+        priceWindow.pack();
+        priceWindow.setResizable(false);
+        priceWindow.setVisible(true);
+    }
+
+    private void setPriceLayout(Integer roomNumber) {
+        gbc.weighty = 0.5;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        prices = new JComboBox<>();
+        gbc.anchor = GridBagConstraints.LINE_START;
+        JLabel changeOfPrice = new JLabel(I18N.getString("roomNotFilled") + ": " + roomNumber.toString());
+        placeComponent(priceWindow, 0, 0, changeOfPrice);
+        JLabel choosePrice = new JLabel(I18N.getString("choosePrice") + ": ");
+        placeComponent(priceWindow, 0, 1, choosePrice);
+        gbc.anchor = GridBagConstraints.CENTER;
+        initPriceComboBox(prices, roomNumber);
+        placeComponent(priceWindow, 1, 1, prices);
+
+        gbc.anchor = GridBagConstraints.CENTER;
+        priceConfirm = new Button(I18N.getString("confirm"));
+        priceConfirm.setPreferredSize(new Dimension(90, 25));
+        priceConfirm.addActionListener(this::actionPerformed);
+        placeComponent(priceWindow, 1, 2, priceConfirm);
+
+    }
+
     /**
      * @param addPanel JDialog to be set
      */
@@ -224,15 +285,24 @@ public class CheckIn {
         addIDfield.setText("-");
         placeComponent(addPanel, 1, 2, addIDfield);
 
+
+        JLabel roomsLabel = new JLabel(I18N.getString("roomNumber") + ":");
+        placeComponent(addPanel, 0, 3, roomsLabel);
+        rooms = new JComboBox<>();
+        initRoomComboBox(rooms, res);
+        gbc.insets = new Insets(5, 5, 5, 70);
+        placeComponent(addPanel, 1, 3, rooms);
+
+        gbc.insets = new Insets(5, 5, 5, 5);
         addConfirm = new Button(I18N.getString("add"));
         addConfirm.setPreferredSize(new Dimension(90, 25));
         addConfirm.addActionListener(this::actionPerformed);
-        placeComponent(addPanel, 0, 3, addConfirm);
+        placeComponent(addPanel, 0, 4, addConfirm);
         gbc.insets = new Insets(0, 75, 0, 0);
         addCancel = new Button(I18N.getString("cancel"));
         addCancel.setPreferredSize(new Dimension(85, 25));
         addCancel.addActionListener(this::actionPerformed);
-        placeComponent(addPanel, 1, 3, addCancel);
+        placeComponent(addPanel, 1, 4, addCancel);
     }
 
     private void removeGuest(Guest guest) {
@@ -251,7 +321,9 @@ public class CheckIn {
             var name = table.getValueAt(rows[i] - i, 0);
             var birthdate = table.getValueAt(rows[i] - i, 1);
             var id = table.getValueAt(rows[i] - i, 2);
-            Guest guest = new Guest((String) name, (LocalDate) birthdate, (String) id, res.getId());
+            var roomNumber = table.getValueAt(rows[i] - i, 3);
+
+            Guest guest = new Guest((String) name, (LocalDate) birthdate, (String) id, res.getId(), Integer.parseInt(roomNumber.toString()));
             removeGuest(guest);
             model.removeRow(rows[i] - i);
         }
@@ -259,7 +331,54 @@ public class CheckIn {
 
     private void createGuests() {
         for (Guest guest : guestList) {
-            guestDao.create(guest);
+            new CreateGuest(guest).execute();
+        }
+    }
+
+    private int getNumOfRooms(Integer n) {
+        int count = 0;
+        for (int i  = 0; i < table.getRowCount(); i++) {
+
+            if (table.getValueAt(i, 3).toString().equals(n.toString())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int roomPriceCategoryToInt(RoomDao.RoomPriceCategory category) {
+        if (category == RoomDao.RoomPriceCategory.SINGLE_ROOM) {
+            return 1;
+        }
+
+        if (category == RoomDao.RoomPriceCategory.DOUBLE_ROOM) {
+            return 2;
+        }
+
+        if (category == RoomDao.RoomPriceCategory.TRIPLE_ROOM) {
+            return 3;
+        }
+
+        return 4;
+    }
+
+    private boolean checkInvalidRooms() {
+        for (Integer n : res.getRoomNumbers()) {
+            Room room = roomDao.getRoom(n);
+            if (getNumOfRooms(n) > roomPriceCategoryToInt(room.getRoomPriceCategory())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void checkNonFullRooms() {
+        for (Integer n : res.getRoomNumbers()) {
+            Room room = roomDao.getRoom(n);
+            roomNumber = n;
+            if (getNumOfRooms(n) < roomPriceCategoryToInt(room.getRoomPriceCategory())) {
+                initPriceLayout(n);
+            }
         }
     }
 
@@ -276,12 +395,13 @@ public class CheckIn {
             } else {
                 if (guestList.size() != res.getGuests()) {
                     new ErrorDialog(dialog, I18N.getString("invalidNumOfGuestsError"));
+                } else if (!checkInvalidRooms()) {
+                    new ErrorDialog(dialog, I18N.getString("overfilledRoomError"));
                 } else {
+                    checkNonFullRooms();
                     createGuests();
                     res.setStatus(ReservationStatus.ONGOING);
-                    reservationDao.update(res);
-                    Timetable.drawWeek(LocalDate.now());
-                    dialog.dispose();
+                    new UpdateReservation(res).execute();
                 }
             }
         }
@@ -292,6 +412,12 @@ public class CheckIn {
             res = reservationMap.get(selected);
             fillReservation(res);
         }
+        if (e.getSource().equals(prices)) {
+            String selected = (String) prices.getSelectedItem();
+            assert selected != null;
+            price = Integer.parseInt(selected.split(",")[0]);
+
+        }
         if (e.getSource().equals(add)) {
             initAddLayout();
         }
@@ -299,6 +425,10 @@ public class CheckIn {
             removeSelectedRows(table);
             confirm.setEnabled(guestList.size() == res.getGuests());
         }
+        if (e.getSource().equals(priceConfirm)) {
+            new UpdateReservationPrice(res, roomNumber, price).execute();
+        }
+
         if (e.getSource().equals(addConfirm)) {
             if (addNameField.getText().equals("") || addIDfield.getText().equals("")) {
                 new ErrorDialog(dialog, I18N.getString("notAllFieldsFilledError"));
@@ -307,9 +437,11 @@ public class CheckIn {
             } else {
                 String name = addNameField.getText();
                 String id = addIDfield.getText();
-                Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId());
+                assert rooms.getSelectedItem() != null;
+                int roomNumber = Integer.parseInt(rooms.getSelectedItem().toString());
+                Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId(), roomNumber);
                 DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
-                dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText()});
+                dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText(), rooms.getSelectedItem()});
                 guestList.add(guest);
                 addWindow.dispose();
                 confirm.setEnabled(guestList.size() == res.getGuests());
@@ -317,6 +449,100 @@ public class CheckIn {
         }
         if (e.getSource().equals(addCancel)) {
             addWindow.dispose();
+        }
+    }
+    private class LoadPlannedReservations extends SwingWorker<Map<String, Reservation>, Void> {
+
+        @Override
+        protected Map<String, Reservation> doInBackground() {
+            Map<String, Reservation> map = new HashMap<>();
+            for (Reservation reservation : reservationDao.findAll().stream()
+                    .filter(x -> x.getArrival().equals(LocalDate.now()))
+                    .filter(x -> x.getStatus().equals(ReservationStatus.PLANNED))
+                    .collect(Collectors.toList())) {
+                map.put(reservation.toString(), reservation);
+            }
+            return map;
+        }
+        @Override
+        public void done() {
+            try {
+                reservationMap = get();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            for (String reservation : reservationMap.keySet()) {
+                reservationPicker.addItem(reservation);
+            }
+            String selected = (String) reservationPicker.getSelectedItem();
+            Reservation reservation = reservationMap.get(selected);
+            if (reservation != null) {
+                fillReservation(reservation);
+                add.setEnabled(true);
+                delete.setEnabled(true);
+            }
+        }
+    }
+
+    private class UpdateReservationPrice extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+        private final Integer roomNumber;
+        private final int price;
+
+        private UpdateReservationPrice(Reservation reservation, Integer roomNumber, int price) {
+            this.reservation = reservation;
+            this.roomNumber = roomNumber;
+            this.price = price;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.updatePrice(reservation.getId(), roomNumber, price);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            priceWindow.dispose();
+        }
+    }
+
+    private class CreateGuest extends SwingWorker<Void, Void> {
+
+        private final Guest guest;
+
+        public CreateGuest(Guest guest) {
+            this.guest = guest;
+        }
+
+
+        @Override
+        protected Void doInBackground() {
+            guestDao.create(guest);
+            return null;
+        }
+    }
+
+    private class UpdateReservation extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+
+
+        private UpdateReservation(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.update(reservation);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            Timetable.refresh();
+            dialog.dispose();
         }
     }
 }

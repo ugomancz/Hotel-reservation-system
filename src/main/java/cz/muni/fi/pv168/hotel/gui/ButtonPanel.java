@@ -17,6 +17,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.GridLayout;
 
+/**
+ * @author Ondrej Kostik
+ */
 class ButtonPanel {
 
     private static final int NUM_OF_BUTTONS = 8;
@@ -27,21 +30,18 @@ class ButtonPanel {
         panel = new JPanel();
         panel.setLayout(new GridLayout(NUM_OF_BUTTONS, 1, 5, 5));
         panel.setBackground(Constants.BACKGROUND_COLOR);
-        addButtons(frame, reservationDao, guestDao, roomDao);
+
+        panel.add(new Button(I18N.getString("newReservationButton"), (e) -> new NewReservation(frame, reservationDao, guestDao, roomDao)));
+        panel.add(new Button(I18N.getString("cancelReservationButton"), (e) -> new CancelReservation(frame, reservationDao)));
+        panel.add(new Button(I18N.getString("checkInButton"), (e) -> new CheckIn(frame, reservationDao, guestDao, roomDao)));
+        panel.add(new Button(I18N.getString("checkOutButton"), (e) -> new CheckOut(frame, reservationDao, roomDao)));
+        panel.add(new Button(I18N.getString("reservationInfoButton"), (e) -> new ReservationInfo(frame, reservationDao, roomDao)));
+        panel.add(new Button(I18N.getString("guestsInfoButton"), (e) -> new GuestsInfo(frame, reservationDao, guestDao)));
+        panel.add(new Button(I18N.getString("roomInfoButton"), (e) -> new RoomInfo(frame, roomDao)));
+        panel.add(new Button(I18N.getString("settingsButton"), (e) -> new Settings(frame)));
     }
 
     JPanel getPanel() {
         return panel;
-    }
-
-    private void addButtons(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
-        panel.add(new Button(I18N.getString("newReservationButton"), e -> new NewReservation(frame, reservationDao, guestDao, roomDao)));
-        panel.add(new Button(I18N.getString("cancelReservationButton"), e -> new CancelReservation(frame, reservationDao)));
-        panel.add(new Button(I18N.getString("checkInButton"), e -> new CheckIn(frame, reservationDao, guestDao)));
-        panel.add(new Button(I18N.getString("checkOutButton"), e -> new CheckOut(frame, reservationDao, roomDao)));
-        panel.add(new Button(I18N.getString("reservationInfoButton"), e -> new ReservationInfo(frame, reservationDao, roomDao)));
-        panel.add(new Button(I18N.getString("guestsInfoButton"), e -> new GuestsInfo(frame, reservationDao, guestDao)));
-        panel.add(new Button(I18N.getString("roomInfoButton"), e -> new RoomInfo(frame, roomDao)));
-        panel.add(new Button(I18N.getString("settingsButton"), e -> new Settings(frame)));
     }
 }

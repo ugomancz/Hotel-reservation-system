@@ -12,10 +12,10 @@ public class GuestTable {
     public static JTable createTable() {
 
         DefaultTableModel dataModel = new DefaultTableModel() {
-            private final String[] columns = {I18N.getString("name"), I18N.getString("birthDate"), I18N.getString("IDnumber")};
+            private final String[] columns = {I18N.getString("name"), I18N.getString("birthDate"), I18N.getString("IDnumber"), I18N.getString("roomNumber")};
 
             public int getColumnCount() {
-                return 3;
+                return 4;
             }
 
             @Override
@@ -30,8 +30,10 @@ public class GuestTable {
             }
         };
         JTable table = new JTable(dataModel);
-        table.getColumnModel().getColumn(1).setPreferredWidth(10);
+        table.getColumnModel().getColumn(0).setPreferredWidth(15);
+        table.getColumnModel().getColumn(1).setPreferredWidth(15);
         table.getColumnModel().getColumn(2).setPreferredWidth(15);
+        table.getColumnModel().getColumn(3).setPreferredWidth(15);
         table.getTableHeader().setReorderingAllowed(false);
 
         return table;

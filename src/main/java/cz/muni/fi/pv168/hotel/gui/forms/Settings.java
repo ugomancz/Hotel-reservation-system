@@ -36,7 +36,7 @@ public class Settings {
 
     private static final I18N I18N = new I18N(Settings.class);
     private final JDialog dialog;
-    private final GridBagConstraints gbc;
+    private final GridBagConstraints gbc = new GridBagConstraints();
     private final File configFile = new File(Constants.CONFIG_FILE_PATH);
     private Properties properties;
     private JTextField textField;
@@ -49,7 +49,6 @@ public class Settings {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
         dialog.getRootPane().registerKeyboardAction((e) -> new StoreProperties().execute(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
-        gbc = new GridBagConstraints();
         new LoadProperties().execute();
         initLayout();
         dialog.setVisible(true);
@@ -65,7 +64,7 @@ public class Settings {
         JLabel label = new JLabel(I18N.getString("feesLabel"));
         textField = new JTextField(10);
         textField.setText(properties.getProperty("localFee"));
-        Button okButton = new Button(I18N.getString("confirmButton"), (e) -> new StoreProperties().execute());
+        Button okButton = new Button(I18N.getString("confirmButton"), (e) -> updateProperty());
         Button cancelButton = new Button(I18N.getString("cancelButton"), (e) -> dialog.dispose());
 
         addComponent(label, 0, 0);
@@ -79,6 +78,14 @@ public class Settings {
         gbc.gridx = x;
         gbc.gridy = y;
         dialog.add(component, gbc);
+    }
+
+    private void updateProperty() {
+        if (!Validation.isNumeric(textField.getText())) {
+            new ErrorDialog(dialog, I18N.getString("numberError"));
+        } else {
+            new StoreProperties().execute();
+        }
     }
 
     private class LoadProperties extends SwingWorker<String, Void> {
@@ -111,20 +118,15 @@ public class Settings {
 
         @Override
         protected Void doInBackground() {
-            String input = textField.getText();
-            if (Validation.isNumeric(input)) {
-                properties.setProperty("localFee", input);
-                try {
-                    try (OutputStream out = new FileOutputStream(configFile)) {
-                        properties.store(out, "property updated");
-                    }
-                } catch (IOException ex) {
-                    new ErrorDialog(dialog, I18N.getString("fileError"));
+            properties.setProperty("localFee", textField.getText());
+            try {
+                try (OutputStream out = new FileOutputStream(configFile)) {
+                    properties.store(out, "property updated");
                 }
-                dialog.dispose();
-            } else {
-                new ErrorDialog(dialog, I18N.getString("numberError"));
+            } catch (IOException ex) {
+                new ErrorDialog(dialog, I18N.getString("fileError"));
             }
+            dialog.dispose();
             return null;
         }
 
