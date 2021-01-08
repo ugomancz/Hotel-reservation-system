@@ -119,11 +119,6 @@ public class GuestsInfo {
             for (String reservation : reservationMap.keySet()) {
                 reservationPicker.addItem(reservation);
             }
-            String selected = (String) reservationPicker.getSelectedItem();
-            Reservation reservation = reservationMap.get(selected);
-            if (reservation != null) {
-                displayGuests(reservation);
-            }
         }
     }
 
