@@ -2,6 +2,7 @@ package cz.muni.fi.pv168.hotel.gui.forms;
 
 import cz.muni.fi.pv168.hotel.gui.Button;
 import cz.muni.fi.pv168.hotel.gui.I18N;
+import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
@@ -37,11 +38,11 @@ public class Reorganisation {
     private final ReservationDao reservationDao;
     private final RoomDao roomDao;
     private final GridBagConstraints gbc = new GridBagConstraints();
-    private JDialog dialog;
+    private final JDialog dialog;
     private Map<String, Reservation> reservationMap;
-    private Button okButton, cancelButton;
-    private JComboBox<Integer> oldRoom = new JComboBox<>();
-    private JComboBox<Integer> newRoom = new JComboBox<>();
+    private Button okButton;
+    private final JComboBox<Integer> oldRoom = new JComboBox<>();
+    private final JComboBox<Integer> newRoom = new JComboBox<>();
     private JComboBox<String> reservationPicker;
 
     public Reorganisation(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
@@ -54,7 +55,6 @@ public class Reorganisation {
         new LoadReservations().execute();
         initLayout();
         dialog.setResizable(false);
-        dialog.setVisible(true);
     }
 
     private void initLayout() {
@@ -64,27 +64,45 @@ public class Reorganisation {
         gbc.weighty = 0.5;
         addComponent(new JLabel(I18N.getString("reservationLabel")), 0, 0);
         addComponent(new JLabel(I18N.getString("oldRoomLabel")), 0, 1);
-        addComponent(oldRoom, 1, 1);
         addComponent(new JLabel(I18N.getString("newRoomLabel")), 2, 1);
-        addComponent(newRoom, 3, 1);
-        reservationPicker.addActionListener(this::actionPerformed);
-        gbc.gridwidth = 3;
-        addComponent(reservationPicker, 1, 0);
+
         okButton = new Button(I18N.getString("okButton"), this::actionPerformed);
         gbc.anchor = GridBagConstraints.LINE_START;
         addComponent(okButton, 0, 2);
-        okButton = new Button(I18N.getString("cancelButton"), (e) -> dialog.dispose());
+
+        Button cancelButton = new Button(I18N.getString("cancelButton"), (e) -> dialog.dispose());
         gbc.anchor = GridBagConstraints.LINE_END;
-        addComponent(okButton, 3, 2);
+        addComponent(cancelButton, 3, 2);
+
+        initComboBoxes();
+    }
+
+    private void initComboBoxes() {
+        oldRoom.addActionListener(this::actionPerformed);
+        oldRoom.setPreferredSize(new Dimension(50, 20));
+        addComponent(oldRoom, 1, 1);
+        newRoom.setPreferredSize(new Dimension(50, 20));
+        addComponent(newRoom, 3, 1);
+        reservationPicker = new JComboBox<>();
+        reservationPicker.setPreferredSize(new Dimension(223, 20));
+        reservationPicker.addActionListener(this::actionPerformed);
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        addComponent(reservationPicker, 1, 0);
     }
 
     private void actionPerformed(ActionEvent e) {
         String selected = (String) reservationPicker.getSelectedItem();
         if (e.getSource().equals(reservationPicker)) {
+            oldRoom.removeAllItems();
             new LoadReservationRooms(reservationMap.get(selected)).execute();
         } else if (e.getSource().equals(oldRoom)) {
+            newRoom.removeAllItems();
             new LoadFreeRooms(reservationMap.get(selected)).execute();
         } else if (e.getSource().equals(okButton)) {
+            if (selected == null) {
+                new ErrorDialog(dialog, I18N.getString("reservationError"));
+            }
             Integer oldRoomNumber = (Integer) oldRoom.getSelectedItem();
             Integer newRoomNumber = (Integer) newRoom.getSelectedItem();
             new UpdateRoomNumber(oldRoomNumber, newRoomNumber, reservationMap.get(selected)).execute();
@@ -118,7 +136,6 @@ public class Reorganisation {
                 ex.printStackTrace();
                 return;
             }
-            reservationPicker = new JComboBox<>();
             try {
                 for (String name : get().keySet()) {
                     reservationPicker.addItem(name);
@@ -126,7 +143,6 @@ public class Reorganisation {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            reservationPicker.setPreferredSize(new Dimension(223, 20));
             dialog.pack();
             dialog.setVisible(true);
         }
@@ -147,7 +163,6 @@ public class Reorganisation {
 
         @Override
         protected void done() {
-            reservationPicker = new JComboBox<>();
             try {
                 for (Integer roomNumber : get()) {
                     oldRoom.addItem(roomNumber);
@@ -173,7 +188,6 @@ public class Reorganisation {
 
         @Override
         protected void done() {
-            reservationPicker = new JComboBox<>();
             try {
                 for (Room room : get()) {
                     newRoom.addItem(room.getRoomNumber());
@@ -206,9 +220,10 @@ public class Reorganisation {
         protected void done() {
             try {
                 get();
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            Timetable.refresh();
             dialog.dispose();
         }
     }
