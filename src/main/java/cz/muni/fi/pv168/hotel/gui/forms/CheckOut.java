@@ -7,15 +7,14 @@ import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
-import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 import javax.swing.WindowConstants;
 import java.awt.Dialog.ModalityType;
@@ -41,18 +40,16 @@ import java.util.stream.Collectors;
 public class CheckOut {
 
     private static final I18N I18N = new I18N(CheckOut.class);
-    private final JLabel label = new JLabel("", SwingConstants.CENTER);
     private final ReservationDao reservationDao;
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
-    private final RoomDao roomDao;
+    private final JTextArea textArea = new JTextArea();
     private int localFee;
     private Map<String, Reservation> reservationMap;
     private JButton outButton, cancelButton;
     private JComboBox<String> reservationPicker;
 
-    public CheckOut(Window owner, ReservationDao reservationDao, RoomDao roomDao) {
-        this.roomDao = roomDao;
+    public CheckOut(Window owner, ReservationDao reservationDao) {
         this.reservationDao = reservationDao;
         dialog = new JDialog(owner, I18N.getString("windowTitle"), ModalityType.APPLICATION_MODAL);
         dialog.setLocationRelativeTo(owner);
@@ -71,9 +68,12 @@ public class CheckOut {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.gridx = 0;
         addComponent(addComboBox(), 0);
-        label.setPreferredSize(new Dimension(215, 130));
-        addComponent(label, 1);
+        textArea.setEditable(false);
+        JScrollPane pane = new JScrollPane(textArea);
+        pane.setPreferredSize(new Dimension(215, 200));
+        addComponent(pane, 1);
         addButtons();
+        dialog.pack();
     }
 
     private void addButtons() {
@@ -101,23 +101,22 @@ public class CheckOut {
         return reservationPicker;
     }
 
-    private int calculateTotalPrice(Reservation reservation) {
+    private int calculateTotalPrice(Reservation reservation, Map<Integer, Integer> roomMap) {
         int length = LocalDate.now().compareTo(reservation.getArrival());
-        return length * roomDao.getPricePerNight(reservation.getRoomNumbers()) +
-                length * localFee * reservation.getGuests();
+        int pricePerNight = roomMap.values().stream().mapToInt(Integer::intValue).sum();
+        return length * pricePerNight + length * localFee * reservation.getGuests();
     }
 
-    private void displayInfo(Reservation reservation) {
-        String receipt = "<html>" + I18N.getString("clientLabel") + ": %s<br/><br/>" +
-                I18N.getString("nightsLabel") + ": %d<br/>" +
-                I18N.getString("guestsLabel") + ": %d<br/>" +
-                I18N.getString("feesLabel") + ": %d<br/><br/>" +
-                "<u>" + I18N.getString("totalLabel") + ": %d</u></html>";
-        label.setText(String.format(receipt, reservation.getName(),
-                LocalDate.now().compareTo(reservation.getArrival()),
-                reservation.getGuests(),
-                localFee, calculateTotalPrice(reservation)));
-        dialog.pack();
+    private void displayInfo(Reservation reservation, Map<Integer, Integer> roomMap) {
+        textArea.setText("");
+        textArea.append(I18N.getString("clientLabel") + ": " + reservation.getName() + "\n");
+        for (Integer roomNumber : roomMap.keySet()) {
+            textArea.append(I18N.getString("roomNumberLabel") + " " + roomNumber + ": " + roomMap.get(roomNumber) + "\n");
+        }
+        textArea.append(I18N.getString("feesLabel") + ": " + localFee + "\n");
+        textArea.append(I18N.getString("nightsLabel") + ": " + LocalDate.now().compareTo(reservation.getArrival()) + "\n");
+        textArea.append(I18N.getString("guestsLabel") + ": " + reservation.getGuests() + "\n");
+        textArea.append(I18N.getString("totalLabel") + ": " + calculateTotalPrice(reservation, roomMap));
     }
 
     private void closeReservation(Reservation reservation) {
@@ -136,7 +135,7 @@ public class CheckOut {
             closeReservation(reservationMap.get(selected));
         } else if (e.getSource().equals(reservationPicker)) {
             String selected = (String) reservationPicker.getSelectedItem();
-            displayInfo(reservationMap.get(selected));
+            new CalculatePrice(reservationMap.get(selected)).execute();
         } else if (e.getSource().equals(cancelButton)) {
             dialog.dispose();
         }
@@ -168,7 +167,7 @@ public class CheckOut {
             String selected = (String) reservationPicker.getSelectedItem();
             Reservation reservation = reservationMap.get(selected);
             if (reservation != null) {
-                displayInfo(reservation);
+                new CalculatePrice(reservation).execute();
             }
             outButton.setEnabled(true);
         }
@@ -190,8 +189,36 @@ public class CheckOut {
 
         @Override
         public void done() {
+            try {
+                get();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             Timetable.drawWeek(LocalDate.now());
             dialog.dispose();
+        }
+    }
+
+    private class CalculatePrice extends SwingWorker<Map<Integer, Integer>, Void> {
+
+        private final Reservation reservation;
+
+        private CalculatePrice(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Map<Integer, Integer> doInBackground() {
+            return reservationDao.getReservedRoomsPrice(reservation.getId());
+        }
+
+        @Override
+        public void done() {
+            try {
+                displayInfo(reservation, get());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

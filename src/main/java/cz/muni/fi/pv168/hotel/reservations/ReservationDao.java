@@ -1,6 +1,5 @@
 package cz.muni.fi.pv168.hotel.reservations;
 
-import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.DataAccessException;
 import cz.muni.fi.pv168.hotel.rooms.Room;
 import cz.muni.fi.pv168.hotel.rooms.RoomDao;
@@ -15,7 +14,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
@@ -193,7 +191,7 @@ public final class ReservationDao {
         }
     }
 
-    public HashMap<Integer, Integer> getReservedRooms(long reservationId) {
+    public HashMap<Integer, Integer> getReservedRoomsPrice(long reservationId) {
         HashMap<Integer, Integer> hashMap = new HashMap<>();
         for (Integer roomNumber : getReservationRoomNumbers(reservationId)) {
             hashMap.put(roomNumber, getOldPrice(reservationId, roomNumber));
@@ -289,6 +287,7 @@ public final class ReservationDao {
     }
 
     private class ReservedRoom {
+
         private ReservedRoom() {
             if (!tableExists()) {
                 createTable();
