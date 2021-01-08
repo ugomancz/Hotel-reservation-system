@@ -9,6 +9,8 @@ import cz.muni.fi.pv168.hotel.gui.Timetable;
 import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
+import cz.muni.fi.pv168.hotel.rooms.Room;
+import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -32,6 +34,7 @@ public class CheckIn {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final ReservationDao reservationDao;
     private final GuestDao guestDao;
+    private final RoomDao roomDao;
     private Map<String, Reservation> reservationMap = new HashMap<>();
     private final JDialog dialog;
     private final ArrayList<Guest> guestList = new ArrayList<>();
@@ -39,15 +42,16 @@ public class CheckIn {
     private JTable table;
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel;
-    private JComboBox<String> reservationPicker, rooms;
+    private JComboBox<String> reservationPicker, rooms, prices;
     private JTextField addNameField, addIDfield;
     private Reservation res;
     private BirthDatePicker birthDatePicker;
 
-    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao) {
+    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.guestDao = guestDao;
         this.reservationDao = reservationDao;
+        this.roomDao = roomDao;
         dialog.setSize(500, 400);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(frame);
@@ -63,10 +67,11 @@ public class CheckIn {
     }
 
 
-    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, Reservation reservation) {
+    public CheckIn(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao, Reservation reservation) {
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.guestDao = guestDao;
         this.reservationDao = reservationDao;
+        this.roomDao = roomDao;
         dialog.setSize(500, 400);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setLocationRelativeTo(frame);
@@ -276,6 +281,58 @@ public class CheckIn {
         }
     }
 
+    private int getNumOfRooms(Integer n) {
+        int count = 0;
+        for (int i  = 0; i < table.getRowCount(); i++) {
+
+            String test1 = table.getValueAt(i, 3).toString();
+            String test2 = n.toString();
+            if (table.getValueAt(i, 3).toString().equals(n.toString())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int roomPriceCategoryToInt(RoomDao.RoomPriceCategory category) {
+        if (category == RoomDao.RoomPriceCategory.SINGLE_ROOM) {
+            return 1;
+        }
+
+        if (category == RoomDao.RoomPriceCategory.DOUBLE_ROOM) {
+            return 2;
+        }
+
+        if (category == RoomDao.RoomPriceCategory.TRIPLE_ROOM) {
+            return 3;
+        }
+
+        return 4;
+    }
+
+    private boolean checkInvalidRooms() {
+        for (Integer n : res.getRoomNumbers()) {
+            Room room = roomDao.getRoom(n);
+            int i = getNumOfRooms(n);
+            int cap = roomPriceCategoryToInt(room.getRoomPriceCategory());
+            if (getNumOfRooms(n) > roomPriceCategoryToInt(room.getRoomPriceCategory())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkNonFullRooms() {
+        for (Integer n : res.getRoomNumbers()) {
+            Room room = roomDao.getRoom(n);
+            if (getNumOfRooms(n) < roomPriceCategoryToInt(room.getRoomPriceCategory())) {
+                new ErrorDialog(dialog, "Room underfilled");
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void actionPerformed(ActionEvent e) {
 
         if (e.getSource().equals(cancel) | e.getSource().equals(dialog.getRootPane())) {
@@ -289,6 +346,9 @@ public class CheckIn {
             } else {
                 if (guestList.size() != res.getGuests()) {
                     new ErrorDialog(dialog, I18N.getString("invalidNumOfGuestsError"));
+                }
+                else if (!checkInvalidRooms()) {
+                    new ErrorDialog(dialog, I18N.getString("overfilledRoomError"));
                 } else {
                     createGuests();
                     res.setStatus(ReservationStatus.ONGOING);
@@ -330,7 +390,6 @@ public class CheckIn {
             addWindow.dispose();
         }
     }
-
     private class LoadPlannedReservations extends SwingWorker<Map<String, Reservation>, Void> {
 
         @Override
