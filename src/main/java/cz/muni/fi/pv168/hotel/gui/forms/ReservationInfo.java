@@ -250,7 +250,7 @@ public class ReservationInfo {
         List<Integer> selected = new ArrayList<>();
         for (int i = 0; i < roomPicker.getRowCount(); i++) {
             if ((boolean) roomPicker.getValueAt(i, 0)) {
-                selected.add(reversedRoomIndex.get((i + 1)));
+                selected.add(reversedRoomIndex.get((i)));
             }
         }
         return selected.toArray(Integer[]::new);
