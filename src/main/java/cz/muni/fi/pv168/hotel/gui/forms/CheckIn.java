@@ -1,5 +1,6 @@
 package cz.muni.fi.pv168.hotel.gui.forms;
 
+import cz.muni.fi.pv168.hotel.Constants;
 import cz.muni.fi.pv168.hotel.guests.Guest;
 import cz.muni.fi.pv168.hotel.guests.GuestDao;
 import cz.muni.fi.pv168.hotel.gui.BirthDatePicker;
@@ -38,10 +39,10 @@ public class CheckIn {
     private Map<String, Reservation> reservationMap = new HashMap<>();
     private final JDialog dialog;
     private final ArrayList<Guest> guestList = new ArrayList<>();
-    private JDialog addWindow;
+    private JDialog addWindow, priceWindow;
     private JTable table;
     private JLabel resName, resGuests, resRooms;
-    private Button confirm, cancel, add, delete, addConfirm, addCancel;
+    private Button confirm, cancel, add, delete, addConfirm, addCancel, priceConfirm, priceCancel;
     private JComboBox<String> reservationPicker, rooms, prices;
     private JTextField addNameField, addIDfield;
     private Reservation res;
@@ -116,6 +117,16 @@ public class CheckIn {
         comboBox.setPreferredSize(new Dimension(100, 20));
         gbc.anchor = GridBagConstraints.CENTER;
         comboBox.setSelectedItem(0);
+    }
+
+    private void initPriceComboBox(JComboBox<String> prices, Integer roomNumber) {
+        for (Integer price : Constants.ROOM_PRICES.values()) {
+            prices.addItem(price.toString());
+        }
+        prices.setPreferredSize(new Dimension(100, 20));
+        gbc.anchor = GridBagConstraints.CENTER;
+        prices.setSelectedItem(roomNumber.toString());
+
     }
 
     /**
@@ -209,6 +220,35 @@ public class CheckIn {
         addWindow.pack();
         addWindow.setResizable(false);
         addWindow.setVisible(true);
+    }
+
+    private void initPriceLayout(Integer roomNumber) {
+        priceWindow = new JDialog(dialog, I18N.getString("unfilledRoom"), Dialog.ModalityType.APPLICATION_MODAL);
+        GridBagLayout layout = new GridBagLayout();
+        priceWindow.setLayout(layout);
+        priceWindow.setLocationRelativeTo(dialog);
+        priceWindow.getRootPane().registerKeyboardAction((e) -> priceWindow.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        setPriceLayout(roomNumber);
+        priceWindow.pack();
+        priceWindow.setResizable(false);
+        priceWindow.setVisible(true);
+    }
+
+    private void setPriceLayout(Integer roomNumber) {
+        gbc.weighty = 0.5;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        prices = new JComboBox<>();
+        gbc.anchor = GridBagConstraints.LINE_START;
+        JLabel changeOfPrice = new JLabel(I18N.getString("roomNotFilled") + ": " + roomNumber.toString());
+        placeComponent(priceWindow, 0, 0, changeOfPrice);
+        JLabel choosePrice = new JLabel(I18N.getString("choosePrice") + ": ");
+        placeComponent(priceWindow, 0, 1, choosePrice);
+        gbc.anchor = GridBagConstraints.CENTER;
+        initPriceComboBox(prices, roomNumber);
+        placeComponent(priceWindow, 1, 1, prices);
+        priceConfirm = new Button(I18N.getString("confirm"));
+        priceConfirm.setPreferredSize(new Dimension(85, 25));
     }
 
     /**
@@ -313,8 +353,6 @@ public class CheckIn {
     private boolean checkInvalidRooms() {
         for (Integer n : res.getRoomNumbers()) {
             Room room = roomDao.getRoom(n);
-            int i = getNumOfRooms(n);
-            int cap = roomPriceCategoryToInt(room.getRoomPriceCategory());
             if (getNumOfRooms(n) > roomPriceCategoryToInt(room.getRoomPriceCategory())) {
                 return false;
             }
@@ -322,15 +360,13 @@ public class CheckIn {
         return true;
     }
 
-    private boolean checkNonFullRooms() {
+    private void checkNonFullRooms() {
         for (Integer n : res.getRoomNumbers()) {
             Room room = roomDao.getRoom(n);
             if (getNumOfRooms(n) < roomPriceCategoryToInt(room.getRoomPriceCategory())) {
-                new ErrorDialog(dialog, "Room underfilled");
-                return true;
+                initPriceLayout(n);
             }
         }
-        return false;
     }
 
     private void actionPerformed(ActionEvent e) {
@@ -346,10 +382,10 @@ public class CheckIn {
             } else {
                 if (guestList.size() != res.getGuests()) {
                     new ErrorDialog(dialog, I18N.getString("invalidNumOfGuestsError"));
-                }
-                else if (!checkInvalidRooms()) {
+                } else if (!checkInvalidRooms()) {
                     new ErrorDialog(dialog, I18N.getString("overfilledRoomError"));
                 } else {
+                    checkNonFullRooms();
                     createGuests();
                     res.setStatus(ReservationStatus.ONGOING);
                     new UpdateReservation(res).execute();
