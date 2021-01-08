@@ -6,6 +6,7 @@ import cz.muni.fi.pv168.hotel.reservations.Reservation;
 import cz.muni.fi.pv168.hotel.reservations.ReservationDao;
 import cz.muni.fi.pv168.hotel.reservations.ReservationStatus;
 import cz.muni.fi.pv168.hotel.rooms.Room;
+import cz.muni.fi.pv168.hotel.rooms.RoomDao;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -34,16 +35,18 @@ public class Reorganisation {
 
     private static final I18N I18N = new I18N(Reorganisation.class);
     private final ReservationDao reservationDao;
+    private final RoomDao roomDao;
     private final GridBagConstraints gbc = new GridBagConstraints();
     private JDialog dialog;
     private Map<String, Reservation> reservationMap;
     private Button okButton, cancelButton;
-    private JComboBox<Integer> oldRoom  = new JComboBox<>();
-    private JComboBox<Integer> newRoom  = new JComboBox<>();
+    private JComboBox<Integer> oldRoom = new JComboBox<>();
+    private JComboBox<Integer> newRoom = new JComboBox<>();
     private JComboBox<String> reservationPicker;
 
-    public Reorganisation(JFrame frame, ReservationDao reservationDao) {
+    public Reorganisation(JFrame frame, ReservationDao reservationDao, RoomDao roomDao) {
         this.reservationDao = reservationDao;
+        this.roomDao = roomDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         dialog.getRootPane().registerKeyboardAction((e) -> dialog.dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -56,7 +59,7 @@ public class Reorganisation {
 
     private void initLayout() {
         dialog.setLayout(new GridBagLayout());
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(5, 5, 5, 5);
         gbc.weightx = 0.5;
         gbc.weighty = 0.5;
         addComponent(new JLabel(I18N.getString("reservationLabel")), 0, 0);
@@ -64,6 +67,28 @@ public class Reorganisation {
         addComponent(oldRoom, 1, 1);
         addComponent(new JLabel(I18N.getString("newRoomLabel")), 2, 1);
         addComponent(newRoom, 3, 1);
+        reservationPicker.addActionListener(this::actionPerformed);
+        gbc.gridwidth = 3;
+        addComponent(reservationPicker, 1, 0);
+        okButton = new Button(I18N.getString("okButton"), this::actionPerformed);
+        gbc.anchor = GridBagConstraints.LINE_START;
+        addComponent(okButton, 0, 2);
+        okButton = new Button(I18N.getString("cancelButton"), (e) -> dialog.dispose());
+        gbc.anchor = GridBagConstraints.LINE_END;
+        addComponent(okButton, 3, 2);
+    }
+
+    private void actionPerformed(ActionEvent e) {
+        String selected = (String) reservationPicker.getSelectedItem();
+        if (e.getSource().equals(reservationPicker)) {
+            new LoadReservationRooms(reservationMap.get(selected)).execute();
+        } else if (e.getSource().equals(oldRoom)) {
+            new LoadFreeRooms(reservationMap.get(selected)).execute();
+        } else if (e.getSource().equals(okButton)) {
+            Integer oldRoomNumber = (Integer) oldRoom.getSelectedItem();
+            Integer newRoomNumber = (Integer) newRoom.getSelectedItem();
+            new UpdateRoomNumber(oldRoomNumber, newRoomNumber, reservationMap.get(selected)).execute();
+        }
     }
 
     private void addComponent(Component component, int x, int y) {
@@ -102,14 +127,89 @@ public class Reorganisation {
                 e.printStackTrace();
             }
             reservationPicker.setPreferredSize(new Dimension(223, 20));
-            gbc.gridwidth = 3;
-            reservationPicker.addActionListener(Reorganisation::reservationPicked);
-            addComponent(reservationPicker, 1, 0);
             dialog.pack();
             dialog.setVisible(true);
         }
     }
 
-    private static void reservationPicked(ActionEvent event) {
+    private class LoadReservationRooms extends SwingWorker<Integer[], Void> {
+
+        private final Reservation reservation;
+
+        public LoadReservationRooms(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Integer[] doInBackground() {
+            return reservationDao.getReservationRoomNumbers(reservation.getId());
+        }
+
+        @Override
+        protected void done() {
+            reservationPicker = new JComboBox<>();
+            try {
+                for (Integer roomNumber : get()) {
+                    oldRoom.addItem(roomNumber);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class LoadFreeRooms extends SwingWorker<List<Room>, Void> {
+
+        private final Reservation reservation;
+
+        public LoadFreeRooms(Reservation reservation) {
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected List<Room> doInBackground() {
+            return reservationDao.getFreeRooms(reservation.getArrival(), reservation.getDeparture(), roomDao);
+        }
+
+        @Override
+        protected void done() {
+            reservationPicker = new JComboBox<>();
+            try {
+                for (Room room : get()) {
+                    newRoom.addItem(room.getRoomNumber());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class UpdateRoomNumber extends SwingWorker<Void, Void> {
+
+        private final Integer oldRoomNumber;
+        private final Integer newRoomNumber;
+        private final Reservation reservation;
+
+        public UpdateRoomNumber(Integer oldRoomNumber, Integer newRoomNumber, Reservation reservation) {
+            this.oldRoomNumber = oldRoomNumber;
+            this.newRoomNumber = newRoomNumber;
+            this.reservation = reservation;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.updateRoomNumber(reservation.getId(), oldRoomNumber, newRoomNumber);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                get();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            dialog.dispose();
+        }
     }
 }
