@@ -321,7 +321,9 @@ public class CheckIn {
             var name = table.getValueAt(rows[i] - i, 0);
             var birthdate = table.getValueAt(rows[i] - i, 1);
             var id = table.getValueAt(rows[i] - i, 2);
-            Guest guest = new Guest((String) name, (LocalDate) birthdate, (String) id, res.getId());
+            var roomNumber = table.getValueAt(rows[i] - i, 3);
+
+            Guest guest = new Guest((String) name, (LocalDate) birthdate, (String) id, res.getId(), Integer.parseInt(roomNumber.toString()));
             removeGuest(guest);
             model.removeRow(rows[i] - i);
         }
@@ -435,7 +437,9 @@ public class CheckIn {
             } else {
                 String name = addNameField.getText();
                 String id = addIDfield.getText();
-                Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId());
+                assert rooms.getSelectedItem() != null;
+                int roomNumber = Integer.parseInt(rooms.getSelectedItem().toString());
+                Guest guest = new Guest(name, birthDatePicker.getDate(), id, res.getId(), roomNumber);
                 DefaultTableModel dataModel = (DefaultTableModel) table.getModel();
                 dataModel.addRow(new Object[]{name, birthDatePicker.getDate(), addIDfield.getText(), rooms.getSelectedItem()});
                 guestList.add(guest);

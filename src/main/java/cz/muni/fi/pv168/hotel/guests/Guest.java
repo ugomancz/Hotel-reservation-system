@@ -79,7 +79,8 @@ public class Guest {
         return name.equals(guest.name) &&
                 birthDate.equals(guest.birthDate) &&
                 guestId.equals(guest.guestId) &&
-                reservationId.equals(guest.reservationId);
+                reservationId.equals(guest.reservationId) &&
+                roomNumber == guest.roomNumber;
     }
 
     @Override
