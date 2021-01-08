@@ -32,10 +32,10 @@ public final class ReservationDao {
     public ReservationDao(DataSource dataSource) {
         this.dataSource = dataSource;
         this.roomDao = new RoomDao(dataSource);
-        this.reservedRoom = new ReservedRoom();
         if (!tableExists()) {
             createTable();
         }
+        this.reservedRoom = new ReservedRoom();
     }
 
     private boolean tableExists() {
@@ -94,7 +94,7 @@ public final class ReservationDao {
                      "UPDATE RESERVATION SET NAME = ?, PHONE = ?, EMAIL = ?, HOSTS = ?,"
                              + " ARRIVAL = ?, DEPARTURE = ?, STATUS = ?, GUESTID = ? WHERE ID = ?")) {
             setRows(reservation, st);
-            st.setLong(10, reservation.getId());
+            st.setLong(9, reservation.getId());
             int rowsUpdated = st.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new DataAccessException("Failed to update non-existing reservation: " + reservation);
@@ -184,8 +184,8 @@ public final class ReservationDao {
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all reservations", ex);
         }
-
     }
+
     public int getNumOfReservations(LocalDate date) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
@@ -352,7 +352,7 @@ public final class ReservationDao {
         public void create(long reservationId, int roomNumber, int pricePerNight) {
             try (var connection = dataSource.getConnection();
                  var st = connection.prepareStatement(
-                         "INSERT INTO RESERVEDROOM (?, ?, ?) VALUES (?, ?, ?)")) {
+                         "INSERT INTO RESERVEDROOM (RESERVATIONID, ROOMID, PRICEPERNIGHT) VALUES (?, ?, ?)")) {
                 st.setLong(1, reservationId);
                 st.setInt(2, roomNumber);
                 st.setInt(3, pricePerNight);
