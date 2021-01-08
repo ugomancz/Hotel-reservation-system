@@ -49,6 +49,7 @@ public class NewReservation {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private final JDialog dialog;
     private final RoomDao roomDao;
+    private final GuestDao guestDao;
     private final Map<Integer, Integer> roomIndex = Map.ofEntries(
             Map.entry(101, 0),
             Map.entry(102, 1),
@@ -65,6 +66,7 @@ public class NewReservation {
             Map.entry(302, 12),
             Map.entry(303, 13)
     );
+    private final JFrame frame;
     private Button cancelButton;
     private Button checkinButton;
     private JTextField name, phone, email, people;
@@ -73,7 +75,9 @@ public class NewReservation {
 
 
     public NewReservation(JFrame frame, ReservationDao reservationDao, GuestDao guestDao, RoomDao roomDao) {
+        this.frame = frame;
         this.roomDao = roomDao;
+        this.guestDao = guestDao;
         dialog = new JDialog(frame, I18N.getString("windowTitle"), Dialog.ModalityType.APPLICATION_MODAL);
         this.reservationDao = reservationDao;
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
