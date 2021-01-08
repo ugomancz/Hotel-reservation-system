@@ -447,6 +447,7 @@ public final class ReservationDao {
             try (var connection = dataSource.getConnection();
                  var st = connection.prepareStatement(
                          "SELECT ROOMID FROM RESERVEDROOM WHERE reservationid = ?")) {
+                st.setLong(1, reservationId);
                 try (var rs = st.executeQuery()) {
 
                     while (rs.next()) {
