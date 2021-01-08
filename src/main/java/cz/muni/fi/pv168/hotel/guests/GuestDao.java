@@ -76,8 +76,8 @@ public final class GuestDao {
             st.setDate(2, Date.valueOf(guest.getBirthDate()));
             st.setString(3, guest.getGuestId());
             st.setLong(4, guest.getReservationId());
-            st.setLong(5, guest.getId());
-            st.setInt(6, guest.getRoomNumber());
+            st.setInt(5, guest.getRoomNumber());
+            st.setLong(6, guest.getId());
             int rowsUpdated = st.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new DataAccessException("Failed to update non-existing guest: " + guest);
