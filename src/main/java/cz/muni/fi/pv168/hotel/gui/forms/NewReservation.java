@@ -271,7 +271,7 @@ public class NewReservation {
                 get();
                 Timetable.refresh();
                 if (toCheckIn) {
-                    new CheckIn(frame, reservationDao, guestDao, reservation);
+                    new CheckIn(frame, reservationDao, guestDao, roomDao, reservation);
                 }
                 dialog.dispose();
             } catch (Exception ex) {
