@@ -393,7 +393,7 @@ public final class ReservationDao {
         public Integer getPrice(long reservationId, int roomNumber) {
             try (var connection = dataSource.getConnection();
                  var st = connection.prepareStatement(
-                         "SELECT PRICEPERNIGHT FROM RESERVERDROOM WHERE RESERVATIONID = ? AND ROOMID = ?")) {
+                         "SELECT PRICEPERNIGHT FROM RESERVEDROOM WHERE RESERVATIONID = ? AND ROOMID = ?")) {
                 st.setLong(1, reservationId);
                 st.setInt(2, roomNumber);
                 int price = -1;
