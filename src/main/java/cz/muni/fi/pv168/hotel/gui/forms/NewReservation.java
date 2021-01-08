@@ -67,7 +67,7 @@ public class NewReservation {
             Map.entry(302, 12),
             Map.entry(303, 13)
     );
-    private Button cancelButton, checkinButton;
+    private Button cancelButton, checkinButton, okayButton;
     private JTextField name, phone, email, people;
     private JTable picker;
     private DesignedDatePicker fromDate, toDate;
@@ -121,18 +121,18 @@ public class NewReservation {
         fromDate = new DesignedDatePicker();
         fromDate.setFirstAllowedDate(LocalDate.now());
         fromDate.setDate(LocalDate.now());
-        fromDate.addDateChangeListener(e -> toDate.setFirstAllowedDate(fromDate.getDate().plusDays(1)));
         placeComponent(1, 4, fromDate.getDatePicker());
 
         toDate = new DesignedDatePicker();
         toDate.setFirstAllowedDate(LocalDate.now().plusDays(1));
         toDate.setDate(LocalDate.now().plusDays(1));
+        addDateChangeListeners();
         placeComponent(1, 5, toDate.getDatePicker());
     }
 
     private void addDateChangeListeners() {
-        toDate.addDateChangeListener(this::arrivalPicked);
-        fromDate.addDateChangeListener(this::departurePicked);
+        fromDate.addDateChangeListener(this::arrivalPicked);
+        toDate.addDateChangeListener(this::departurePicked);
     }
 
     private void arrivalPicked(DateChangeEvent event) {
@@ -156,7 +156,8 @@ public class NewReservation {
 
     private void addButtons() {
         gbc.anchor = GridBagConstraints.LINE_START;
-        Button okayButton = new Button(I18N.getString("confirmButton"));
+
+        okayButton = new Button(I18N.getString("confirmButton"));
         okayButton.addActionListener(this::actionPerformed);
         placeComponent(0, 10, okayButton);
 
@@ -185,7 +186,6 @@ public class NewReservation {
         addDatePickers();
         addButtons();
         addTable();
-        addDateChangeListeners();
         new UpdateTable().execute();
         dialog.pack();
     }
@@ -273,11 +273,7 @@ public class NewReservation {
 
         @Override
         protected List<Room> doInBackground() {
-            try {
-                return reservationDao.getFreeRooms(fromDate.getDate(), toDate.getDate(), roomDao);
-            } catch (NullPointerException ex) {
-                return reservationDao.getFreeRooms(fromDate.getDate(), toDate.getDate(), roomDao);
-            }
+            return reservationDao.getFreeRooms(fromDate.getDate(), toDate.getDate(), roomDao);
         }
 
         @Override
