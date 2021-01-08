@@ -43,6 +43,8 @@ public class CheckIn {
     private JTable table;
     private JLabel resName, resGuests, resRooms;
     private Button confirm, cancel, add, delete, addConfirm, addCancel, priceConfirm, priceCancel;
+    private int price;
+    private Integer roomNumber;
     private JComboBox<String> reservationPicker, rooms, prices;
     private JTextField addNameField, addIDfield;
     private Reservation res;
@@ -121,11 +123,16 @@ public class CheckIn {
 
     private void initPriceComboBox(JComboBox<String> prices, Integer roomNumber) {
         for (Integer price : Constants.ROOM_PRICES.values()) {
-            prices.addItem(price.toString());
+            if (price == roomDao.getPricePerNight(roomNumber)) {
+                prices.addItem(price.toString() + ",- " + "(" + I18N.getString("current") + ")");
+            } else {
+                prices.addItem(price.toString() + ",-");
+            }
         }
-        prices.setPreferredSize(new Dimension(100, 20));
+        prices.addActionListener(this::actionPerformed);
+        prices.setPreferredSize(new Dimension(170, 20));
         gbc.anchor = GridBagConstraints.CENTER;
-        prices.setSelectedItem(roomNumber.toString());
+        prices.setSelectedItem(roomDao.getPricePerNight(roomNumber) + ",- " + "(" + I18N.getString("current") + ")");
 
     }
 
@@ -247,8 +254,18 @@ public class CheckIn {
         gbc.anchor = GridBagConstraints.CENTER;
         initPriceComboBox(prices, roomNumber);
         placeComponent(priceWindow, 1, 1, prices);
+
+        gbc.anchor = GridBagConstraints.LINE_START;
         priceConfirm = new Button(I18N.getString("confirm"));
-        priceConfirm.setPreferredSize(new Dimension(85, 25));
+        priceConfirm.setPreferredSize(new Dimension(90, 25));
+        priceConfirm.addActionListener(this::actionPerformed);
+        placeComponent(priceWindow, 0, 2, priceConfirm);
+
+        gbc.anchor = GridBagConstraints.LINE_END;
+        priceCancel = new Button(I18N.getString("cancel"));
+        priceCancel.setPreferredSize(new Dimension(90, 25));
+        priceCancel.addActionListener(this::actionPerformed);
+        placeComponent(priceWindow, 1, 2, priceCancel);
     }
 
     /**
@@ -325,8 +342,6 @@ public class CheckIn {
         int count = 0;
         for (int i  = 0; i < table.getRowCount(); i++) {
 
-            String test1 = table.getValueAt(i, 3).toString();
-            String test2 = n.toString();
             if (table.getValueAt(i, 3).toString().equals(n.toString())) {
                 count++;
             }
@@ -363,6 +378,7 @@ public class CheckIn {
     private void checkNonFullRooms() {
         for (Integer n : res.getRoomNumbers()) {
             Room room = roomDao.getRoom(n);
+            roomNumber = n;
             if (getNumOfRooms(n) < roomPriceCategoryToInt(room.getRoomPriceCategory())) {
                 initPriceLayout(n);
             }
@@ -399,6 +415,12 @@ public class CheckIn {
             res = reservationMap.get(selected);
             fillReservation(res);
         }
+        if (e.getSource().equals(prices)) {
+            String selected = (String) prices.getSelectedItem();
+            assert selected != null;
+            price = Integer.parseInt(selected.split(",")[0]);
+
+        }
         if (e.getSource().equals(add)) {
             initAddLayout();
         }
@@ -406,6 +428,10 @@ public class CheckIn {
             removeSelectedRows(table);
             confirm.setEnabled(guestList.size() == res.getGuests());
         }
+        if (e.getSource().equals(priceConfirm)) {
+            new UpdateReservationPrice(res, roomNumber, price).execute();
+        }
+
         if (e.getSource().equals(addConfirm)) {
             if (addNameField.getText().equals("") || addIDfield.getText().equals("")) {
                 new ErrorDialog(dialog, I18N.getString("notAllFieldsFilledError"));
@@ -456,6 +482,30 @@ public class CheckIn {
                 add.setEnabled(true);
                 delete.setEnabled(true);
             }
+        }
+    }
+
+    private class UpdateReservationPrice extends SwingWorker<Void, Void> {
+
+        private final Reservation reservation;
+        private final Integer roomNumber;
+        private final int price;
+
+        private UpdateReservationPrice(Reservation reservation, Integer roomNumber, int price) {
+            this.reservation = reservation;
+            this.roomNumber = roomNumber;
+            this.price = price;
+        }
+
+        @Override
+        protected Void doInBackground() {
+            reservationDao.updatePrice(reservation.getId(), roomNumber, price);
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            priceWindow.dispose();
         }
     }
 
