@@ -73,6 +73,7 @@ public final class ReservationDao {
         if (reservation.getId() == null) {
             throw new IllegalArgumentException("Reservation has null ID");
         }
+        reservedRoom.delete(reservation.getId());
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement("DELETE FROM RESERVATION WHERE ID = ?")) {
             st.setLong(1, reservation.getId());
@@ -81,7 +82,7 @@ public final class ReservationDao {
                 throw new DataAccessException("Failed to delete non-existing reservation: " + reservation);
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to delete reservation " + reservation, ex);
+            throw new DataAccessException("Failed to delete reservation ", ex);
         }
     }
 
@@ -381,6 +382,19 @@ public final class ReservationDao {
             } catch (SQLException ex) {
                 throw new DataAccessException("Failed to update reserved room, reservation: "
                         + reservationId + " and room: " + roomNumber, ex);
+            }
+        }
+
+        public void delete(long reservationId) {
+            try (var connection = dataSource.getConnection();
+                 var st = connection.prepareStatement("DELETE FROM RESERVEDROOM WHERE RESERVATIONID = ?")) {
+                st.setLong(1, reservationId);
+                int rowsDeleted = st.executeUpdate();
+                if (rowsDeleted == 0) {
+                    throw new DataAccessException("Failed to delete non-existing reservationId: " + reservationId);
+                }
+            } catch (SQLException ex) {
+                throw new DataAccessException("Failed to delete from reservedRoom for reservationId " + reservationId, ex);
             }
         }
 
