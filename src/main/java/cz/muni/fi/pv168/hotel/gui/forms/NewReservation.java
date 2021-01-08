@@ -241,9 +241,10 @@ public class NewReservation {
                 Reservation reservation = new Reservation(usedName, usedPhone, usedMail, usedPeople, rooms.toArray(Integer[]::new), from, to,
                         ReservationStatus.PLANNED.toString());
                 if (e.getSource().equals(checkinButton)) { // go straight to check-in
-                    //new CheckIn(frame, reservationDao, guestDao, reservation);
+                    new CreateReservation(reservation, true).execute();
+                } else {
+                    new CreateReservation(reservation, false).execute();
                 }
-                new CreateReservation(reservation).execute();
             }
         }
     }
@@ -251,8 +252,10 @@ public class NewReservation {
     private class CreateReservation extends SwingWorker<Void, Void> {
 
         private final Reservation reservation;
+        private final boolean toCheckIn;
 
-        public CreateReservation(Reservation reservation) {
+        public CreateReservation(Reservation reservation, boolean toCheckIn) {
+            this.toCheckIn = toCheckIn;
             this.reservation = reservation;
         }
 
@@ -264,8 +267,16 @@ public class NewReservation {
 
         @Override
         public void done() {
-            Timetable.refresh();
-            dialog.dispose();
+            try {
+                get();
+                Timetable.refresh();
+                if (toCheckIn) {
+                    new CheckIn(frame, reservationDao, guestDao, reservation);
+                }
+                dialog.dispose();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
