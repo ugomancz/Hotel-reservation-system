@@ -111,8 +111,13 @@ public class CancelReservation {
 
         @Override
         public void done() {
-            Timetable.refresh();
-            dialog.dispose();
+            try {
+                get();
+                Timetable.refresh();
+                dialog.dispose();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -133,8 +138,8 @@ public class CancelReservation {
         protected void done() {
             try {
                 reservationMap = get();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
             reservationPicker = new JComboBox<>();
             try {
