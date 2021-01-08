@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
@@ -163,7 +164,7 @@ public final class ReservationDao {
         try (var rs = st.executeQuery()) {
             while (rs.next()) {
                 Reservation reservation = new Reservation(rs.getString("NAME"), rs.getString("PHONE"),
-                        rs.getString("EMAIL"), rs.getInt("HOSTS"), getReservationNumbers(rs.getLong("ID")),
+                        rs.getString("EMAIL"), rs.getInt("HOSTS"), getReservationRoomNumbers(rs.getLong("ID")),
                         rs.getDate("ARRIVAL").toLocalDate(), rs.getDate("DEPARTURE").toLocalDate(),
                         rs.getString("STATUS"));
                 reservation.setId(rs.getLong("ID"));
@@ -174,7 +175,7 @@ public final class ReservationDao {
         return reservations;
     }
 
-    private Integer[] getReservationNumbers(Long reservationId) {
+    public Integer[] getReservationRoomNumbers(Long reservationId) {
         List<Integer> roomNumbers = new ArrayList<>();
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement("SELECT ROOMID FROM RESERVEDROOM " +
@@ -190,6 +191,14 @@ public final class ReservationDao {
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all reservations", ex);
         }
+    }
+
+    public HashMap<Integer, Integer> getReservedRooms(long reservationId) {
+        HashMap<Integer, Integer> hashMap = new HashMap<>();
+        for (Integer roomNumber : getReservationRoomNumbers(reservationId)) {
+            hashMap.put(roomNumber, getOldPrice(reservationId, roomNumber));
+        }
+        return hashMap;
     }
 
     public int getNumOfReservations(LocalDate date) {
@@ -239,7 +248,7 @@ public final class ReservationDao {
         }
     }
 
-    public void updateRoomNumber(long reservationId, int oldNumber, int newNumber){
+    public void updateRoomNumber(long reservationId, int oldNumber, int newNumber) {
         reservedRoom.updateRoomNumber(reservationId, oldNumber, newNumber);
     }
 
@@ -277,21 +286,6 @@ public final class ReservationDao {
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to drop RESERVATION table", ex);
         }
-    }
-
-    private String parse(Integer[] roomNumbers) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(Constants.DELIMITER);
-        for (Integer roomNumber : roomNumbers) {
-            sb.append(roomNumber).append(Constants.DELIMITER);
-        }
-        return sb.toString();
-    }
-
-    private Integer[] unparse(String roomnumbers) {
-        String[] numbers = roomnumbers.split(";");
-        return Stream.of(numbers).skip(1).limit(numbers.length - 1)
-                .mapToInt(Integer::parseInt).boxed().toArray(Integer[]::new);
     }
 
     private class ReservedRoom {
@@ -345,7 +339,7 @@ public final class ReservationDao {
             }
         }
 
-        private void updateRoomNumber(long reservationId, int oldRoom, int newRoom){
+        private void updateRoomNumber(long reservationId, int oldRoom, int newRoom) {
             try (var connection = dataSource.getConnection();
                  var st = connection.prepareStatement(
                          "UPDATE RESERVEDROOM SET ROOMID = ? WHERE RESERVATIONID = ? AND ROOMID = ?")) {
