@@ -142,7 +142,7 @@ public class GuestsInfo {
             try {
                 List<Guest> guests = get();
                 for (Guest guest : guests) {
-                    model.addRow(new Object[]{guest.getName(), guest.getBirthDate(), guest.getGuestId()});
+                    model.addRow(new Object[]{guest.getName(), guest.getBirthDate(), guest.getGuestId(), guest.getRoomNumber()});
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
