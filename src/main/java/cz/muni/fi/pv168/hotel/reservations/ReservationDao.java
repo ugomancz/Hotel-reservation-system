@@ -216,55 +216,6 @@ public final class ReservationDao {
         return hashSet;
     }
 
-//    public boolean isFree(int room, LocalDate arrival, LocalDate departure) {
-//        try (var connection = dataSource.getConnection();
-//             var st = connection.prepareStatement(
-//                     "SELECT count(*) as totalRows FROM RESERVATION WHERE STATUS<>? AND (ROOMNUMBERS LIKE ?) " + "AND ("
-//                             + "(DEPARTURE>? AND ARRIVAL<?)"
-//                             + ")")) {
-//            st.setString(1, ReservationStatus.PAST.name());
-//            st.setString(2, "%;" + room + ";%");
-//            st.setDate(3, Date.valueOf(arrival));
-//            st.setDate(4, Date.valueOf(departure));
-//            int result;
-//            try (var rs = st.executeQuery()) {
-//                if (rs.next()) {
-//                    result = rs.getInt("totalRows");
-//                } else {
-//                    result = 0;
-//                }
-//            }
-//            return result == 0;
-//        } catch (SQLException ex) {
-//            throw new DataAccessException("Failed to load all reservations", ex);
-//        }
-//    }
-
-//    public boolean isFree(int room, LocalDate arrival, LocalDate departure, long id) {
-//        try (var connection = dataSource.getConnection();
-//             var st = connection.prepareStatement(
-//                     "SELECT count(*) as totalRows FROM RESERVATION WHERE STATUS<>? AND (ROOMNUMBERS LIKE ?) " + "AND ("
-//                             + "(DEPARTURE>? AND ARRIVAL<?) AND ID<>?"
-//                             + ")")) {
-//            st.setString(1, ReservationStatus.PAST.name());
-//            st.setString(2, "%;" + room + ";%");
-//            st.setDate(3, Date.valueOf(arrival));
-//            st.setDate(4, Date.valueOf(departure));
-//            st.setLong(5, id);
-//            int result;
-//            try (var rs = st.executeQuery()) {
-//                if (rs.next()) {
-//                    result = rs.getInt("totalRows");
-//                } else {
-//                    result = 0;
-//                }
-//            }
-//            return result == 0;
-//        } catch (SQLException ex) {
-//            throw new DataAccessException("Failed to load all reservations", ex);
-//        }
-//    }
-
     public List<Room> getFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao) {
         try (var connection = dataSource.getConnection();
              var st = connection.prepareStatement(
@@ -286,6 +237,10 @@ public final class ReservationDao {
         } catch (SQLException ex) {
             throw new DataAccessException("Failed to load all reservations", ex);
         }
+    }
+
+    public void updateRoomNumber(long reservationId, int oldNumber, int newNumber){
+        reservedRoom.updateRoomNumber(reservationId, oldNumber, newNumber);
     }
 
     private List<Room> collectFreeRooms(LocalDate arrival, LocalDate departure, RoomDao roomDao, PreparedStatement st) throws SQLException {
@@ -387,6 +342,25 @@ public final class ReservationDao {
             } catch (SQLException ex) {
                 throw new DataAccessException("Failed to update reserved room, reservation: "
                         + reservationId + " and room: " + roomNumber, ex);
+            }
+        }
+
+        private void updateRoomNumber(long reservationId, int oldRoom, int newRoom){
+            try (var connection = dataSource.getConnection();
+                 var st = connection.prepareStatement(
+                         "UPDATE RESERVEDROOM SET ROOMID = ? WHERE RESERVATIONID = ? AND ROOMID = ?")) {
+                st.setInt(1, newRoom);
+                st.setLong(2, reservationId);
+                st.setInt(3, oldRoom);
+                int rowsUpdated = st.executeUpdate();
+                if (rowsUpdated == 0) {
+                    throw new DataAccessException("Failed to update non-existing " +
+                            "reserved room for reservation: "
+                            + reservationId + " and room: " + oldRoom);
+                }
+            } catch (SQLException ex) {
+                throw new DataAccessException("Failed to update reserved room, reservation: "
+                        + reservationId + " and room: " + oldRoom, ex);
             }
         }
 
