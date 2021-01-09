@@ -28,10 +28,10 @@ class DesignedCalendar {
         this.roomDao = roomDao;
         CALENDAR.setSettings(initSettings());
         CALENDAR.addCalendarListener(new CalendarEvent());
-        CALENDAR.getPreviousMonthButton().setBackground(Constants.BUTTON_BACKGROUND);
-        CALENDAR.getPreviousMonthButton().setFont(Constants.BUTTON_FONT);
-        CALENDAR.getNextMonthButton().setBackground(Constants.BUTTON_BACKGROUND);
-        CALENDAR.getNextMonthButton().setFont(Constants.BUTTON_FONT);
+        //CALENDAR.getPreviousMonthButton().setBackground(Constants.BUTTON_BACKGROUND);
+        //CALENDAR.getPreviousMonthButton().setFont(Constants.BUTTON_FONT);
+        //CALENDAR.getNextMonthButton().setBackground(Constants.BUTTON_BACKGROUND);
+        //CALENDAR.getNextMonthButton().setFont(Constants.BUTTON_FONT);
     }
 
     static void setDate(LocalDate date) {

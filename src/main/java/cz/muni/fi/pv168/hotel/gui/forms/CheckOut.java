@@ -71,7 +71,7 @@ public class CheckOut {
         addComponent(addComboBox(), 0);
         textArea.setEditable(false);
         JScrollPane pane = new JScrollPane(textArea);
-        pane.setPreferredSize(new Dimension(215, 200));
+        pane.setPreferredSize(new Dimension(230, 200));
         addComponent(pane, 1);
         addButtons();
         dialog.pack();

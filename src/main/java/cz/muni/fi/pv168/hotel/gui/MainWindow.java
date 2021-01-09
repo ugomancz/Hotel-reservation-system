@@ -77,7 +77,7 @@ public class MainWindow {
             setLayout(new GridLayout(rooms.size(), 1, 0, 1));
             setBorder(new EmptyBorder(0, 0, 0, 0));
             setBackground(Constants.BACKGROUND_COLOR);
-            setPreferredSize(new Dimension(75, 500));
+            setPreferredSize(new Dimension(80, 500));
             for (Room room : rooms) {
                 JLabel label = new JLabel(I18N.getString("roomLabel") + room.getRoomNumber(), SwingConstants.CENTER);
                 label.setBackground(Constants.BACKGROUND_COLOR);

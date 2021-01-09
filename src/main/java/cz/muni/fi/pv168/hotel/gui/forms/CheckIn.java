@@ -34,10 +34,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -162,7 +159,7 @@ public class CheckIn {
         placeComponent(dialog, 0, 0, reservation);
         reservationPicker = new JComboBox<>();
         initComboBox();
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.anchor = GridBagConstraints.LINE_END;
         placeComponent(dialog, 0, 0, reservationPicker);
 
         String selected = (String) reservationPicker.getSelectedItem();
@@ -345,9 +342,7 @@ public class CheckIn {
     }
 
     private void createGuests() {
-        for (Guest guest : guestList) {
-            new CreateGuest(guest).execute();
-        }
+        new CreateGuests(guestList).execute();
     }
 
     private int getNumOfRooms(Integer n) {
@@ -525,19 +520,30 @@ public class CheckIn {
         }
     }
 
-    private class CreateGuest extends SwingWorker<Void, Void> {
+    private class CreateGuests extends SwingWorker<Void, Void> {
 
-        private final Guest guest;
+        private final List<Guest> guests;
 
-        public CreateGuest(Guest guest) {
-            this.guest = guest;
+        public CreateGuests(List<Guest> guests) {
+            this.guests = guests;
         }
 
 
         @Override
         protected Void doInBackground() {
-            guestDao.create(guest);
+            for (Guest guest : guests) {
+                guestDao.create(guest);
+            }
             return null;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                get();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
