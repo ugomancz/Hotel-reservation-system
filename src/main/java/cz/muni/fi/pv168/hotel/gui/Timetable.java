@@ -20,6 +20,7 @@ import java.awt.GridLayout;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class Timetable {
     private static RoomDao roomDao;
     private static JTextPane[][] TEXT_PANES;
     private static ReservationDao reservationDao;
-    private static LocalDate currentMonday;
+    private static LocalDate displayedMonday;
     private final JPanel panel;
 
     Timetable(ReservationDao reservationDao, RoomDao roomDao) {
@@ -71,8 +72,8 @@ public class Timetable {
         TEXT_PANES[room][day].setBackground(Color.white);
     }
 
-    private static void fillPane(int room, int day, LocalDate today, Reservation reservation) {
-        if (reservation.getArrival().isEqual(today) && reservation.getStatus() != ReservationStatus.PAST) {
+    private static void fillPane(int room, int day, Reservation reservation) {
+        if (reservation.getArrival().isEqual(displayedMonday.plusDays(day)) && reservation.getStatus() != ReservationStatus.PAST) {
             TEXT_PANES[room][day].setBackground(FIRST_DAY_OF_RESERVATION);
         } else {
             TEXT_PANES[room][day].setBackground(STATUS_COLOR.get(reservation.getStatus()));
@@ -95,12 +96,12 @@ public class Timetable {
         }
     }
 
-    private static void updatePane(List<Reservation> reservations, LocalDate today, int room, int day) {
+    private static void updatePane(List<Reservation> reservations, int room, int day) {
         if (reservations.size() == 0) {
             clearPane(room, day);
         } else if (reservations.size() == 1) {
             Reservation reservation = reservations.get(0);
-            fillPane(room, day, today, reservation);
+            fillPane(room, day, reservation);
         } else {
             Reservation reservationOne = reservations.get(0);
             Reservation reservationTwo = reservations.get(1);
@@ -110,17 +111,12 @@ public class Timetable {
 
     public static void drawWeek(LocalDate date) {
         LocalDate monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-        currentMonday = monday;
-        for (int room = 0; room < roomDao.numberOfRooms(); room++) { // for every room
-            for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
-                LocalDate currentDay = monday.plusDays(day);
-                new GetReservation(room, day, currentDay).execute();
-            }
-        }
+        displayedMonday = monday;
+        new UpdateTable(monday).execute();
     }
 
     public static void refresh() {
-        drawWeek(currentMonday);
+        drawWeek(displayedMonday);
     }
 
     JPanel getPanel() {
@@ -145,28 +141,35 @@ public class Timetable {
         }
     }
 
-    private static class GetReservation extends SwingWorker<List<Reservation>, Void> {
+    private static class UpdateTable extends SwingWorker<List<List<Reservation>>, Void> {
 
-        int room, day;
-        LocalDate date;
+        LocalDate monday;
 
-        public GetReservation(int room, int day, LocalDate date) {
-            this.room = room;
-            this.day = day;
-            this.date = date;
+        public UpdateTable(LocalDate monday) {
+            this.monday = monday;
         }
 
         @Override
-        protected List<Reservation> doInBackground() {
+        protected List<List<Reservation>> doInBackground() {
+            List<List<Reservation>> reservations = new ArrayList<>();
+
             Map<Integer, Integer> reversedRoomIndex = ROOM_INDEX.entrySet().stream()
                     .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
-            return reservationDao.getReservation(reversedRoomIndex.get(room), date);
+            for (int room = 0; room < roomDao.numberOfRooms(); room++) { // for every room
+                for (int day = 0; day < Constants.DAYS_IN_WEEK; day++) { // for every day of the week
+                    reservations.add(reservationDao.getReservation(reversedRoomIndex.get(room), monday.plusDays(day)));
+                }
+            }
+            return reservations;
         }
 
         @Override
         protected void done() {
             try {
-                updatePane(get(), date, room, day);
+                List<List<Reservation>> reservations = get();
+                for (int i = 0; i < reservations.size(); i++) {
+                    updatePane(reservations.get(i), i / 7, i % 7);
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

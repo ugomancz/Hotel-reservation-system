@@ -92,12 +92,10 @@ class TimetableHeader {
             current = current.minusWeeks(1);
             changeDates(current);
             Timetable.drawWeek(current);
-            DesignedCalendar.setDate(current);
         } else if (e.getSource().equals(next)) {
             current = current.plusWeeks(1);
             changeDates(current);
             Timetable.drawWeek(current);
-            DesignedCalendar.setDate(current);
         }
     }
 }
