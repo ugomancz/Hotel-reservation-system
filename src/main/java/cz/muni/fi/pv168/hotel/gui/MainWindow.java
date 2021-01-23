@@ -22,7 +22,7 @@ import java.util.List;
 public class MainWindow {
 
     private static final I18N I18N = new I18N(MainWindow.class);
-    static Dimension sidePanelDimension = new Dimension(255, 30);
+    static final Dimension sidePanelDimension = new Dimension(255, 30);
     private static JFrame frame;
     private final RoomDao roomDao;
     private final JPanel panel = new JPanel();
@@ -79,7 +79,7 @@ public class MainWindow {
             setBackground(Constants.BACKGROUND_COLOR);
             setPreferredSize(new Dimension(80, 500));
             for (Room room : rooms) {
-                JLabel label = new JLabel(I18N.getString("roomLabel") + room.getRoomNumber(), SwingConstants.CENTER);
+                JLabel label = new JLabel(I18N.getString("roomLabel") + " " + room.getRoomNumber(), SwingConstants.CENTER);
                 label.setBackground(Constants.BACKGROUND_COLOR);
                 add(label);
             }

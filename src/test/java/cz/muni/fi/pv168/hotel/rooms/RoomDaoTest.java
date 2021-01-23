@@ -8,12 +8,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RoomDaoTest {
 
-    private static EmbeddedDataSource dataSource;
     private static RoomDao roomDao;
 
     @BeforeAll
     static void initTestDataSource() {
-        dataSource = new EmbeddedDataSource();
+        EmbeddedDataSource dataSource = new EmbeddedDataSource();
         dataSource.setDatabaseName("memory:hotel-app-test");
         dataSource.setCreateDatabase("create");
         roomDao = new RoomDao(dataSource);

@@ -143,7 +143,7 @@ public class Timetable {
 
     private static class UpdateTable extends SwingWorker<List<List<Reservation>>, Void> {
 
-        LocalDate monday;
+        final LocalDate monday;
 
         public UpdateTable(LocalDate monday) {
             this.monday = monday;

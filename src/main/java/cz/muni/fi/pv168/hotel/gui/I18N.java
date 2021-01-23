@@ -20,7 +20,4 @@ public final class I18N {
         return bundle.getString(prefix + key);
     }
 
-    <E extends Enum<E>> String getString(E key) {
-        return bundle.getString(key.getClass().getSimpleName() + "." + key.name());
-    }
 }
