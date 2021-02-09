@@ -226,7 +226,7 @@ public class CheckOut {
     private class LoadProperties extends SwingWorker<String, Void> {
 
         @Override
-        protected String doInBackground() throws Exception {
+        protected String doInBackground() {
             Properties defaultProperties = new Properties();
             defaultProperties.setProperty("localFee", "50");
             Properties properties = new Properties(defaultProperties);

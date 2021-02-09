@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class GuestDaoTest {
 
     private static EmbeddedDataSource dataSource;
-    private static ReservationDao reservationDao;
     private static Reservation reservation;
     private GuestDao guestDao;
 
@@ -27,7 +26,7 @@ public class GuestDaoTest {
         dataSource = new EmbeddedDataSource();
         dataSource.setDatabaseName("memory:hotel-app-test");
         dataSource.setCreateDatabase("create");
-        reservationDao = new ReservationDao(dataSource);
+        ReservationDao reservationDao = new ReservationDao(dataSource);
         reservation = new Reservation("name", "345234234", null, 4, new Integer[]{101, 102, 103}, LocalDate.now(), LocalDate.now().plusDays(3), "PLANNED");
         reservationDao.create(reservation);
     }

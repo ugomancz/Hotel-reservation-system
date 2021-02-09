@@ -8,10 +8,10 @@ import java.util.Objects;
 public class Room {
 
     private static final I18N I18N = new I18N(Room.class);
-    private int roomNumber;
-    private RoomDao.RoomPriceCategory roomPriceCategory;
-    private int standardBeds;
-    private int kingsizeBeds;
+    private final int roomNumber;
+    private final RoomDao.RoomPriceCategory roomPriceCategory;
+    private final int standardBeds;
+    private final int kingsizeBeds;
 
     public Room(int roomNumber, RoomDao.RoomPriceCategory roomPriceCategory, int standardBeds, int kingsizeBeds) {
         this.roomNumber = roomNumber;
@@ -24,16 +24,8 @@ public class Room {
         return roomPriceCategory;
     }
 
-    public void setRoomPriceCategory(RoomDao.RoomPriceCategory roomPriceCategory) {
-        this.roomPriceCategory = roomPriceCategory;
-    }
-
     public int getRoomNumber() {
         return roomNumber;
-    }
-
-    public void setRoomNumber(int roomNumber) {
-        this.roomNumber = roomNumber;
     }
 
     public int getPricePerNight() {
@@ -44,16 +36,8 @@ public class Room {
         return standardBeds;
     }
 
-    public void setStandardBeds(int standardBeds) {
-        this.standardBeds = standardBeds;
-    }
-
     public int getKingsizeBeds() {
         return kingsizeBeds;
-    }
-
-    public void setKingsizeBeds(int kingsizeBeds) {
-        this.kingsizeBeds = kingsizeBeds;
     }
 
     @Override

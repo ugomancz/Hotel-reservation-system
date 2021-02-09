@@ -60,14 +60,6 @@ public final class RoomDao {
         return getRoom(roomNumber).getPricePerNight();
     }
 
-    public int getPricePerNight(Integer[] rooms) {
-        int total = 0;
-        for (Integer roomNumber : rooms) {
-            total += getPricePerNight(roomNumber);
-        }
-        return total;
-    }
-
     public int numberOfBeds(int roomNumber) {
         Room room = getRoom(roomNumber);
         return room.getKingsizeBeds() * 2 + room.getStandardBeds();
@@ -83,22 +75,6 @@ public final class RoomDao {
 
     public int numberOfRooms() {
         return rooms.size();
-    }
-
-    public void dropTable() {
-        try (var connection = dataSource.getConnection();
-             var st = connection.createStatement()) {
-            st.executeUpdate("DROP TABLE APP.ROOM");
-        } catch (SQLException ex) {
-            throw new DataAccessException("Failed to drop ROOM table", ex);
-        }
-    }
-
-    public void printAll(List<Room> rooms) {
-        for (Room room :
-                rooms) {
-            System.out.printf("Room number %s is free%n", room.getRoomNumber());
-        }
     }
 
     public List<Room> findAll() {
